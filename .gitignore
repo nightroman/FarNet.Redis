@@ -1,0 +1,11 @@
+.vs
+bin
+obj
+Properties
+z
+z.*
+
+*.htm
+*.nupkg
+*.user
+Directory.Build.props

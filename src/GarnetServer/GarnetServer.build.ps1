@@ -8,7 +8,7 @@ $DataRoot = 'C:\DATA\Garnet'
 $LogFile = "$DataRoot\service.log"
 $ArgList = @(
 	'-q --recover --logger-level Information'
-	"--checkpointdir $DataRoot"
+	"--checkpointdir $DataRoot\checkpointdir"
 	'--index 512m'
 	'--obj-index 64m'
 ) -join ' '

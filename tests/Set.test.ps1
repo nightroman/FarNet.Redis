@@ -33,3 +33,19 @@ task set {
 
 	Remove-RedisKey $key
 }
+
+#! fixed
+task empty_strings {
+	$key = 'test:1'
+
+	Set-RedisSet $key '', 1
+	$r = (Get-RedisSet $key) -join '|'
+	equals $r '|1'
+
+	Set-RedisSet $key ''
+	$r = Get-RedisSet $key
+	equals $r.Count 1
+	equals @($r)[0] ''
+
+	Remove-RedisKey $key
+}

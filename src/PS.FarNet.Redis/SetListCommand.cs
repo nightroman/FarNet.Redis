@@ -8,6 +8,7 @@ public sealed class SetListCommand : BaseKeyCmdlet
 {
     [Parameter(Position = 1, Mandatory = true)]
     [AllowEmptyCollection]
+    [AllowEmptyString]
     [ValidateNotNull]
     public string[] Value { get; set; }
 

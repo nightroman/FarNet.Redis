@@ -7,6 +7,8 @@ namespace PS.FarNet.Redis;
 public sealed class SetSetCommand : BaseKeyCmdlet
 {
     [Parameter(Position = 1, Mandatory = true)]
+    [AllowEmptyCollection]
+    [AllowEmptyString]
     [ValidateNotNull]
     public string[] Value { get; set; }
 

@@ -71,3 +71,19 @@ task result_List {
 	Set-RedisList $key @()
 	assert (!(Test-RedisKey $key))
 }
+
+#! fixed
+task empty_strings {
+	$key = 'test:1'
+
+	Set-RedisList $key '', 1
+	$r = (Get-RedisList $key) -join '|'
+	equals $r '|1'
+
+	Set-RedisList $key ''
+	$r = Get-RedisList $key
+	equals $r.Count 1
+	equals $r[0] ''
+
+	Remove-RedisKey $key
+}

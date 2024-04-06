@@ -1,7 +1,7 @@
 @{
 	Author = 'Roman Kuzmin'
 	ModuleVersion = '0.0.0'
-	Description = 'FarNet.Redis cmdlets'
+	Description = 'StackExchange.Redis cmdlets'
 	Copyright = 'Copyright (c) Roman Kuzmin'
 	GUID = '08fab1c4-7b7b-4467-91d0-a88fb123f9cc'
 
@@ -30,4 +30,13 @@
 		'Set-RedisString'
 		'Test-RedisKey'
 	)
+
+	PrivateData = @{
+		PSData = @{
+			Tags = 'Redis', 'Client', 'Database'
+			ProjectUri = 'https://github.com/nightroman/FarNet.Redis'
+			LicenseUri = 'https://github.com/nightroman/FarNet.Redis/blob/main/LICENSE'
+			ReleaseNotes = 'https://github.com/nightroman/FarNet.Redis/blob/main/Release-Notes.md'
+		}
+	}
 }

@@ -1,8 +1,8 @@
 [NuGet]: https://www.nuget.org/packages/FarNet.Redis
 [GitHub]: https://github.com/nightroman/FarNet.Redis
-[Microsoft.Garnet]: https://www.nuget.org/packages/Microsoft.Garnet
+[Microsoft.Garnet]: https://microsoft.github.io/garnet
 [StackExchange.Redis]: https://github.com/StackExchange/StackExchange.Redis
-[GarnetServer]: https://github.com/nightroman/FarNet.SQLite/tree/main/src/GarnetServer
+[GarnetServer]: https://github.com/nightroman/FarNet.Redis/tree/main/src/GarnetServer
 
 # FarNet.Redis
 
@@ -49,11 +49,11 @@ Included assets:
 
 - `FarNet.Redis.psd1`, `PS.FarNet.Redis.dll`
 
-    The PowerShell module files.
+    PowerShell module files.
 
 - `FarNet.Redis.ini`
 
-    The configuration for F# scripts (`FarNet.FSharpFar`).
+    F# scripts configuration, `FarNet.FSharpFar`.
 
 The PowerShell module may be imported as:
 
@@ -61,20 +61,20 @@ The PowerShell module may be imported as:
 Import-Module $env:FARHOME\FarNet\Lib\FarNet.Redis
 ```
 
+**Expose the module as a symbolic link or junction**
+
 Consider exposing this module, so that you can:
 
 ```powershell
 Import-Module FarNet.Redis
 ```
 
-**Expose the module as a symbolic link or junction**
-
 (1) Choose one of the module directories, see `$env:PSModulePath`.
 
 (2) Change to the selected directory and create the symbolic link
 
 ```powershell
-New-Item -Path FarNet.Redis -ItemType SymbolicLink -Value $env:FARHOME\FarNet\Lib\FarNet.Redis
+New-Item FarNet.Redis -ItemType SymbolicLink -Value $env:FARHOME\FarNet\Lib\FarNet.Redis
 ```
 
 (3) Alternatively, you may create the similar folder junction point in Far

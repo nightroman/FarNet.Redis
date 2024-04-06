@@ -153,6 +153,8 @@ task pushPSGallery package, {
 	Publish-Module -Path $PSPackageRoot -NuGetApiKey $NuGetApiKey
 }
 
+task push pushNuGet, pushPSGallery, clean
+
 task test {
 	Invoke-Build ** tests
 }

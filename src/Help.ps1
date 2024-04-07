@@ -26,6 +26,14 @@ $BaseKeys = Merge-Helps $BaseDB @{
 	}
 }
 
+$BaseSub = Merge-Helps $BaseDB @{
+	parameters = @{
+		Channel = @'
+		Specifies the Redis channel.
+'@
+	}
+}
+
 ### Open-Redis
 @{
 	command = 'Open-Redis'
@@ -48,13 +56,31 @@ $BaseKeys = Merge-Helps $BaseDB @{
 	outputs = @{
 		type = 'StackExchange.Redis.IDatabase'
 	}
+	links = @(
+		@{ text = 'Close-Redis' }
+	)
 }
 
 ### Close-Redis
 Merge-Helps $BaseDB @{
 	command = 'Close-Redis'
 	synopsis = 'Closes the Redis database.'
-	description = 'This command closes the database from Open-Redis.'
+	description = @'
+	This command closes the database from Open-Redis.
+'@
+	links = @(
+		@{ text = 'Open-Redis' }
+	)
+}
+
+### Get-RedisServer
+Merge-Helps $BaseDB @{
+	command = 'Get-RedisServer'
+	synopsis = 'Gets the database server instance.'
+	description = ''
+	outputs = @(
+		@{type = 'StackExchange.Redis.IServer'}
+	)
 }
 
 ### Get-RedisAny
@@ -78,7 +104,6 @@ Merge-Helps $BaseKey @{
 	)
 }
 
-
 ### Get-RedisHash
 Merge-Helps $BaseKey @{
 	command = 'Get-RedisHash'
@@ -94,24 +119,6 @@ Merge-Helps $BaseKey @{
 		@{type = 'System.Int64'}
 	)
 }
-
-
-### Get-RedisKey
-Merge-Helps $BaseKey @{
-	command = 'Get-RedisKey'
-	synopsis = 'Gets the specified key information.'
-	description = @'
-	Without extra parameters this cmdlet gets the value type.
-'@
-	parameters = @{
-		TimeToLive = 'Tells to get the time to live span.'
-	}
-	outputs = @(
-		@{type = 'StackExchange.Redis.RedisType'}
-		@{type = 'System.TimeSpan'}
-	)
-}
-
 
 ### Get-RedisList
 Merge-Helps $BaseKey @{
@@ -129,18 +136,6 @@ Merge-Helps $BaseKey @{
 	)
 }
 
-
-### Get-RedisServer
-Merge-Helps $BaseDB @{
-	command = 'Get-RedisServer'
-	synopsis = 'Gets the database server instance.'
-	description = ''
-	outputs = @(
-		@{type = 'StackExchange.Redis.IServer'}
-	)
-}
-
-
 ### Get-RedisSet
 Merge-Helps $BaseKey @{
 	command = 'Get-RedisSet'
@@ -157,7 +152,6 @@ Merge-Helps $BaseKey @{
 	)
 }
 
-
 ### Get-RedisString
 Merge-Helps $BaseKeys @{
 	command = 'Get-RedisString'
@@ -171,34 +165,6 @@ Merge-Helps $BaseKeys @{
 	outputs = @(
 		@{type = 'System.String'}
 		@{type = 'System.Int64'}
-	)
-}
-
-
-### Remove-RedisKey
-Merge-Helps $BaseKeys @{
-	command = 'Remove-RedisKey'
-	synopsis = 'Removes the specified keys.'
-	description = ''
-	parameters = @{
-		Result = 'Tells to get the number of removed keys.'
-	}
-	outputs = @(
-		@{type = 'none'}
-		@{type = 'System.Int64'}
-	)
-}
-
-### Search-RedisKey
-Merge-Helps $BaseDB @{
-	command = 'Search-RedisKey'
-	synopsis = 'Searches for keys matching the pattern.'
-	description = ''
-	parameters = @{
-		Pattern = 'Specifies the search pattern.'
-	}
-	outputs = @(
-		@{type = 'System.String'}
 	)
 }
 
@@ -274,6 +240,22 @@ Merge-Helps $BaseKeys @{
 	)
 }
 
+### Get-RedisKey
+Merge-Helps $BaseKey @{
+	command = 'Get-RedisKey'
+	synopsis = 'Gets the specified key information.'
+	description = @'
+	Without extra parameters this cmdlet gets the value type.
+'@
+	parameters = @{
+		TimeToLive = 'Tells to get the time to live span.'
+	}
+	outputs = @(
+		@{type = 'StackExchange.Redis.RedisType'}
+		@{type = 'System.TimeSpan'}
+	)
+}
+
 ### Test-RedisKey
 Merge-Helps $BaseKeys @{
 	command = 'Test-RedisKey'
@@ -283,5 +265,87 @@ Merge-Helps $BaseKeys @{
 '@
 	outputs = @(
 		@{type = 'System.Int64'}
+	)
+}
+
+### Remove-RedisKey
+Merge-Helps $BaseKeys @{
+	command = 'Remove-RedisKey'
+	synopsis = 'Removes the specified keys.'
+	description = ''
+	parameters = @{
+		Result = 'Tells to get the number of removed keys.'
+	}
+	outputs = @(
+		@{type = 'none'}
+		@{type = 'System.Int64'}
+	)
+}
+
+### Search-RedisKey
+Merge-Helps $BaseDB @{
+	command = 'Search-RedisKey'
+	synopsis = 'Searches for keys matching the pattern.'
+	description = ''
+	parameters = @{
+		Pattern = 'Specifies the search pattern.'
+	}
+	outputs = @(
+		@{type = 'System.String'}
+	)
+}
+
+### Register-RedisSub
+Merge-Helps $BaseSub @{
+	command = 'Register-RedisSub'
+	synopsis = 'Registers the channel message handler.'
+	description = @'
+	This command registers the specified channel handler.
+'@
+	parameters = @{
+		Script = @'
+		The channel message handler script. The script is invoked with two
+		arguments: the channel and the received string message.
+'@
+	}
+	outputs = @(
+		@{
+			type = 'System.Object'
+			description = 'Use this object for Unregister-RedisSub.'
+		}
+	)
+	examples = @(
+		@{ code = {
+			$handler = Register-RedisSub test {
+				param($channel, $message)
+				Write-Host "Channel $channel received: $message"
+			}
+
+			$null = $db.Publish('test', 'Hello')
+
+			Unregister-RedisSub test $handler
+		}}
+	)
+	links = @(
+		@{text = 'Unregister-RedisSub'}
+	)
+}
+
+### Unregister-RedisSub
+Merge-Helps $BaseSub @{
+	command = 'Unregister-RedisSub'
+	synopsis = 'Unregisters the channel subscription handler.'
+	description = @'
+	This command unregisters the specified channel handler or all handlers of
+	the specified channel.
+'@
+	parameters = @{
+		Handler = @'
+		The object from Register-RedisSub identifying the handler. If it is
+		omitted then all handlers of the specified channel are unregistered.
+'@
+	}
+	links = @(
+		@{ text = 'Register-RedisSub' }
 	)
 }

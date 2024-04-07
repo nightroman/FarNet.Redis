@@ -15,20 +15,26 @@
 	CmdletsToExport = @(
 		'Open-Redis'
 		'Close-Redis'
+		'Get-RedisServer'
+
 		'Get-RedisAny'
 		'Get-RedisHash'
-		'Get-RedisKey'
 		'Get-RedisList'
-		'Get-RedisServer'
 		'Get-RedisSet'
 		'Get-RedisString'
-		'Remove-RedisKey'
-		'Search-RedisKey'
+
 		'Set-RedisHash'
 		'Set-RedisList'
 		'Set-RedisSet'
 		'Set-RedisString'
+
+		'Get-RedisKey'
 		'Test-RedisKey'
+		'Remove-RedisKey'
+		'Search-RedisKey'
+
+		'Register-RedisSub'
+		'Unregister-RedisSub'
 	)
 
 	PrivateData = @{

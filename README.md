@@ -83,7 +83,9 @@ Manager using `AltF6`.
 Then you may update the FarNet package with new versions. The symbolic link or
 junction do not have to be updated, they point to the same location.
 
-## Sample code
+## Examples
+
+See [tests](https://github.com/nightroman/FarNet.Redis/tree/main/tests) for all examples.
 
 PowerShell
 

@@ -22,6 +22,7 @@
 		'Get-RedisList'
 		'Get-RedisSet'
 		'Get-RedisString'
+		'Wait-RedisString'
 
 		'Set-RedisHash'
 		'Set-RedisList'

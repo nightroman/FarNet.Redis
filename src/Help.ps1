@@ -77,7 +77,6 @@ Merge-Helps $BaseDB @{
 Merge-Helps $BaseDB @{
 	command = 'Get-RedisServer'
 	synopsis = 'Gets the database server instance.'
-	description = ''
 	outputs = @(
 		@{type = 'StackExchange.Redis.IServer'}
 	)
@@ -172,7 +171,6 @@ Merge-Helps $BaseKeys @{
 Merge-Helps $BaseKey @{
 	command = 'Set-RedisHash'
 	synopsis = 'Sets the specified hash.'
-	description = ''
 	parameters = @{
 		Update = 'Tells to update the hash if it exists.'
 		Value = 'The new hash.'
@@ -183,7 +181,6 @@ Merge-Helps $BaseKey @{
 Merge-Helps $BaseKey @{
 	command = 'Set-RedisList'
 	synopsis = 'Sets the specified list.'
-	description = ''
 	parameters = @{
 		LeftPush = 'Tells to inserts new items at the start.'
 		RightPush = 'Tells to append new items to the end.'
@@ -195,7 +192,6 @@ Merge-Helps $BaseKey @{
 Merge-Helps $BaseKey @{
 	command = 'Set-RedisSet'
 	synopsis = 'Sets the specified set.'
-	description = ''
 	parameters = @{
 		Add = 'Tells to add new items.'
 		Value = 'The new set.'
@@ -206,7 +202,6 @@ Merge-Helps $BaseKey @{
 Merge-Helps $BaseKeys @{
 	command = 'Set-RedisString'
 	synopsis = 'Sets the specified string.'
-	description = ''
 	parameters = @{
 		Append = @'
 		Tells to append if the string exists and get the result string length.
@@ -237,6 +232,24 @@ Merge-Helps $BaseKeys @{
 		@{type = 'System.Int64'}
 		@{type = 'System.Double'}
 		@{type = 'System.String'}
+	)
+}
+
+### Wait-RedisString
+Merge-Helps $BaseKey @{
+	command = 'Wait-RedisString'
+	synopsis = 'Waits for the string to exist and returns it.'
+	description = @'
+	This command periodically checks the specified string for existence and
+	returns its value or none if the time is out.
+'@
+	parameters = @{
+		Delay = 'Time to sleep between checks.'
+		Timeout = 'Total time to wait.'
+	}
+	outputs = @(
+		@{type = 'none'; description = 'The time is out.'}
+		@{type = 'System.String'; description = 'The existing string.'}
 	)
 }
 
@@ -272,7 +285,6 @@ Merge-Helps $BaseKeys @{
 Merge-Helps $BaseKeys @{
 	command = 'Remove-RedisKey'
 	synopsis = 'Removes the specified keys.'
-	description = ''
 	parameters = @{
 		Result = 'Tells to get the number of removed keys.'
 	}
@@ -286,7 +298,6 @@ Merge-Helps $BaseKeys @{
 Merge-Helps $BaseDB @{
 	command = 'Search-RedisKey'
 	synopsis = 'Searches for keys matching the pattern.'
-	description = ''
 	parameters = @{
 		Pattern = 'Specifies the search pattern.'
 	}

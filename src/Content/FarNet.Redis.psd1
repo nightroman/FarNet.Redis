@@ -5,7 +5,7 @@
 	Copyright = 'Copyright (c) Roman Kuzmin'
 	GUID = '08fab1c4-7b7b-4467-91d0-a88fb123f9cc'
 
-	PowerShellVersion = '7.4.1'
+	PowerShellVersion = '7.4.0'
 	RootModule = 'PS.FarNet.Redis.dll'
 	RequiredAssemblies = 'FarNet.Redis.dll', 'StackExchange.Redis.dll'
 
@@ -22,7 +22,6 @@
 		'Get-RedisList'
 		'Get-RedisSet'
 		'Get-RedisString'
-		'Wait-RedisString'
 
 		'Set-RedisHash'
 		'Set-RedisList'
@@ -30,12 +29,17 @@
 		'Set-RedisString'
 
 		'Get-RedisKey'
+		'Set-RedisKey'
 		'Test-RedisKey'
 		'Remove-RedisKey'
 		'Search-RedisKey'
 
 		'Register-RedisSub'
 		'Unregister-RedisSub'
+
+		'Get-RedisClixml'
+		'Set-RedisClixml'
+		'Wait-RedisString'
 	)
 
 	PrivateData = @{

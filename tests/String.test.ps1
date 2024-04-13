@@ -44,7 +44,8 @@ task null {
 
 	# setting $null removes the key
 	Set-RedisString $key $null
-	$r = Test-RedisKey 0
+	$r = Test-RedisKey $key
+	equals $r 0L
 	$r = Get-RedisString $key
 	equals $r $null
 }

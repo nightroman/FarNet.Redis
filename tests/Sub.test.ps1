@@ -1,7 +1,30 @@
 ﻿
 . ./About.ps1
 
-task pubsub {
+task one_handler {
+	Remove-RedisKey ($key = 'test:1')
+
+	# register
+	$handler = Register-RedisSub test {
+		param($channel, $message)
+		Set-RedisString $key $message
+	}
+
+	# send message
+	$r = $db.Publish('test', 'hello')
+	equals $r 1L
+
+	# wait, test
+	$r = Wait-RedisString $key ([timespan]::FromMilliseconds(50)) ([timespan]::FromMilliseconds(5000))
+	equals $r hello
+
+	# unregister
+	Unregister-RedisSub test $handler
+
+	Remove-RedisKey $key
+}
+
+task many_handlers {
 	$log = [System.Collections.Concurrent.ConcurrentQueue[string]]::new()
 
 	# register 3 handlers

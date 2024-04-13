@@ -1,0 +1,51 @@
+﻿TOPIC
+    about_FarNet.Redis
+
+SHORT DESCRIPTION
+    StackExchange.Redis PowerShell module and FarNet library
+
+LONG DESCRIPTION
+    The module provides the following cmdlets.
+
+    Connect and get database instance:
+
+        Open-Redis
+        Close-Redis
+        Get-RedisServer
+
+    Get data commands:
+
+        Get-RedisAny
+        Get-RedisHash
+        Get-RedisList
+        Get-RedisSet
+        Get-RedisString
+
+    Set data commands:
+
+        Set-RedisHash
+        Set-RedisList
+        Set-RedisSet
+        Set-RedisString
+
+    Key operations:
+
+        Get-RedisKey
+        Set-RedisKey
+        Test-RedisKey
+        Remove-RedisKey
+        Search-RedisKey
+
+    Subscriptions:
+
+        Register-RedisSub
+        Unregister-RedisSub
+
+    Utility commands:
+
+        Get-RedisClixml
+        Set-RedisClixml
+        Wait-RedisString
+
+SEE ALSO
+    StackExchange.Redis https://github.com/StackExchange/StackExchange.Redis

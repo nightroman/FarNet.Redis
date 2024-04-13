@@ -103,6 +103,7 @@ task package help, markdown, version, {
 
 	$result = Get-ChildItem $PSPackageRoot -Recurse -File -Name | Out-String
 	$sample = @'
+about_FarNet.Redis.help.txt
 FarNet.Redis.dll
 FarNet.Redis.ini
 FarNet.Redis.psd1

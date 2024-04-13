@@ -58,3 +58,21 @@ task expiry {
 
 	Remove-RedisKey $key
 }
+
+task TimeToLive {
+	Remove-RedisKey ($key = 'test:1')
+
+	Set-RedisString $key 1
+	$r = Get-RedisKey $key -TimeToLive
+	equals $r $null
+
+	Set-RedisKey $key -TimeToLive ([timespan]::FromSeconds(42))
+	$r = Get-RedisKey $key -TimeToLive
+	equals ([int]([timespan]::FromSeconds(42) - $r).TotalSeconds) 0
+
+	Set-RedisKey $key -TimeToLive $null
+	$r = Get-RedisKey $key -TimeToLive
+	equals $r $null
+
+	Remove-RedisKey $key
+}

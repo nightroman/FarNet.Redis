@@ -9,7 +9,7 @@
 [StackExchange.Redis] PowerShell module and FarNet library
 
 Packages:
-- PowerShell 7.4.1 module, PSGallery [FarNet.Redis](https://www.powershellgallery.com/packages/FarNet.Redis)
+- PowerShell 7.4 module, PSGallery [FarNet.Redis](https://www.powershellgallery.com/packages/FarNet.Redis)
 - FarNet library, NuGet [FarNet.Redis](https://www.nuget.org/packages/FarNet.Redis)
 
 ## PowerShell module
@@ -20,15 +20,15 @@ You may install the PowerShell module by this command:
 Install-Module FarNet.Redis
 ```
 
-Explore the module commands:
-
+Explore, see also [about_FarNet.Redis.help.txt](https://github.com/nightroman/FarNet.Redis/blob/main/src/Content/about_FarNet.Redis.help.txt):
 
 ```powershell
 # import and get module commands
 Import-Module -Name FarNet.Redis
 Get-Command -Module FarNet.Redis
 
-# get commands help
+# get module and commands help
+help about_FarNet.Redis
 help Open-Redis
 help Set-RedisString
 help Get-RedisString

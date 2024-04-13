@@ -235,24 +235,6 @@ Merge-Helps $BaseKeys @{
 	)
 }
 
-### Wait-RedisString
-Merge-Helps $BaseKey @{
-	command = 'Wait-RedisString'
-	synopsis = 'Waits for the string to exist and returns it.'
-	description = @'
-	This command periodically checks the specified string for existence and
-	returns its value or none if the time is out.
-'@
-	parameters = @{
-		Delay = 'Time to sleep between checks.'
-		Timeout = 'Total time to wait.'
-	}
-	outputs = @(
-		@{type = 'none'; description = 'The time is out.'}
-		@{type = 'System.String'; description = 'The existing string.'}
-	)
-}
-
 ### Get-RedisKey
 Merge-Helps $BaseKey @{
 	command = 'Get-RedisKey'
@@ -267,6 +249,15 @@ Merge-Helps $BaseKey @{
 		@{type = 'StackExchange.Redis.RedisType'}
 		@{type = 'System.TimeSpan'}
 	)
+}
+
+### Set-RedisKey
+Merge-Helps $BaseKey @{
+	command = 'Set-RedisKey'
+	synopsis = 'Sets the specified key properties.'
+	parameters = @{
+		TimeToLive = 'Specifies the time to live, or null to persist.'
+	}
 }
 
 ### Test-RedisKey
@@ -358,5 +349,49 @@ Merge-Helps $BaseSub @{
 	}
 	links = @(
 		@{ text = 'Register-RedisSub' }
+	)
+}
+
+### Get-RedisClixml
+Merge-Helps $BaseKey @{
+	command = 'Get-RedisClixml'
+	synopsis = 'Restores an object from CLIXML string.'
+	outputs = @(
+		@{type = 'System.Object'}
+	)
+}
+
+### Set-RedisClixml
+Merge-Helps $BaseKey @{
+	command = 'Set-RedisClixml'
+	synopsis = 'Stores an object as CLIXML string.'
+	parameters = @{
+		Value = @'
+		Specifies the object to be serialized and stored as CLIXML string.
+'@
+		Depth = @'
+		Specifies the serialization depth. Default: 1.
+'@
+		Expiry = @'
+		Tells to set the expiry time span.
+'@
+	}
+}
+
+### Wait-RedisString
+Merge-Helps $BaseKey @{
+	command = 'Wait-RedisString'
+	synopsis = 'Waits for the string to exist and returns it.'
+	description = @'
+	This command periodically checks the specified string for existence and
+	returns its value or none if the time is out.
+'@
+	parameters = @{
+		Delay = 'Time to sleep between checks.'
+		Timeout = 'Total time to wait.'
+	}
+	outputs = @(
+		@{type = 'none'; description = 'The time is out.'}
+		@{type = 'System.String'; description = 'The existing string.'}
 	)
 }

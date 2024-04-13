@@ -1,8 +1,14 @@
 # FarNet.Redis Release Notes
 
+## v0.3.0
+
+New cmdlet `Set-RedisKey`.
+
+New utility cmdlets `Get-RedisClixml`, `Set-RedisClixml`.
+
 ## v0.2.0
 
-New cmdlet `Wait-RedisString`.
+New utility cmdlet `Wait-RedisString`.
 
 ## v0.1.0
 

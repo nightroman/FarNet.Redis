@@ -7,10 +7,10 @@ $ServiceApp = "$ServiceRoot\GarnetServer.exe"
 $DataRoot = 'C:\DATA\Garnet'
 $LogFile = "$DataRoot\service.log"
 $ArgList = @(
-	'-q --recover --logger-level Information'
 	"--checkpointdir $DataRoot\checkpointdir"
 	'--index 512m'
 	'--obj-index 64m'
+	'-q --recover --logger-level Information'
 ) -join ' '
 
 task run {
@@ -27,6 +27,7 @@ task install {
 	exec { nssm install $ServiceName $ServiceApp $ArgList }
 	exec { nssm set $ServiceName AppStdout $LogFile }
 	exec { nssm set $ServiceName AppStderr $LogFile }
+	exec { nssm set $ServiceName Start SERVICE_DELAYED_AUTO_START }
 }
 
 task start {

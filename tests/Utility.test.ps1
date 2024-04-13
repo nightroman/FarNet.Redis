@@ -9,7 +9,7 @@
 	ConvertTo-Json and ConvertFrom-Json provide better performance.
 	But the supported data types are not that rich as with CLIXML.
 #>
-task clixml {
+task clixml_flat {
 	$key = 'test:1'
 
 	$data = @{
@@ -38,6 +38,41 @@ task clixml {
 	equals $r.TimeSpan $data.TimeSpan
 	equals $r.Guid $data.Guid
 	equals $r.Version $data.Version
+
+	Remove-RedisKey $key
+}
+
+<#
+	Depth 1 does not mean excluded nested objects.
+	For example this test preserves 3 levels.
+#>
+task clixml_deep {
+	$key = 'test:1'
+
+	$data = @{
+		t1 = @{
+			t2 = @{
+				t3 = @{
+					Version = $Host.Version
+				}
+			}
+		}
+		o1 = [pscustomobject]@{
+			o2 = [pscustomobject]@{
+				o3 = [pscustomobject] @{
+					Version = $Host.Version
+				}
+			}
+		}
+	}
+
+	Set-RedisClixml $key $data -Depth 1
+
+	$r = Get-RedisClixml $key
+	equals $r.t1.t2.t3.Version $Host.Version
+	equals $r.o1.o2.o3.Version $Host.Version
+	assert ($r.t1 -is [hashtable])
+	assert ($r.o1 -is [pscustomobject])
 
 	Remove-RedisKey $key
 }

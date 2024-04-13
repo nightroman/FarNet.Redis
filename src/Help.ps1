@@ -370,7 +370,8 @@ Merge-Helps $BaseKey @{
 		Specifies the object to be serialized and stored as CLIXML string.
 '@
 		Depth = @'
-		Specifies the serialization depth. Default: 1.
+		Specifies how many levels of contained objects are included in the XML
+		representation. Default: 1.
 '@
 		Expiry = @'
 		Tells to set the expiry time span.

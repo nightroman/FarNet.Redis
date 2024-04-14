@@ -3,7 +3,7 @@ using System.Management.Automation;
 
 namespace PS.FarNet.Redis;
 
-[Cmdlet("Get", "RedisSet", DefaultParameterSetName = "Main")]
+[Cmdlet("Get", "RedisSet", DefaultParameterSetName = NMain)]
 [OutputType(typeof(HashSet<string>))]
 [OutputType(typeof(long))]
 public sealed class GetSetCommand : BaseGetCountCmdlet

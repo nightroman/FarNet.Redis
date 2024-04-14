@@ -1,104 +1,104 @@
 ﻿using StackExchange.Redis;
 using System;
-using System.Collections.Generic;
+using System.Collections;
 using System.Management.Automation;
 
 namespace PS.FarNet.Redis;
 
-[Cmdlet("Set", "RedisString", DefaultParameterSetName = "Main")]
+[Cmdlet("Set", "RedisString", DefaultParameterSetName = NMain)]
 [OutputType(typeof(long))]
 [OutputType(typeof(double))]
 [OutputType(typeof(string))]
-public sealed class SetStringCommand : BaseKeysCmdlet
+public sealed class SetStringCommand : BaseDBCmdlet
 {
-    [Parameter(Position = 1, Mandatory = true)]
-    [AllowNull]
-    [AllowEmptyString]
-    public string[] Value { get; set; }
+    const string NMany = "Many";
+    const string NAppend = "Append";
+    const string NIncrement = "Increment";
+    const string NDecrement = "Decrement";
+    const string NSetAndGet = "SetAndGet";
 
-    [Parameter(ParameterSetName = "Main")]
-    [Parameter(ParameterSetName = "Get")]
+    [Parameter(Position = 0, Mandatory = true, ParameterSetName = NMain)]
+    [Parameter(Position = 0, Mandatory = true, ParameterSetName = NAppend)]
+    [Parameter(Position = 0, Mandatory = true, ParameterSetName = NIncrement)]
+    [Parameter(Position = 0, Mandatory = true, ParameterSetName = NDecrement)]
+    [Parameter(Position = 0, Mandatory = true, ParameterSetName = NSetAndGet)]
+    public string Key { get; set; }
+
+    [Parameter(Position = 1, Mandatory = true, ParameterSetName = NMain)]
+    [AllowEmptyString]
+    [AllowNull]
+    public string Value { get; set; }
+
+    [Parameter(Mandatory = true, ParameterSetName = NMany)]
+    public IDictionary Many { get; set; }
+
+    [Parameter(ParameterSetName = NMain)]
+    [Parameter(ParameterSetName = NSetAndGet)]
     public TimeSpan? Expiry { get; set; }
 
-    [Parameter(ParameterSetName = "When", Mandatory = true)]
+    [Parameter(ParameterSetName = NMain)]
+    [Parameter(ParameterSetName = NMany)]
     public When When { set => _When = value; }
     When? _When;
 
-    [Parameter(ParameterSetName = "Append", Mandatory = true)]
-    public SwitchParameter Append { get; set; }
+    [Parameter(Mandatory = true, ParameterSetName = NAppend)]
+    public string Append { get; set; }
 
-    [Parameter(ParameterSetName = "Decrement", Mandatory = true)]
-    public SwitchParameter Decrement { get; set; }
+    [Parameter(Mandatory = true, ParameterSetName = NIncrement)]
+    public long Increment { get; set; }
 
-    [Parameter(ParameterSetName = "Increment", Mandatory = true)]
-    public SwitchParameter Increment { get; set; }
+    [Parameter(Mandatory = true, ParameterSetName = NDecrement)]
+    public long Decrement { get; set; }
 
-    [Parameter(ParameterSetName = "Get", Mandatory = true)]
-    public SwitchParameter Get { get; set; }
+    [Parameter(Mandatory = true, ParameterSetName = NSetAndGet)]
+    [AllowEmptyString]
+    [AllowNull]
+    public string SetAndGet { get; set; }
 
     protected override void BeginProcessing()
     {
         base.BeginProcessing();
 
-        if (Value == null)
-            Value = Abc.OneNullString;
-
-        if (Key.Length != Value.Length)
-            throw new PSArgumentException("Expected the same number of Key and Value items.");
-
-        if (Key.Length == 1)
+        switch (ParameterSetName)
         {
-            if (Append)
-            {
-                var res = Database.StringAppend(Key[0], Value[0]);
-                WriteObject(res);
-            }
-            else if (Decrement)
-            {
-                var res = Database.Execute("DECRBY", Key[0], Value[0]);
-                WriteObject((double)res);
-            }
-            else if (Increment)
-            {
-                var res = Database.Execute("INCRBY", Key[0], Value[0]);
-                WriteObject((double)res);
-            }
-            else if (Get)
-            {
-                var res = Database.StringSetAndGet(Key[0], Value[0], Expiry);
-                WriteObject((string)res);
-            }
-            else
-            {
-                var res = Database.StringSet(Key[0], Value[0], Expiry, false, _When ?? When.Always);
-                if (_When.HasValue)
+            case NAppend:
+                {
+                    var res = Database.StringAppend(Key, Append);
                     WriteObject(res);
-            }
-        }
-        else
-        {
-            if (Append)
-                throw new PSArgumentException("Append is not supported with key lists.");
-
-            if (Decrement)
-                throw new PSArgumentException("Decrement is not supported with key lists.");
-
-            if (Increment)
-                throw new PSArgumentException("Increment is not supported with key lists.");
-
-            if (Get)
-                throw new PSArgumentException("Get is not supported with key lists.");
-
-            if (Expiry.HasValue)
-                throw new PSArgumentException("Expiry is not supported with key lists.");
-
-            var entries = new KeyValuePair<RedisKey, RedisValue>[Key.Length];
-            for (int i = 0; i < Key.Length; ++i)
-                entries[i] = new(Key[i], Value[i]);
-
-            var res = Database.StringSet(entries, _When ?? When.Always);
-            if (_When.HasValue)
-                WriteObject(res);
+                }
+                break;
+            case NIncrement:
+                {
+                    var res = Database.StringIncrement(Key, Increment);
+                    WriteObject(res);
+                }
+                break;
+            case NDecrement:
+                {
+                    var res = Database.StringDecrement(Key, Decrement);
+                    WriteObject(res);
+                }
+                break;
+            case NSetAndGet:
+                {
+                    var res = Database.StringSetAndGet(Key, SetAndGet, Expiry);
+                    WriteObject((string)res);
+                }
+                break;
+            case NMany:
+                {
+                    var res = Database.StringSet(Abc.ToRedisPairs(Many), _When ?? When.Always);
+                    if (_When.HasValue)
+                        WriteObject(res);
+                }
+                break;
+            default:
+                {
+                    var res = Database.StringSet(Key, Value, Expiry, false, _When ?? When.Always);
+                    if (_When.HasValue)
+                        WriteObject(res);
+                }
+                break;
         }
     }
 }

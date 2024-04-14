@@ -6,18 +6,23 @@ namespace PS.FarNet.Redis;
 [Cmdlet("Set", "RedisKey")]
 public sealed class SetKeyCommand : BaseKeyCmdlet
 {
-    [Parameter]
-    public TimeSpan? TimeToLive { set { _isTimeToLive = true; _TimeToLive = value; } }
-    TimeSpan? _TimeToLive;
-    bool _isTimeToLive;
+    const string NExpire = "Expire";
+
+    [Parameter(Mandatory = true, ParameterSetName = NExpire)]
+    [AllowNull]
+    public TimeSpan? Expire { get; set; }
 
     protected override void BeginProcessing()
     {
         base.BeginProcessing();
 
-        if (_isTimeToLive)
+        switch (ParameterSetName)
         {
-            Database.KeyExpire(RKey, _TimeToLive);
+            case NExpire:
+                {
+                    Database.KeyExpire(RKey, Expire);
+                }
+                break;
         }
     }
 }

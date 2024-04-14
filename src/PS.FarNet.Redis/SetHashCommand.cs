@@ -4,31 +4,43 @@ using System.Management.Automation;
 
 namespace PS.FarNet.Redis;
 
-[Cmdlet("Set", "RedisHash")]
+[Cmdlet("Set", "RedisHash", DefaultParameterSetName = NMain)]
 public sealed class SetHashCommand : BaseKeyCmdlet
 {
-    [Parameter(Position = 1, Mandatory = true)]
-    [ValidateNotNull]
+    const string NDelete = "Delete";
+    const string NSet = "Set";
+
+    [Parameter(Position = 1, Mandatory = true, ParameterSetName = NMain)]
     public IDictionary Value { get; set; }
 
-    [Parameter]
-    public SwitchParameter Update { get; set; }
+    [Parameter(Mandatory = true, ParameterSetName = NDelete)]
+    public string[] Delete { get; set; }
+
+    [Parameter(Mandatory = true, ParameterSetName = NSet)]
+    public IDictionary Set { get; set; }
 
     protected override void BeginProcessing()
     {
         base.BeginProcessing();
 
-        var entries = new HashEntry[Value.Count];
-        var i = -1;
-        foreach (DictionaryEntry kv in Value)
+        switch (ParameterSetName)
         {
-            ++i;
-            entries[i] = new(new RedisValue(kv.Key?.ToString()), new RedisValue(kv.Value?.ToString()));
+            case NDelete:
+                {
+                    Database.HashDelete(RKey, Abc.ToRedis(Delete));
+                }
+                break;
+            case NSet:
+                {
+                    Database.HashSet(RKey, Abc.ToRedis(Set));
+                }
+                break;
+            default:
+                {
+                    Database.KeyDelete(RKey);
+                    Database.HashSet(RKey, Abc.ToRedis(Value));
+                }
+                break;
         }
-
-        if (!Update)
-            Database.KeyDelete(RKey);
-
-        Database.HashSet(RKey, entries);
     }
 }

@@ -1,31 +1,47 @@
-﻿using StackExchange.Redis;
-using System.Management.Automation;
+﻿using System.Management.Automation;
 
 namespace PS.FarNet.Redis;
 
-[Cmdlet("Set", "RedisSet", DefaultParameterSetName = "Main")]
+[Cmdlet("Set", "RedisSet", DefaultParameterSetName = NMain)]
 public sealed class SetSetCommand : BaseKeyCmdlet
 {
-    [Parameter(Position = 1, Mandatory = true)]
-    [AllowEmptyCollection]
+    const string NAdd = "Add";
+    const string NRemove = "Remove";
+
+    [Parameter(Position = 1, Mandatory = true, ParameterSetName = NMain)]
     [AllowEmptyString]
-    [ValidateNotNull]
     public string[] Value { get; set; }
 
-    [Parameter(ParameterSetName = "Add", Mandatory = true)]
-    public SwitchParameter Add { get; set; }
+    [Parameter(Mandatory = true, ParameterSetName = NAdd)]
+    [AllowEmptyString]
+    public string[] Add { get; set; }
+
+    [Parameter(Mandatory = true, ParameterSetName = NRemove)]
+    [AllowEmptyString]
+    public string[] Remove { get; set; }
 
     protected override void BeginProcessing()
     {
         base.BeginProcessing();
 
-        var entries = new RedisValue[Value.Length];
-        for (int i = 0; i < entries.Length; ++i)
-            entries[i] = new RedisValue(Value[i]);
-
-        if (!Add)
-            Database.KeyDelete(RKey);
-
-        Database.SetAdd(RKey, entries);
+        switch (ParameterSetName)
+        {
+            case NAdd:
+                {
+                    Database.SetAdd(RKey, Abc.ToRedis(Add));
+                }
+                break;
+            case NRemove:
+                {
+                    Database.SetRemove(RKey, Abc.ToRedis(Remove));
+                }
+                break;
+            default:
+                {
+                    Database.KeyDelete(RKey);
+                    Database.SetAdd(RKey, Abc.ToRedis(Value));
+                }
+                break;
+        }
     }
 }

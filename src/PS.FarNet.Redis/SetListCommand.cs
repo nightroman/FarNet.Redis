@@ -3,41 +3,69 @@ using System.Management.Automation;
 
 namespace PS.FarNet.Redis;
 
-[Cmdlet("Set", "RedisList", DefaultParameterSetName = "Main")]
+[Cmdlet("Set", "RedisList", DefaultParameterSetName = NMain)]
+[OutputType(typeof(string))]
 public sealed class SetListCommand : BaseKeyCmdlet
 {
-    [Parameter(Position = 1, Mandatory = true)]
-    [AllowEmptyCollection]
+    const string NLeftPush = "LeftPush";
+    const string NRightPush = "RightPush";
+    const string NLeftPop = "LeftPop";
+    const string NRightPop = "RightPop";
+
+    [Parameter(Position = 1, Mandatory = true, ParameterSetName = NMain)]
     [AllowEmptyString]
-    [ValidateNotNull]
     public string[] Value { get; set; }
 
-    [Parameter(ParameterSetName = "LeftPush", Mandatory = true)]
-    public SwitchParameter LeftPush { get; set; }
+    [Parameter(Mandatory = true, ParameterSetName = NLeftPush)]
+    [AllowEmptyString]
+    public string[] LeftPush { get; set; }
 
-    [Parameter(ParameterSetName = "RightPush", Mandatory = true)]
-    public SwitchParameter RightPush { get; set; }
+    [Parameter(Mandatory = true, ParameterSetName = NRightPush)]
+    [AllowEmptyString]
+    public string[] RightPush { get; set; }
+
+    [Parameter(Mandatory = true, ParameterSetName = NLeftPop)]
+    [ValidateRange(1L, long.MaxValue)]
+    public long LeftPop { get; set; }
+
+    [Parameter(Mandatory = true, ParameterSetName = NRightPop)]
+    [ValidateRange(1L, long.MaxValue)]
+    public long RightPop { get; set; }
 
     protected override void BeginProcessing()
     {
         base.BeginProcessing();
 
-        var entries = new RedisValue[Value.Length];
-        for (int i = 0; i < entries.Length; ++i)
-            entries[i] = new RedisValue(Value[i]);
-
-        if (LeftPush)
+        switch (ParameterSetName)
         {
-            Database.ListLeftPush(RKey, entries);
-        }
-        else if (RightPush)
-        {
-            Database.ListRightPush(RKey, entries);
-        }
-        else
-        {
-            Database.KeyDelete(RKey);
-            Database.ListRightPush(RKey, entries);
+            case NLeftPush:
+                {
+                    Database.ListLeftPush(RKey, Abc.ToRedis(LeftPush));
+                }
+                break;
+            case NRightPush:
+                {
+                    Database.ListRightPush(RKey, Abc.ToRedis(RightPush));
+                }
+                break;
+            case NLeftPop:
+                {
+                    var res = Database.ListLeftPop(RKey, LeftPop);
+                    WriteObject(Abc.ToList(res), true);
+                }
+                break;
+            case NRightPop:
+                {
+                    var res = Database.ListRightPop(RKey, RightPop);
+                    WriteObject(Abc.ToList(res), true);
+                }
+                break;
+            default:
+                {
+                    Database.KeyDelete(RKey);
+                    Database.ListRightPush(RKey, Abc.ToRedis(Value));
+                }
+                break;
         }
     }
 }

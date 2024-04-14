@@ -3,24 +3,41 @@ using System.Management.Automation;
 
 namespace PS.FarNet.Redis;
 
-[Cmdlet("Get", "RedisList", DefaultParameterSetName = "Main")]
+[Cmdlet("Get", "RedisList", DefaultParameterSetName = NMain)]
 [OutputType(typeof(List<string>))]
+[OutputType(typeof(string))]
 [OutputType(typeof(long))]
 public sealed class GetListCommand : BaseGetCountCmdlet
 {
+    const string NIndex = "Index";
+
+    [Parameter(ParameterSetName = NIndex, Mandatory = true)]
+    public long Index { get; set; }
+
     protected override void BeginProcessing()
     {
         base.BeginProcessing();
 
-        if (Count)
+        switch (ParameterSetName)
         {
-            var res = Database.ListLength(RKey);
-            WriteObject(res);
-        }
-        else
-        {
-            var res = Database.ListRange(RKey);
-            WriteObject(Abc.ToList(res));
+            case NCount:
+                {
+                    var res = Database.ListLength(RKey);
+                    WriteObject(res);
+                }
+                break;
+            case NIndex:
+                {
+                    var res = Database.ListGetByIndex(RKey, Index);
+                    WriteObject((string)res);
+                }
+                break;
+            default:
+                {
+                    var res = Database.ListRange(RKey);
+                    WriteObject(Abc.ToList(res));
+                }
+                break;
         }
     }
 }

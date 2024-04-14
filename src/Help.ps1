@@ -2,6 +2,9 @@
 Set-StrictMode -Version 3
 Import-Module FarNet.Redis
 
+$ParamKey = 'Specifies the Redis key.'
+$ParamCount = 'Gets the number of items.'
+
 $BaseDB = @{
 	parameters = @{
 		Database = @'
@@ -12,9 +15,7 @@ $BaseDB = @{
 
 $BaseKey = Merge-Helps $BaseDB @{
 	parameters = @{
-		Key = @'
-		Specifies the Redis key.
-'@
+		Key = $ParamKey
 	}
 }
 
@@ -43,7 +44,9 @@ $BaseSub = Merge-Helps $BaseDB @{
 	as the variable $db. Other commands use the variable $db as the default
 	value of the parameter Database.
 
-	You may close the database by Close-Redis.
+	You may close the database by Close-Redis. Or keep it for using later. If
+	you use the same configuration string then the same database instance is
+	returned.
 '@
 	parameters = @{
 		Configuration = @'
@@ -78,7 +81,7 @@ Merge-Helps $BaseDB @{
 	command = 'Get-RedisServer'
 	synopsis = 'Gets the database server instance.'
 	outputs = @(
-		@{type = 'StackExchange.Redis.IServer'}
+		@{ type = 'StackExchange.Redis.IServer' }
 	)
 }
 
@@ -87,8 +90,8 @@ Merge-Helps $BaseKey @{
 	command = 'Get-RedisAny'
 	synopsis = 'Gets the specified key value.'
 	description = @'
-	Use this cmdlet when the type is defined as a variable or unknown.
-	In other cases use the type specific cmdlets Get-Redis{Type}.
+	Use this command when a type is unknown or defined as a variable.
+	When the type is known, use type specific cmdlets Get-Redis{Type}.
 '@
 	parameters = @{
 		Type = @'
@@ -96,158 +99,177 @@ Merge-Helps $BaseKey @{
 '@
 	}
 	outputs = @(
-		@{type = 'System.String'}
-		@{type = 'System.Collections.Generic.List[System.String]'}
-		@{type = 'System.Collections.Generic.HashSet[System.String]'}
-		@{type = 'System.Collections.Generic.Dictionary[System.String, System.String]'}
+		@{ type = 'System.String' }
+		@{ type = 'System.Collections.Generic.List[System.String]' }
+		@{ type = 'System.Collections.Generic.HashSet[System.String]' }
+		@{ type = 'System.Collections.Generic.Dictionary[System.String, System.String]' }
 	)
 }
 
 ### Get-RedisHash
 Merge-Helps $BaseKey @{
 	command = 'Get-RedisHash'
-	synopsis = 'Gets the specified hash.'
-	description = @'
-	Without extra parameters this cmdlet gets the hash.
-'@
+	synopsis = 'Gets the hash or its details.'
 	parameters = @{
-		Count = 'Tells to get the number of items.'
+		Count = $ParamCount
 	}
 	outputs = @(
-		@{type = 'System.Collections.Generic.Dictionary[System.String, System.String]'}
-		@{type = 'System.Int64'}
+		@{ type = 'System.Collections.Generic.Dictionary[System.String, System.String]' }
+		@{ type = 'System.Int64' }
 	)
 }
 
 ### Get-RedisList
 Merge-Helps $BaseKey @{
 	command = 'Get-RedisList'
-	synopsis = 'Gets the specified list.'
-	description = @'
-	Without extra parameters this cmdlet gets the list.
-'@
+	synopsis = 'Gets the list or its details.'
 	parameters = @{
-		Count = 'Tells to get the number of items.'
+		Count = $ParamCount
+		Index = @'
+		Gets an item by the specified index. Negative indexes are used to get
+		items from the tail, e.g. -1 is the last item.
+'@
 	}
 	outputs = @(
-		@{type = 'System.Collections.Generic.List[System.String]'}
-		@{type = 'System.Int64'}
+		@{ type = 'System.Collections.Generic.List[System.String]' }
+		@{ type = 'System.String' }
+		@{ type = 'System.Int64' }
 	)
 }
 
 ### Get-RedisSet
 Merge-Helps $BaseKey @{
 	command = 'Get-RedisSet'
-	synopsis = 'Gets the specified set.'
-	description = @'
-	Without extra parameters this cmdlet gets the set.
-'@
+	synopsis = 'Gets the set or its details.'
 	parameters = @{
-		Count = 'Tells to get the number of items.'
+		Count = $ParamCount
 	}
 	outputs = @(
-		@{type = 'System.Collections.Generic.HashSet[System.String]'}
-		@{type = 'System.Int64'}
+		@{ type = 'System.Collections.Generic.HashSet[System.String]' }
+		@{ type = 'System.Int64' }
 	)
 }
 
 ### Get-RedisString
 Merge-Helps $BaseKeys @{
 	command = 'Get-RedisString'
-	synopsis = 'Gets the specified strings.'
-	description = @'
-	Without extra parameters this cmdlet gets strings.
-'@
+	synopsis = 'Gets the string or its details.'
 	parameters = @{
-		Length = 'Tells to get the string length.'
+		Length = 'Gets the string length.'
 	}
 	outputs = @(
-		@{type = 'System.String'}
-		@{type = 'System.Int64'}
+		@{ type = 'System.String' }
+		@{ type = 'System.Int64' }
 	)
 }
 
 ### Set-RedisHash
 Merge-Helps $BaseKey @{
 	command = 'Set-RedisHash'
-	synopsis = 'Sets the specified hash.'
+	synopsis = 'Sets or updates the specified hash.'
 	parameters = @{
-		Update = 'Tells to update the hash if it exists.'
-		Value = 'The new hash.'
+		Value = @'
+		The new hash.
+'@
+		Delete = @'
+		Removes the specified hash fields.
+'@
+		Set = @'
+		Sets the specified hash entries.
+'@
 	}
 }
 
 ### Set-RedisList
 Merge-Helps $BaseKey @{
 	command = 'Set-RedisList'
-	synopsis = 'Sets the specified list.'
+	synopsis = 'Sets or updates the specified list.'
 	parameters = @{
-		LeftPush = 'Tells to inserts new items at the start.'
-		RightPush = 'Tells to append new items to the end.'
-		Value = 'The new list.'
+		Value = @'
+		The new list.
+'@
+		LeftPush = @'
+		Insert the specified items at the head.
+'@
+		RightPush = @'
+		Insert the specified items at the tail.
+'@
+		LeftPop = @'
+		Removes and returns the specified number of items at the head.
+'@
+		RightPop = @'
+		Removes and returns the specified number of items at the tail.
+'@
 	}
 }
 
 ### Set-RedisSet
 Merge-Helps $BaseKey @{
 	command = 'Set-RedisSet'
-	synopsis = 'Sets the specified set.'
+	synopsis = 'Sets or updates the specified set.'
 	parameters = @{
-		Add = 'Tells to add new items.'
-		Value = 'The new set.'
+		Value = @'
+		The new set.
+'@
+		Add = @'
+		Adds the specified items.
+'@
+		Remove = @'
+		Removes the specified items.
+'@
 	}
 }
 
 ### Set-RedisString
-Merge-Helps $BaseKeys @{
+Merge-Helps $BaseDB @{
 	command = 'Set-RedisString'
-	synopsis = 'Sets the specified string.'
+	synopsis = 'Sets or updates the specified string.'
 	parameters = @{
-		Append = @'
-		Tells to append if the string exists and get the result string length.
-'@
-		Decrement = @'
-		Decrements the number and gets the result number.
-'@
-		Increment = @'
-		Increments the number and gets the result number.
-'@
-		Expiry = @'
-		Tells to set the expiry time span.
-'@
-		Get = @'
-		Tells to atomically set the new string and return the old if any.
-'@
+		Key = $ParamKey
 		Value = @'
 		The new string.
 '@
+		Many = @'
+		Sets several strings specified as hashtable or dictionary.
+'@
+		Append = @'
+		Appends the specified string and gets the result string length.
+'@
+		Increment = @'
+		Increments by the specified number and gets the result integer.
+'@
+		Decrement = @'
+		Decrements by the specified number and gets the result integer.
+'@
+		SetAndGet = @'
+		Atomically sets the specified string and return the old string.
+'@
+		Expiry = @'
+		Specifies the expiry time span.
+'@
 		When = @'
-		Specifies when the new value should be set and gets the result.
-		The result is true or false if the value is set or not set.
-		Values to use: Always or Exists.
+		Specifies when the values should be set and returns true if keys were
+		set and false otherwise.
 '@
 	}
 	outputs = @(
-		@{type = 'none'}
-		@{type = 'System.Int64'}
-		@{type = 'System.Double'}
-		@{type = 'System.String'}
+		@{ type = 'none' }
+		@{ type = 'System.Int64' }
+		@{ type = 'System.Double' }
+		@{ type = 'System.String' }
 	)
 }
 
 ### Get-RedisKey
 Merge-Helps $BaseKey @{
 	command = 'Get-RedisKey'
-	synopsis = 'Gets the specified key information.'
-	description = @'
-	Without extra parameters this cmdlet gets the value type.
-'@
+	synopsis = 'Gets the key type or other details.'
 	parameters = @{
 		TimeToLive = 'Tells to get the time to live span.'
 	}
 	outputs = @(
-		@{type = 'StackExchange.Redis.RedisType'}
-		@{type = 'System.TimeSpan'}
+		@{ type = 'StackExchange.Redis.RedisType' }
+		@{ type = 'System.TimeSpan' }
 	)
 }
 
@@ -256,7 +278,10 @@ Merge-Helps $BaseKey @{
 	command = 'Set-RedisKey'
 	synopsis = 'Sets the specified key properties.'
 	parameters = @{
-		TimeToLive = 'Specifies the time to live, or null to persist.'
+		Expire = @'
+		Sets the specified time span to live.
+		Use null in order to persist the key.
+'@
 	}
 }
 
@@ -268,7 +293,7 @@ Merge-Helps $BaseKeys @{
 	This command tests the specified keys and gets the number of existing.
 '@
 	outputs = @(
-		@{type = 'System.Int64'}
+		@{ type = 'System.Int64' }
 	)
 }
 
@@ -280,8 +305,8 @@ Merge-Helps $BaseKeys @{
 		Result = 'Tells to get the number of removed keys.'
 	}
 	outputs = @(
-		@{type = 'none'}
-		@{type = 'System.Int64'}
+		@{ type = 'none' }
+		@{ type = 'System.Int64' }
 	)
 }
 
@@ -293,7 +318,7 @@ Merge-Helps $BaseDB @{
 		Pattern = 'Specifies the search pattern.'
 	}
 	outputs = @(
-		@{type = 'System.String'}
+		@{ type = 'System.String' }
 	)
 }
 
@@ -357,7 +382,7 @@ Merge-Helps $BaseKey @{
 	command = 'Get-RedisClixml'
 	synopsis = 'Restores an object from CLIXML string.'
 	outputs = @(
-		@{type = 'System.Object'}
+		@{ type = 'System.Object' }
 	)
 }
 
@@ -392,7 +417,7 @@ Merge-Helps $BaseKey @{
 		Timeout = 'Total time to wait.'
 	}
 	outputs = @(
-		@{type = 'none'; description = 'The time is out.'}
-		@{type = 'System.String'; description = 'The existing string.'}
+		@{ type = 'none'; description = 'The time is out.' }
+		@{ type = 'System.String'; description = 'The existing string.' }
 	)
 }

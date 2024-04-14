@@ -4,7 +4,7 @@ using System.Management.Automation;
 
 namespace PS.FarNet.Redis;
 
-[Cmdlet("Get", "RedisKey", DefaultParameterSetName = "Main")]
+[Cmdlet("Get", "RedisKey", DefaultParameterSetName = NMain)]
 [OutputType(typeof(RedisType))]
 [OutputType(typeof(TimeSpan))]
 public sealed class GetKeyCommand : BaseKeyCmdlet

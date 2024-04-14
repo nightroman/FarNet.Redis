@@ -2,10 +2,10 @@
 . ./About.ps1
 
 task test {
-	$key1 = 'test:key1'
-	$key2 = 'test:key2'
+	$key1 = 'test:1'
+	$key2 = 'test:2'
 	$miss = 'test:missing'
-	Set-RedisString $key1, $key2 1, 2
+	Set-RedisString -Many @{$key1 = 1; $key2 = 2}
 
 	equals (Test-RedisKey $miss) 0L
 	equals (Test-RedisKey $key1) 1L
@@ -17,10 +17,10 @@ task test {
 }
 
 task remove {
-	$key1 = 'test:key1'
-	$key2 = 'test:key2'
+	$key1 = 'test:1'
+	$key2 = 'test:2'
 	$miss = 'test:missing'
-	Set-RedisString $key1, $key2 1, 2
+	Set-RedisString -Many @{$key1 = 1; $key2 = 2}
 
 	equals (Remove-RedisKey $key1) $null
 	equals (Test-RedisKey $key1) 0L
@@ -42,7 +42,7 @@ task search {
 }
 
 task expiry {
-	$key = 'test:key1'
+	$key = 'test:1'
 	$seconds = 1.0
 
 	Set-RedisString $key 1
@@ -66,11 +66,11 @@ task TimeToLive {
 	$r = Get-RedisKey $key -TimeToLive
 	equals $r $null
 
-	Set-RedisKey $key -TimeToLive ([timespan]::FromSeconds(42))
+	Set-RedisKey $key -Expire ([timespan]::FromSeconds(42))
 	$r = Get-RedisKey $key -TimeToLive
 	equals ([int]([timespan]::FromSeconds(42) - $r).TotalSeconds) 0
 
-	Set-RedisKey $key -TimeToLive $null
+	Set-RedisKey $key -Expire $null
 	$r = Get-RedisKey $key -TimeToLive
 	equals $r $null
 

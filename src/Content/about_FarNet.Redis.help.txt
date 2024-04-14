@@ -47,5 +47,33 @@ LONG DESCRIPTION
         Set-RedisClixml
         Wait-RedisString
 
+REDIS TYPES
+    For a Redis type { String | Hash | List | Set } use these cmdlets:
+
+    * Set-Redis{Type}
+        Sets or updates values. It returns nothing on simple set operations.
+        On updates, it returns some result depending on parameters.
+
+    * Get-Redis{Type}
+        Gets values or other details. It always returns some result.
+        The result type depends on the command and parameters.
+
+    * Get-RedisAny
+        Use this command when the type is unknown or variable.
+
+    * Test-RedisKey
+        Checks for existence of specified keys.
+
+    * Remove-RedisKey
+        Removes specified keys.
+
+PARAMETER NAMES
+    Parameter names of Redis{Type} cmdlets follow StackExchange.Redis method
+    and parameter names when possible, to make it easier to find their pairs
+    in StackExchange.Redis and FarNet.Redis manuals.
+
+    That is why some names may deviate from PowerShell traditions (Delete vs.
+    Remove) or look inconsistent (Expire, Expiry, TimeToLive).
+
 SEE ALSO
     StackExchange.Redis https://github.com/StackExchange/StackExchange.Redis

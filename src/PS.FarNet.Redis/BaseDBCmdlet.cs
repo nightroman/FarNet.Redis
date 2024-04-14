@@ -5,6 +5,8 @@ namespace PS.FarNet.Redis;
 
 public abstract class BaseDBCmdlet : PSCmdlet
 {
+    protected const string NMain = "Main";
+
     [Parameter]
     public IDatabase Database { get; set; }
 

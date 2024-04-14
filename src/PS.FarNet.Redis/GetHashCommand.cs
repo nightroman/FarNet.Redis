@@ -3,7 +3,7 @@ using System.Management.Automation;
 
 namespace PS.FarNet.Redis;
 
-[Cmdlet("Get", "RedisHash", DefaultParameterSetName = "Main")]
+[Cmdlet("Get", "RedisHash", DefaultParameterSetName = NMain)]
 [OutputType(typeof(Dictionary<string, string>))]
 [OutputType(typeof(long))]
 public sealed class GetHashCommand : BaseGetCountCmdlet

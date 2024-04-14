@@ -2,7 +2,7 @@
 
 namespace PS.FarNet.Redis;
 
-[Cmdlet("Get", "RedisString", DefaultParameterSetName = "Main")]
+[Cmdlet("Get", "RedisString", DefaultParameterSetName = NMain)]
 [OutputType(typeof(string))]
 [OutputType(typeof(long))]
 public sealed class GetStringCommand : BaseKeysCmdlet

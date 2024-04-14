@@ -1,5 +1,11 @@
 # FarNet.Redis Release Notes
 
+## v0.4.0
+
+Potentially breaking changes in cmdlet parameters.
+
+Add new operation parameters, rework parameters.
+
 ## v0.3.0
 
 New cmdlet `Set-RedisKey`.

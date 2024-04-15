@@ -8,6 +8,13 @@
 
 [StackExchange.Redis] PowerShell module and FarNet library
 
+The module provides PowerShell friendly wrappers for basic Redis types and
+operations. For not yet implemented or advanced operations (like getting
+`byte[]` data) use SERedis API methods directly, see examples in tests.
+
+Redis keys, output simple values and complex type items are strings.\
+Input values may be anything supported by SERedis, including `byte[]`.
+
 Packages:
 - PowerShell 7.4 module, PSGallery [FarNet.Redis](https://www.powershellgallery.com/packages/FarNet.Redis)
 - FarNet library, NuGet [FarNet.Redis](https://www.nuget.org/packages/FarNet.Redis)
@@ -17,7 +24,7 @@ Packages:
 You may install the PowerShell module by this command:
 
 ```powershell
-Install-Module FarNet.Redis
+Install-Module -Name FarNet.Redis
 ```
 
 Explore, see also [about_FarNet.Redis.help.txt](https://github.com/nightroman/FarNet.Redis/blob/main/src/Content/about_FarNet.Redis.help.txt):

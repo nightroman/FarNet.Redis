@@ -46,6 +46,30 @@ task set {
 	Remove-RedisKey $key
 }
 
+# Use (,) notation in order to pass byte[] values avoiding unrolling to object[].
+task bytes {
+	$key = 'test:1'
+
+	[byte[]]$b1 = @(201, 1)
+	Set-RedisSet $key (,$b1)
+
+	[byte[]]$b2 = @(202, 2)
+	[byte[]]$b3 = @(203, 3)
+	Set-RedisSet $key -Add @((,$b2); (,$b3))
+
+	Set-RedisSet $key -Remove (,$b1)
+
+	$r = $db.SetMembers($key)
+
+	$r0 = $r.ForEach{([byte[]]$_)[0]} -join ','
+	equals $r0 '202,203'
+
+	$r1 = $r.ForEach{([byte[]]$_)[1]} -join ','
+	equals $r1 '2,3'
+
+	Remove-RedisKey $key
+}
+
 #! fixed
 task empty_strings {
 	$key = 'test:1'
@@ -62,18 +86,37 @@ task empty_strings {
 	Remove-RedisKey $key
 }
 
-task bad_Value {
+task invalid {
+	# Value
+
 	try { throw Set-RedisSet 1 $null }
 	catch { $_; assert ($_ -like '*because it is null.*') }
 
 	try { throw Set-RedisSet 1 @() }
 	catch { $_; assert ($_ -like '*because it is an empty array.*') }
-}
 
-task bad_Add {
+	try { throw Set-RedisSet 1 $Host }
+	catch { $_; assert ($_ -like "*'RedisValue':*") }
+
+	# Add
+
 	try { throw Set-RedisSet 1 -Add $null }
 	catch { $_; assert ($_ -like '*because it is null.*') }
 
 	try { throw Set-RedisSet 1 -Add @() }
 	catch { $_; assert ($_ -like '*because it is an empty array.*') }
+
+	try { throw Set-RedisSet 1 -Add $Host }
+	catch { $_; assert ($_ -like "*'RedisValue':*") }
+
+	# Remove
+
+	try { throw Set-RedisSet 1 -Remove $null }
+	catch { $_; assert ($_ -like '*because it is null.*') }
+
+	try { throw Set-RedisSet 1 -Remove @() }
+	catch { $_; assert ($_ -like '*because it is an empty array.*') }
+
+	try { throw Set-RedisSet 1 -Remove $Host }
+	catch { $_; assert ($_ -like "*'RedisValue':*") }
 }

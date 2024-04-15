@@ -5,8 +5,14 @@ SHORT DESCRIPTION
     StackExchange.Redis PowerShell module and FarNet library
 
 LONG DESCRIPTION
-    The module provides the following cmdlets.
+    The module provides PowerShell friendly wrappers for basic Redis types and
+    operations. For not yet implemented or advanced operations (like getting
+    byte[] data) use SERedis API methods directly, see examples in tests.
 
+    Redis keys, output simple values and complex type items are strings.
+    Input values may be anything supported by SERedis, including byte[].
+
+MODULE COMMANDS
     Connect and get database instance:
 
         Open-Redis

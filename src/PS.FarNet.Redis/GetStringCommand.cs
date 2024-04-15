@@ -1,40 +1,51 @@
-﻿using System.Management.Automation;
+﻿using StackExchange.Redis;
+using System.Management.Automation;
 
 namespace PS.FarNet.Redis;
 
 [Cmdlet("Get", "RedisString", DefaultParameterSetName = NMain)]
 [OutputType(typeof(string))]
 [OutputType(typeof(long))]
-public sealed class GetStringCommand : BaseKeysCmdlet
+public sealed class GetStringCommand : BaseDBCmdlet
 {
-    [Parameter(ParameterSetName = "Length", Mandatory = true)]
+    const string NMany = "Many";
+    const string NLength = "Length";
+
+    [Parameter(Position = 0, Mandatory = true, ParameterSetName = NMain)]
+    [Parameter(Position = 0, Mandatory = true, ParameterSetName = NLength)]
+    public string Key { get; set; }
+
+    [Parameter(Mandatory = true, ParameterSetName = NMany)]
+    public string[] Many { get; set; }
+
+    [Parameter(Mandatory = true, ParameterSetName = NLength)]
     public SwitchParameter Length { get; set; }
 
     protected override void BeginProcessing()
     {
         base.BeginProcessing();
 
-        if (Key.Length == 1)
+        switch (ParameterSetName)
         {
-            if (Length)
-            {
-                var res = Database.StringLength(Key[0]);
-                WriteObject(res);
-            }
-            else
-            {
-                var res = Database.StringGet(Key[0]);
-                WriteObject((string)res);
-            }
-        }
-        else
-        {
-            if (Length)
-                throw new PSArgumentException("Length is not supported with key lists.");
-
-            var res = Database.StringGet(Abc.ToKeys(Key));
-            foreach (var item in res)
-                WriteObject((string)item);
+            case NLength:
+                {
+                    long res = Database.StringLength(Key);
+                    WriteObject(res);
+                }
+                break;
+            case NMany:
+                {
+                    RedisValue[] res = Database.StringGet(Abc.ToKeys(Many));
+                    foreach (var item in res)
+                        WriteObject((string)item);
+                }
+                break;
+            default:
+                {
+                    RedisValue res = Database.StringGet(Key);
+                    WriteObject((string)res);
+                }
+                break;
         }
     }
 }

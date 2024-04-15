@@ -14,15 +14,18 @@ public sealed class SetListCommand : BaseKeyCmdlet
 
     [Parameter(Position = 1, Mandatory = true, ParameterSetName = NMain)]
     [AllowEmptyString]
-    public string[] Value { get; set; }
+    public object[] Value { set => _Value = Abc.ToRedis(value); }
+    RedisValue[] _Value;
 
     [Parameter(Mandatory = true, ParameterSetName = NLeftPush)]
     [AllowEmptyString]
-    public string[] LeftPush { get; set; }
+    public object[] LeftPush { set => _LeftPush = Abc.ToRedis(value); }
+    RedisValue[] _LeftPush;
 
     [Parameter(Mandatory = true, ParameterSetName = NRightPush)]
     [AllowEmptyString]
-    public string[] RightPush { get; set; }
+    public object[] RightPush { set => _RightPush = Abc.ToRedis(value); }
+    RedisValue[] _RightPush;
 
     [Parameter(Mandatory = true, ParameterSetName = NLeftPop)]
     [ValidateRange(1L, long.MaxValue)]
@@ -40,12 +43,12 @@ public sealed class SetListCommand : BaseKeyCmdlet
         {
             case NLeftPush:
                 {
-                    Database.ListLeftPush(RKey, Abc.ToRedis(LeftPush));
+                    Database.ListLeftPush(RKey, _LeftPush);
                 }
                 break;
             case NRightPush:
                 {
-                    Database.ListRightPush(RKey, Abc.ToRedis(RightPush));
+                    Database.ListRightPush(RKey, _RightPush);
                 }
                 break;
             case NLeftPop:
@@ -63,7 +66,7 @@ public sealed class SetListCommand : BaseKeyCmdlet
             default:
                 {
                     Database.KeyDelete(RKey);
-                    Database.ListRightPush(RKey, Abc.ToRedis(Value));
+                    Database.ListRightPush(RKey, _Value);
                 }
                 break;
         }

@@ -46,20 +46,48 @@ task hash {
 	Remove-RedisKey $key
 }
 
-task bad_Value {
-	try { throw Set-RedisHash 1 $null }
-	catch { $_; assert ($_ -like '*because it is null.*') }
+# In order to use byte[] values, ensure the type is byte[].
+task bytes {
+	Remove-RedisKey ($key = 'test:1')
+
+	Set-RedisHash $key @{k1 = [byte[]](201)}
+
+	$r = [byte[]]$db.HashGet($key, 'k1')
+	equals $r[0] 201uy
+
+	Set-RedisHash $key -Set @{k2 = [byte[]](0, 202)}
+
+	$r = [byte[]]$db.HashGet($key, 'k1')
+	equals $r[0] 201uy
+
+	$r = [byte[]]$db.HashGet($key, 'k2')
+	equals $r[1] 202uy
+
+	Remove-RedisKey $key
 }
 
-task bad_Delete {
+task invalid {
+	# Value
+
+	try { throw Set-RedisHash 1 $null }
+	catch { $_; assert ($_ -like '*because it is null.*') }
+
+	try { throw Set-RedisHash 1 @{k=$Host} }
+	catch { $_; assert ($_ -like "*'RedisValue':*") }
+
+	# Delete
+
 	try { throw Set-RedisHash 1 -Delete $null }
 	catch { $_; assert ($_ -like '*because it is null.*') }
 
 	try { throw Set-RedisHash 1 -Delete @() }
 	catch { $_; assert ($_ -like '*because it is an empty array.*') }
-}
 
-task bad_Set {
+	# Set
+
 	try { throw Set-RedisHash 1 -Set $null }
 	catch { $_; assert ($_ -like '*because it is null.*') }
+
+	try { throw Set-RedisHash 1 -Set @{k=$Host} }
+	catch { $_; assert ($_ -like "*'RedisValue':*") }
 }

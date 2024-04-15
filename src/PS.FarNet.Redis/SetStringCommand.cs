@@ -27,7 +27,8 @@ public sealed class SetStringCommand : BaseDBCmdlet
     [Parameter(Position = 1, Mandatory = true, ParameterSetName = NMain)]
     [AllowEmptyString]
     [AllowNull]
-    public string Value { get; set; }
+    public object Value { set => _Value = Abc.Unbox(value); }
+    RedisValue _Value;
 
     [Parameter(Mandatory = true, ParameterSetName = NMany)]
     public IDictionary Many { get; set; }
@@ -42,7 +43,8 @@ public sealed class SetStringCommand : BaseDBCmdlet
     When? _When;
 
     [Parameter(Mandatory = true, ParameterSetName = NAppend)]
-    public string Append { get; set; }
+    public object Append { set => _Append = Abc.Unbox(value); }
+    RedisValue _Append;
 
     [Parameter(Mandatory = true, ParameterSetName = NIncrement)]
     public long Increment { get; set; }
@@ -53,7 +55,8 @@ public sealed class SetStringCommand : BaseDBCmdlet
     [Parameter(Mandatory = true, ParameterSetName = NSetAndGet)]
     [AllowEmptyString]
     [AllowNull]
-    public string SetAndGet { get; set; }
+    public object SetAndGet { set => _SetAndGet = Abc.Unbox(value); }
+    RedisValue _SetAndGet;
 
     protected override void BeginProcessing()
     {
@@ -63,38 +66,38 @@ public sealed class SetStringCommand : BaseDBCmdlet
         {
             case NAppend:
                 {
-                    var res = Database.StringAppend(Key, Append);
+                    long res = Database.StringAppend(Key, _Append);
                     WriteObject(res);
                 }
                 break;
             case NIncrement:
                 {
-                    var res = Database.StringIncrement(Key, Increment);
+                    long res = Database.StringIncrement(Key, Increment);
                     WriteObject(res);
                 }
                 break;
             case NDecrement:
                 {
-                    var res = Database.StringDecrement(Key, Decrement);
+                    long res = Database.StringDecrement(Key, Decrement);
                     WriteObject(res);
                 }
                 break;
             case NSetAndGet:
                 {
-                    var res = Database.StringSetAndGet(Key, SetAndGet, Expiry);
+                    RedisValue res = Database.StringSetAndGet(Key, _SetAndGet, Expiry);
                     WriteObject((string)res);
                 }
                 break;
             case NMany:
                 {
-                    var res = Database.StringSet(Abc.ToRedisPairs(Many), _When ?? When.Always);
+                    bool res = Database.StringSet(Abc.ToRedisPairs(Many), _When ?? When.Always);
                     if (_When.HasValue)
                         WriteObject(res);
                 }
                 break;
             default:
                 {
-                    var res = Database.StringSet(Key, Value, Expiry, false, _When ?? When.Always);
+                    bool res = Database.StringSet(Key, _Value, Expiry, false, _When ?? When.Always);
                     if (_When.HasValue)
                         WriteObject(res);
                 }

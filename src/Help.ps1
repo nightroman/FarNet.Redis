@@ -99,10 +99,10 @@ Merge-Helps $BaseKey @{
 '@
 	}
 	outputs = @(
-		@{ type = 'System.String' }
-		@{ type = 'System.Collections.Generic.List[System.String]' }
-		@{ type = 'System.Collections.Generic.HashSet[System.String]' }
-		@{ type = 'System.Collections.Generic.Dictionary[System.String, System.String]' }
+		@{ type = 'System.String'; description = 'when key is String' }
+		@{ type = 'System.Collections.Generic.List[System.String]'; description = 'when key is List' }
+		@{ type = 'System.Collections.Generic.HashSet[System.String]'; description = 'when key is Set' }
+		@{ type = 'System.Collections.Generic.Dictionary[System.String, System.String]'; description = 'when key is Hash' }
 	)
 }
 
@@ -115,7 +115,7 @@ Merge-Helps $BaseKey @{
 	}
 	outputs = @(
 		@{ type = 'System.Collections.Generic.Dictionary[System.String, System.String]' }
-		@{ type = 'System.Int64' }
+		@{ type = 'System.Int64'; description = 'with Count' }
 	)
 }
 
@@ -132,8 +132,8 @@ Merge-Helps $BaseKey @{
 	}
 	outputs = @(
 		@{ type = 'System.Collections.Generic.List[System.String]' }
-		@{ type = 'System.String' }
-		@{ type = 'System.Int64' }
+		@{ type = 'System.String'; description = 'with Index' }
+		@{ type = 'System.Int64'; description = 'with Count' }
 	)
 }
 
@@ -146,20 +146,26 @@ Merge-Helps $BaseKey @{
 	}
 	outputs = @(
 		@{ type = 'System.Collections.Generic.HashSet[System.String]' }
-		@{ type = 'System.Int64' }
+		@{ type = 'System.Int64'; description = 'with Count' }
 	)
 }
 
 ### Get-RedisString
-Merge-Helps $BaseKeys @{
+Merge-Helps $BaseDB @{
 	command = 'Get-RedisString'
 	synopsis = 'Gets the string or its details.'
 	parameters = @{
-		Length = 'Gets the string length.'
+		Key = $ParamKey
+		Many = @'
+		Gets several specified strings.
+'@
+		Length = @'
+		Gets the string length.
+'@
 	}
 	outputs = @(
 		@{ type = 'System.String' }
-		@{ type = 'System.Int64' }
+		@{ type = 'System.Int64'; description = 'with Length' }
 	)
 }
 
@@ -253,10 +259,9 @@ Merge-Helps $BaseDB @{
 '@
 	}
 	outputs = @(
-		@{ type = 'none' }
-		@{ type = 'System.Int64' }
-		@{ type = 'System.Double' }
-		@{ type = 'System.String' }
+		@{ type = 'System.Int64'; description = 'with Increment, Decrement' }
+		@{ type = 'System.String'; description = 'with SetAndGet' }
+		@{ type = 'System.Boolean'; description = 'with When' }
 	)
 }
 
@@ -269,7 +274,7 @@ Merge-Helps $BaseKey @{
 	}
 	outputs = @(
 		@{ type = 'StackExchange.Redis.RedisType' }
-		@{ type = 'System.TimeSpan' }
+		@{ type = 'System.TimeSpan'; description = 'with TimeToLive' }
 	)
 }
 
@@ -305,8 +310,7 @@ Merge-Helps $BaseKeys @{
 		Result = 'Tells to get the number of removed keys.'
 	}
 	outputs = @(
-		@{ type = 'none' }
-		@{ type = 'System.Int64' }
+		@{ type = 'System.Int64'; description = 'with Result' }
 	)
 }
 
@@ -409,8 +413,8 @@ Merge-Helps $BaseKey @{
 	command = 'Wait-RedisString'
 	synopsis = 'Waits for the string to exist and returns it.'
 	description = @'
-	This command periodically checks the specified string for existence and
-	returns its value or none if the time is out.
+	This command periodically checks the specified string and returns its value
+	as soon as it exists. When the time is out, it returns nothing.
 '@
 	parameters = @{
 		Delay = 'Time to sleep between checks.'

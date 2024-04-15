@@ -22,14 +22,19 @@ task string {
 	Remove-RedisKey $key
 }
 
-task set_many {
+task set_get_many {
 	Remove-RedisKey ($key1, $key2 = 'test:1', 'test:2')
 
 	Set-RedisString -Many @{$key1 = 1; $key2 = 2}
 
-	$r1, $r2 = Get-RedisString $key1, $key2
+	$r1, $r2 = Get-RedisString -Many $key1, $key2
 	equals $r1 '1'
 	equals $r2 '2'
+
+	$r1, $r2, $r3 = Get-RedisString -Many $key1, miss, $key2
+	equals $r1 '1'
+	equals $r2 $null
+	equals $r3 '2'
 
 	Remove-RedisKey $key1, $key2
 }
@@ -163,4 +168,67 @@ task increment {
 	equals $r 0L
 
 	Remove-RedisKey $key
+}
+
+# In order to use byte[] values, ensure the type is byte[].
+task bytes {
+	Remove-RedisKey ($key = 'test:1')
+
+	# set bytes
+	Set-RedisString $key ([byte[]]@(0, 255))
+
+	# use [byte[]] variable or cast to [byte[]]
+	$r = [byte[]]$db.StringGet($key)
+	equals $r.Length 2
+	equals $r[0] 0uy
+	equals $r[1] 255uy
+
+	# append bytes
+	$r = Set-RedisString $key -Append ([byte[]]@(42))
+	equals $r 3L
+
+	# cast to byte[]
+	$r = [byte[]]$db.StringGet($key)
+	equals $r.Length 3
+	equals $r[-1] 42uy
+
+	# SetAndGet works with bytes but result is odd string
+	$r = Set-RedisString $key -SetAndGet ([byte[]]@(11))
+	equals $r.Length 3
+	equals $r[0] ([char]0)
+	equals $r[1] ([char]65533)
+	equals $r[2] ([char]42)
+
+	# cast to byte[]
+	$r = [byte[]]$db.StringGet($key)
+	equals $r.Length 1
+	equals $r[0] 11uy
+
+	Remove-RedisKey $key
+}
+
+task invalid {
+	# Value
+
+	# null is fine
+	$null = Set-RedisString 1 $null
+
+	try { throw Set-RedisString 1 @() }
+	catch { $_; assert ($_ -like "*'RedisValue':*") }
+
+	# Append
+
+	try { throw Set-RedisString 1 -Append $null }
+	catch { $_; assert ($_ -like '*because it is null.*') }
+
+	try { throw Set-RedisString 1 -Append $Host }
+	catch { $_; assert ($_ -like "*'RedisValue':*") }
+
+	# SetAndGet
+
+	# null is fine
+	$null = Set-RedisString 1 -SetAndGet $null
+
+	try { throw Set-RedisString 1 -SetAndGet $Host }
+	catch { $_; assert ($_ -like "*'RedisValue':*") }
 }

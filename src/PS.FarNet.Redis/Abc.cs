@@ -1,4 +1,5 @@
 ﻿using StackExchange.Redis;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Management.Automation;
@@ -10,6 +11,18 @@ static class Abc
     public static object BaseObject(object value)
     {
         return value is PSObject ps ? ps.BaseObject : value;
+    }
+
+    public static RedisValue Unbox(object value)
+    {
+        try
+        {
+            return RedisValue.Unbox(value is PSObject ps ? ps.BaseObject : value);
+        }
+        catch (Exception ex)
+        {
+            throw new ArgumentException($"Cannot bind '{value.GetType().Name}' to 'RedisValue': {ex.Message}", ex);
+        }
     }
 
     public static Dictionary<string, string> ToDictionary(HashEntry[] entries)
@@ -44,11 +57,11 @@ static class Abc
         return result;
     }
 
-    public static RedisValue[] ToRedis(string[] input)
+    public static RedisValue[] ToRedis(object[] input)
     {
         var entries = new RedisValue[input.Length];
         for (int i = 0; i < entries.Length; ++i)
-            entries[i] = new RedisValue(input[i]);
+            entries[i] = Unbox(input[i]);
 
         return entries;
     }
@@ -60,7 +73,7 @@ static class Abc
         foreach (DictionaryEntry kv in input)
         {
             ++i;
-            entries[i] = new(new RedisValue(kv.Key?.ToString()), new RedisValue(kv.Value?.ToString()));
+            entries[i] = new(Unbox(kv.Key), Unbox(kv.Value));
         }
 
         return entries;

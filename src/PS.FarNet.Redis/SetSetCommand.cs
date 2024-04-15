@@ -1,4 +1,5 @@
-﻿using System.Management.Automation;
+﻿using StackExchange.Redis;
+using System.Management.Automation;
 
 namespace PS.FarNet.Redis;
 
@@ -10,15 +11,18 @@ public sealed class SetSetCommand : BaseKeyCmdlet
 
     [Parameter(Position = 1, Mandatory = true, ParameterSetName = NMain)]
     [AllowEmptyString]
-    public string[] Value { get; set; }
+    public object[] Value { set => _Value = Abc.ToRedis(value); }
+    RedisValue[] _Value;
 
     [Parameter(Mandatory = true, ParameterSetName = NAdd)]
     [AllowEmptyString]
-    public string[] Add { get; set; }
+    public object[] Add { set => _Add = Abc.ToRedis(value); }
+    RedisValue[] _Add;
 
     [Parameter(Mandatory = true, ParameterSetName = NRemove)]
     [AllowEmptyString]
-    public string[] Remove { get; set; }
+    public object[] Remove { set => _Remove = Abc.ToRedis(value); }
+    RedisValue[] _Remove;
 
     protected override void BeginProcessing()
     {
@@ -28,18 +32,18 @@ public sealed class SetSetCommand : BaseKeyCmdlet
         {
             case NAdd:
                 {
-                    Database.SetAdd(RKey, Abc.ToRedis(Add));
+                    Database.SetAdd(RKey, _Add);
                 }
                 break;
             case NRemove:
                 {
-                    Database.SetRemove(RKey, Abc.ToRedis(Remove));
+                    Database.SetRemove(RKey, _Remove);
                 }
                 break;
             default:
                 {
                     Database.KeyDelete(RKey);
-                    Database.SetAdd(RKey, Abc.ToRedis(Value));
+                    Database.SetAdd(RKey, _Value);
                 }
                 break;
         }

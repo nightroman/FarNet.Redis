@@ -11,13 +11,15 @@ public sealed class SetHashCommand : BaseKeyCmdlet
     const string NSet = "Set";
 
     [Parameter(Position = 1, Mandatory = true, ParameterSetName = NMain)]
-    public IDictionary Value { get; set; }
+    public IDictionary Value { set => _Value = Abc.ToRedis(value); }
+    HashEntry[] _Value;
 
     [Parameter(Mandatory = true, ParameterSetName = NDelete)]
     public string[] Delete { get; set; }
 
     [Parameter(Mandatory = true, ParameterSetName = NSet)]
-    public IDictionary Set { get; set; }
+    public IDictionary Set { set => _Set = Abc.ToRedis(value); }
+    HashEntry[] _Set;
 
     protected override void BeginProcessing()
     {
@@ -32,13 +34,13 @@ public sealed class SetHashCommand : BaseKeyCmdlet
                 break;
             case NSet:
                 {
-                    Database.HashSet(RKey, Abc.ToRedis(Set));
+                    Database.HashSet(RKey, _Set);
                 }
                 break;
             default:
                 {
                     Database.KeyDelete(RKey);
-                    Database.HashSet(RKey, Abc.ToRedis(Value));
+                    Database.HashSet(RKey, _Value);
                 }
                 break;
         }

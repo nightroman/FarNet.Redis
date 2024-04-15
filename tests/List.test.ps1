@@ -111,26 +111,58 @@ task empty_strings {
 	Remove-RedisKey $key
 }
 
-task bad_Value {
+# Use (,) notation in order to pass byte[] values avoiding unrolling to object[].
+task bytes {
+	$key = 'test:1'
+
+	[byte[]]$b1 = @(201; 1)
+	Set-RedisList $key (,$b1)
+
+	[byte[]]$b2 = @(202)
+	[byte[]]$b3 = @(203)
+	Set-RedisList $key -LeftPush @((,$b2); (,$b3))
+
+	[byte[]]$b4 = @(204)
+	[byte[]]$b5 = @(205)
+	Set-RedisList $key -RightPush @((,$b4); (,$b5))
+
+	$r = $db.ListRange($key).ForEach{([byte[]]$_)[0]} -join ','
+	equals $r '203,202,201,204,205'
+
+	Remove-RedisKey $key
+}
+
+task invalid {
+	# Value
+
 	try { throw Set-RedisList 1 $null }
 	catch { $_; assert ($_ -like '*because it is null.*') }
 
 	try { throw Set-RedisList 1 @() }
 	catch { $_; assert ($_ -like '*because it is an empty array.*') }
-}
 
-task bad_LeftPush {
+	try { throw Set-RedisList 1 $Host }
+	catch { $_; assert ($_ -like "*'RedisValue':*") }
+
+	# LeftPush
+
 	try { throw Set-RedisList 1 -LeftPush $null }
 	catch { $_; assert ($_ -like '*because it is null.*') }
 
 	try { throw Set-RedisList 1 -LeftPush @() }
 	catch { $_; assert ($_ -like '*because it is an empty array.*') }
-}
 
-task bad_RightPush {
+	try { throw Set-RedisList 1 -LeftPush $Host }
+	catch { $_; assert ($_ -like "*'RedisValue':*") }
+
+	# RightPush
+
 	try { throw Set-RedisList 1 -RightPush $null }
 	catch { $_; assert ($_ -like '*because it is null.*') }
 
 	try { throw Set-RedisList 1 -RightPush @() }
 	catch { $_; assert ($_ -like '*because it is an empty array.*') }
+
+	try { throw Set-RedisList 1 -RightPush $Host }
+	catch { $_; assert ($_ -like "*'RedisValue':*") }
 }

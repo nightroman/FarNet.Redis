@@ -1,5 +1,9 @@
 # FarNet.Redis Release Notes
 
+## v0.5.1
+
+Minor tweaks, hints on using faster 127.0.0.1 instead of localhost.
+
 ## v0.5.0
 
 Cmdlets value parameters use `object` instead of `string` and support `byte[]` values.

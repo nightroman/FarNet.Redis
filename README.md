@@ -98,7 +98,7 @@ PowerShell
 
 ```powershell
 Import-Module FarNet.Redis
-$db = Open-Redis localhost:3278
+$db = Open-Redis 127.0.0.1:3278
 Set-RedisString test:key1 Hello
 Get-RedisString test:key1
 ```
@@ -107,7 +107,7 @@ F#
 
 ```fsharp
 open StackExchange.Redis
-let db = DB.Open("localhost:3278")
+let db = DB.Open("127.0.0.1:3278")
 db.StringSet("test:key1", "Hello")
 db.StringGet("test:key1")
 ```
@@ -117,6 +117,10 @@ db.StringGet("test:key1")
 [Microsoft.Garnet] is the Redis like server, especially useful on Windows.
 
 Use a simple console project like [GarnetServer] to run your own server.
+
+## Notes
+
+`Open-Redis 127.0.0.1:3278` seems to work faster than using `localhost`.
 
 ## See also
 

@@ -52,8 +52,10 @@ $BaseSub = Merge-Helps $BaseDB @{
 		Configuration = @'
 		Specifies the Redis configuration string.
 		Examples:
-			"localhost:3278"
-			"localhost:3278,AllowAdmin=true"
+			"127.0.0.1:3278"
+			"127.0.0.1:3278,AllowAdmin=true"
+
+		Note that 127.0.0.1 seems to work faster than localhost.
 '@
 	}
 	outputs = @{

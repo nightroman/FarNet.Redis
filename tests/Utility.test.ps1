@@ -1,6 +1,17 @@
 ﻿
 . ./About.ps1
 
+task open_redis {
+	# should be the same instance
+	$db2 = Open-Redis 127.0.0.1:3278
+	equals ([object]::ReferenceEquals($db2, $db)) $true
+
+	# should be a different instance, close it
+	$db2 = Open-Redis 127.0.0.1:3278 -AllowAdmin
+	equals ([object]::ReferenceEquals($db2, $db)) $false
+	Close-Redis -Database $db2
+}
+
 <#
 	Set-RedisClixml and Get-RedisClixml provide low ceremony persistence of PowerShell objects.
 	See the similar Export-Clixml and Import-Clixml for concepts and examples.

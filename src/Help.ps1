@@ -57,6 +57,9 @@ $BaseSub = Merge-Helps $BaseDB @{
 
 		Note that 127.0.0.1 seems to work faster than localhost.
 '@
+		AllowAdmin = @'
+		Tells to allow admin operations.
+'@
 	}
 	outputs = @{
 		type = 'StackExchange.Redis.IDatabase'

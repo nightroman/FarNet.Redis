@@ -10,8 +10,12 @@ public static class DB
 
     public static IDatabase Open(string configuration)
     {
-        ConfigurationOptions options = ConfigurationOptions.Parse(configuration);
+        var options = ConfigurationOptions.Parse(configuration);
+        return Open(options);
+    }
 
+    public static IDatabase Open(ConfigurationOptions options)
+    {
         var key = options.ToString();
         var db = _db.GetOrAdd(key, key =>
         {
@@ -24,7 +28,7 @@ public static class DB
 
     public static void Close(string configuration)
     {
-        ConfigurationOptions options = ConfigurationOptions.Parse(configuration);
+        var options = ConfigurationOptions.Parse(configuration);
 
         var key = options.ToString();
         if (_db.TryRemove(key, out IDatabase? db))

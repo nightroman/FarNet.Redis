@@ -1,5 +1,9 @@
 # FarNet.Redis Release Notes
 
+## v0.5.3
+
+`Get-RedisHash`: new parameter `Field`.
+
 ## v0.5.2
 
 `Open-Redis`: new switch `AllowAdmin`.

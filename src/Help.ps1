@@ -117,9 +117,14 @@ Merge-Helps $BaseKey @{
 	synopsis = 'Gets the hash or its details.'
 	parameters = @{
 		Count = $ParamCount
+		Field = @'
+		Gets the values associated with the specified fields. For every field
+		that does not exist in the hash, null is returned.
+'@
 	}
 	outputs = @(
 		@{ type = 'System.Collections.Generic.Dictionary[System.String, System.String]' }
+		@{ type = 'System.String'; description = 'with Field' }
 		@{ type = 'System.Int64'; description = 'with Count' }
 	)
 }

@@ -30,6 +30,18 @@ task hash {
 	equals $r.user May
 	equals $r.id '11'
 
+	# get 1 field
+	$r = Get-RedisHash $key -Field name
+	equals $r Joe
+	$r = Get-RedisHash $key -Field miss
+	equals $r $null
+
+	# get 3 fields
+	$name, $miss, $age = Get-RedisHash $key -Field name, miss, age
+	equals $name Joe
+	equals $miss $null
+	equals $age '42'
+
 	# delete 1 field
 	Set-RedisHash $key -Delete id
 	equals (Get-RedisHash $key -Count) 3L
@@ -67,6 +79,14 @@ task bytes {
 }
 
 task invalid {
+	# Field
+
+	try { throw Get-RedisHash 1 -Field $null }
+	catch { $_; assert ($_ -like '*because it is null.*') }
+
+	try { throw Get-RedisHash 1 -Field @() }
+	catch { $_; assert ($_ -like '*because it is an empty array.*') }
+
 	# Value
 
 	try { throw Set-RedisHash 1 $null }

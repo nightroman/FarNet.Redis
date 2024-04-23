@@ -35,7 +35,7 @@ public sealed class GetListCommand : BaseGetCountCmdlet
             default:
                 {
                     var res = Database.ListRange(RKey);
-                    WriteObject(Abc.ToList(res));
+                    WriteObject(res.ToStringList());
                 }
                 break;
         }

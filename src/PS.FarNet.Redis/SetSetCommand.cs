@@ -11,17 +11,17 @@ public sealed class SetSetCommand : BaseKeyCmdlet
 
     [Parameter(Position = 1, Mandatory = true, ParameterSetName = NMain)]
     [AllowEmptyString]
-    public object[] Value { set => _Value = Abc.ToRedis(value); }
+    public object[] Value { set => _Value = value.ToRedisValueArray(); }
     RedisValue[] _Value;
 
     [Parameter(Mandatory = true, ParameterSetName = NAdd)]
     [AllowEmptyString]
-    public object[] Add { set => _Add = Abc.ToRedis(value); }
+    public object[] Add { set => _Add = value.ToRedisValueArray(); }
     RedisValue[] _Add;
 
     [Parameter(Mandatory = true, ParameterSetName = NRemove)]
     [AllowEmptyString]
-    public object[] Remove { set => _Remove = Abc.ToRedis(value); }
+    public object[] Remove { set => _Remove = value.ToRedisValueArray(); }
     RedisValue[] _Remove;
 
     protected override void BeginProcessing()

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using StackExchange.Redis;
+using System.Collections.Generic;
 using System.Management.Automation;
 
 namespace PS.FarNet.Redis;
@@ -12,15 +13,20 @@ public sealed class GetSetCommand : BaseGetCountCmdlet
     {
         base.BeginProcessing();
 
-        if (Count)
+        switch (ParameterSetName)
         {
-            var res = Database.SetLength(RKey);
-            WriteObject(res);
-        }
-        else
-        {
-            var res = Database.SetMembers(RKey);
-            WriteObject(Abc.ToHashSet(res));
+            case NCount:
+                {
+                    long res = Database.SetLength(RKey);
+                    WriteObject(res);
+                }
+                break;
+            default:
+                {
+                    RedisValue[] res = Database.SetMembers(RKey);
+                    WriteObject(res.ToStringHashSet());
+                }
+                break;
         }
     }
 }

@@ -14,17 +14,17 @@ public sealed class SetListCommand : BaseKeyCmdlet
 
     [Parameter(Position = 1, Mandatory = true, ParameterSetName = NMain)]
     [AllowEmptyString]
-    public object[] Value { set => _Value = Abc.ToRedis(value); }
+    public object[] Value { set => _Value = value.ToRedisValueArray(); }
     RedisValue[] _Value;
 
     [Parameter(Mandatory = true, ParameterSetName = NLeftPush)]
     [AllowEmptyString]
-    public object[] LeftPush { set => _LeftPush = Abc.ToRedis(value); }
+    public object[] LeftPush { set => _LeftPush = value.ToRedisValueArray(); }
     RedisValue[] _LeftPush;
 
     [Parameter(Mandatory = true, ParameterSetName = NRightPush)]
     [AllowEmptyString]
-    public object[] RightPush { set => _RightPush = Abc.ToRedis(value); }
+    public object[] RightPush { set => _RightPush = value.ToRedisValueArray(); }
     RedisValue[] _RightPush;
 
     [Parameter(Mandatory = true, ParameterSetName = NLeftPop)]
@@ -54,13 +54,13 @@ public sealed class SetListCommand : BaseKeyCmdlet
             case NLeftPop:
                 {
                     var res = Database.ListLeftPop(RKey, LeftPop);
-                    WriteObject(Abc.ToList(res), true);
+                    WriteObject(res.ToStringList(), true);
                 }
                 break;
             case NRightPop:
                 {
                     var res = Database.ListRightPop(RKey, RightPop);
-                    WriteObject(Abc.ToList(res), true);
+                    WriteObject(res.ToStringList(), true);
                 }
                 break;
             default:

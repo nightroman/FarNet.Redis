@@ -35,7 +35,7 @@ public sealed class GetStringCommand : BaseDBCmdlet
                 break;
             case NMany:
                 {
-                    RedisValue[] res = Database.StringGet(Abc.ToKeys(Many));
+                    RedisValue[] res = Database.StringGet(Many.ToRedisKeyArray());
                     foreach (var item in res)
                         WriteObject((string)item);
                 }

@@ -27,9 +27,15 @@ public sealed class GetHashCommand : BaseGetCountCmdlet
                     WriteObject(res);
                 }
                 break;
+            case NField when Field.Length == 1:
+                {
+                    RedisValue res = Database.HashGet(RKey, Field[0]);
+                    WriteObject((string)res);
+                }
+                break;
             case NField:
                 {
-                    RedisValue[] res = Database.HashGet(RKey, Abc.ToRedis(Field));
+                    RedisValue[] res = Database.HashGet(RKey, Field.ToRedisValueArray());
                     foreach (var item in res)
                         WriteObject((string)item);
                 }
@@ -37,7 +43,7 @@ public sealed class GetHashCommand : BaseGetCountCmdlet
             default:
                 {
                     HashEntry[] res = Database.HashGetAll(RKey);
-                    WriteObject(Abc.ToDictionary(res));
+                    WriteObject(res.ToStringDictionary());
                 }
                 break;
         }

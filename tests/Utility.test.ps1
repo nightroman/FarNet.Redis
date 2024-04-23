@@ -87,3 +87,85 @@ task clixml_deep {
 
 	Remove-RedisKey $key
 }
+
+task export {
+	[byte[]]$blob = 0, 128
+	$base64 = [Convert]::ToBase64String($blob)
+	(Search-RedisKey try:*).ForEach{Remove-RedisKey $_}
+
+	# set all types, one with expiry
+	Set-RedisString try:t1 hello
+	Set-RedisString try:b1 $blob
+	Set-RedisString try:t2 hello -Expiry ([timespan]::FromMinutes(3))
+	Set-RedisString try:b2 $blob -Expiry ([timespan]::FromMinutes(3))
+	Set-RedisHash try:h1 ([ordered]@{hello=42; world=$blob})
+	Set-RedisList try:l1 hello, $blob
+	Set-RedisSet try:s1 $blob, hello
+	Set-RedisString try:short lived -Expiry ([timespan]::FromMinutes(1))
+
+	# export with expiring
+	Export-Redis z.1.json try:* -TimeToLive ([timespan]::FromMinutes(2))
+
+	# test expected JSON
+	$r = Get-Content z.1.json -Raw | ConvertFrom-Json -AsHashtable
+	equals $r.Count 7
+	equals $r['try:t1'] hello
+	equals $r['try:b1'][0] $base64
+	equals $r['try:t2'].Text hello
+	equals $r['try:b2'].Blob $base64
+	equals $r['try:h1'].Hash.hello '42'
+	equals $r['try:h1'].Hash.world[0] $base64
+	equals $r['try:l1'].List[0] hello
+	equals $r['try:l1'].List[1][0] $base64
+	equals $r['try:s1'].Set[0][0] $base64
+	equals $r['try:s1'].Set[1] hello
+	assert ($r['try:t2'].EOL -is [datetime])
+	assert ($r['try:b2'].EOL -is [datetime])
+
+	# import and export again, persistent only this time
+	Import-Redis z.1.json
+	Export-Redis z.2.json try:*
+
+	# expiring keys were excluded
+	$r = Get-Content z.2.json -Raw | ConvertFrom-Json -AsHashtable
+	equals (($r.Keys | Sort-Object) -join ',') 'try:b1,try:h1,try:l1,try:s1,try:t1'
+
+	# test expected formatting
+	$result = (Get-Content z.1.json -Raw) -replace '\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d', 'date'
+	$sample = @'
+{
+  "try:t1": "hello",
+  "try:b1": ["AIA="],
+  "try:t2": {
+    "EOL": "date",
+    "Text": "hello"
+  },
+  "try:b2": {
+    "EOL": "date",
+    "Blob": "AIA="
+  },
+  "try:h1": {
+    "Hash": {
+      "hello": "42",
+      "world": ["AIA="]
+    }
+  },
+  "try:l1": {
+    "List": [
+      "hello",
+      ["AIA="]
+    ]
+  },
+  "try:s1": {
+    "Set": [
+      ["AIA="],
+      "hello"
+    ]
+  }
+}
+'@
+	Assert-SameFile.ps1 -Text $sample $result $env:MERGE
+
+	Remove-RedisKey (Search-RedisKey try:*)
+	remove z.*.json
+}

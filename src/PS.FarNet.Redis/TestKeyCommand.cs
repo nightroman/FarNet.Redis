@@ -12,12 +12,12 @@ public sealed class TestKeyCommand : BaseKeysCmdlet
 
         if (Key.Length == 1)
         {
-            var res = Database.KeyExists(Key[0]);
+            bool res = Database.KeyExists(Key[0]);
             WriteObject(res ? 1L : 0L);
         }
         else
         {
-            var res = Database.KeyExists(Abc.ToKeys(Key));
+            long res = Database.KeyExists(Key.ToRedisKeyArray());
             WriteObject(res);
         }
     }

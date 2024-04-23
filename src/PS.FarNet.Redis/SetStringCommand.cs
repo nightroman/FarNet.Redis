@@ -27,7 +27,7 @@ public sealed class SetStringCommand : BaseDBCmdlet
     [Parameter(Position = 1, Mandatory = true, ParameterSetName = NMain)]
     [AllowEmptyString]
     [AllowNull]
-    public object Value { set => _Value = Abc.Unbox(value); }
+    public object Value { set => _Value = value.ToRedisValue(); }
     RedisValue _Value;
 
     [Parameter(Mandatory = true, ParameterSetName = NMany)]
@@ -43,7 +43,7 @@ public sealed class SetStringCommand : BaseDBCmdlet
     When? _When;
 
     [Parameter(Mandatory = true, ParameterSetName = NAppend)]
-    public object Append { set => _Append = Abc.Unbox(value); }
+    public object Append { set => _Append = value.ToRedisValue(); }
     RedisValue _Append;
 
     [Parameter(Mandatory = true, ParameterSetName = NIncrement)]
@@ -55,7 +55,7 @@ public sealed class SetStringCommand : BaseDBCmdlet
     [Parameter(Mandatory = true, ParameterSetName = NSetAndGet)]
     [AllowEmptyString]
     [AllowNull]
-    public object SetAndGet { set => _SetAndGet = Abc.Unbox(value); }
+    public object SetAndGet { set => _SetAndGet = value.ToRedisValue(); }
     RedisValue _SetAndGet;
 
     protected override void BeginProcessing()
@@ -90,7 +90,7 @@ public sealed class SetStringCommand : BaseDBCmdlet
                 break;
             case NMany:
                 {
-                    bool res = Database.StringSet(Abc.ToRedisPairs(Many), _When ?? When.Always);
+                    bool res = Database.StringSet(Many.ToRedisKeyValuePairArray(), _When ?? When.Always);
                     if (_When.HasValue)
                         WriteObject(res);
                 }

@@ -435,3 +435,35 @@ Merge-Helps $BaseKey @{
 		@{ type = 'System.String'; description = 'The existing string.' }
 	)
 }
+
+### Export-Redis
+Merge-Helps $BaseDB @{
+	command = 'Export-Redis'
+	synopsis = 'Exports data to JSON.'
+	description = @'
+	 By default, only persistent keys are exported. Use the parameter
+	 TimeToLive in order to include appropriate expiring keys.
+
+	 Use Import-Redis in order to import exported data.
+'@
+	parameters = @{
+		Path = 'Specifies the output file.'
+		Pattern = 'Specifies the optional key pattern.'
+		TimeToLive = @'
+		Tells to include expiring keys with time to live greater than
+		specified.
+'@
+	}
+}
+
+### Import-Redis
+Merge-Helps $BaseDB @{
+	command = 'Import-Redis'
+	synopsis = 'Imports data from JSON.'
+	description = @'
+	This command imports keys from the file created by Export-Redis.
+'@
+	parameters = @{
+		Path = 'Specifies the input file.'
+	}
+}

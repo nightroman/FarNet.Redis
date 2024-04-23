@@ -9,22 +9,29 @@ namespace PS.FarNet.Redis;
 [OutputType(typeof(TimeSpan))]
 public sealed class GetKeyCommand : BaseKeyCmdlet
 {
-    [Parameter(ParameterSetName = "TimeToLive", Mandatory = true)]
+    const string NTimeToLive = "TimeToLive";
+
+    [Parameter(ParameterSetName = NTimeToLive, Mandatory = true)]
     public SwitchParameter TimeToLive { get; set; }
 
     protected override void BeginProcessing()
     {
         base.BeginProcessing();
 
-        if (TimeToLive)
+        switch (ParameterSetName)
         {
-            var res = Database.KeyTimeToLive(RKey);
-            WriteObject(res);
-        }
-        else
-        {
-            var res = Database.KeyType(RKey);
-            WriteObject(res);
+            case NTimeToLive:
+                {
+                    TimeSpan? res = Database.KeyTimeToLive(RKey);
+                    WriteObject(res);
+                }
+                break;
+            default:
+                {
+                    RedisType res = Database.KeyType(RKey);
+                    WriteObject(res);
+                }
+                break;
         }
     }
 }

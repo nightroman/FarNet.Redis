@@ -23,34 +23,38 @@ public sealed class GetAnyCommand : BaseKeyCmdlet
 
         switch (Type)
         {
-            case RedisType.None:
             case RedisType.String:
                 {
-                    var res = Database.StringGet(RKey);
+                    RedisValue res = Database.StringGet(RKey);
                     WriteObject((string)res);
                 }
                 break;
-
             case RedisType.Hash:
                 {
-                    var res = Database.HashGetAll(RKey);
-                    WriteObject(Abc.ToDictionary(res));
+                    HashEntry[] res = Database.HashGetAll(RKey);
+                    WriteObject(res.ToStringDictionary());
                 }
                 break;
-
             case RedisType.List:
                 {
-                    var res = Database.ListRange(RKey);
-                    WriteObject(Abc.ToList(res));
+                    RedisValue[] res = Database.ListRange(RKey);
+                    WriteObject(res.ToStringList());
                 }
                 break;
-
             case RedisType.Set:
                 {
-                    var res = Database.SetMembers(RKey);
-                    WriteObject(Abc.ToHashSet(res));
+                    RedisValue[] res = Database.SetMembers(RKey);
+                    WriteObject(res.ToStringHashSet());
                 }
                 break;
+            case RedisType.None:
+                {
+                }
+                break;
+            default:
+                {
+                    throw new PSNotSupportedException($"Not supported Redis type: {Type}");
+                }
         }
     }
 }

@@ -37,6 +37,8 @@
 		'Register-RedisSub'
 		'Unregister-RedisSub'
 
+		'Export-Redis'
+		'Import-Redis'
 		'Get-RedisClixml'
 		'Set-RedisClixml'
 		'Wait-RedisString'

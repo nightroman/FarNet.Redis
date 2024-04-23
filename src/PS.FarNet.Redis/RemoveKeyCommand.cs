@@ -15,13 +15,13 @@ public sealed class RemoveKeyCommand : BaseKeysCmdlet
 
         if (Key.Length == 1)
         {
-            var res = Database.KeyDelete(Key[0]);
+            bool res = Database.KeyDelete(Key[0]);
             if (Result)
                 WriteObject(res ? 1L : 0L);
         }
         else
         {
-            var res = Database.KeyDelete(Abc.ToKeys(Key));
+            long res = Database.KeyDelete(Key.ToRedisKeyArray());
             if (Result)
                 WriteObject(res);
         }

@@ -14,7 +14,7 @@ public abstract class BaseDBCmdlet : PSCmdlet
     {
         if (Database is null)
         {
-            Database = Abc.BaseObject(GetVariableValue("db")) as IDatabase;
+            Database = GetVariableValue("db").ToBaseObject() as IDatabase;
             if (Database is null)
                 throw new PSArgumentException("Expected variable $db or parameter Database.", nameof(Database));
         }

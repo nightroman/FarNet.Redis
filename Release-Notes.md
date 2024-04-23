@@ -1,5 +1,9 @@
 # FarNet.Redis Release Notes
 
+## v0.6.0
+
+New utilities `Export-Redis`, `Import-Redis`.
+
 ## v0.5.3
 
 `Get-RedisHash`: new parameter `Field`.

@@ -1,4 +1,5 @@
 ﻿using StackExchange.Redis;
+using System;
 using System.Management.Automation;
 
 namespace PS.FarNet.Redis;
@@ -12,11 +13,25 @@ public abstract class BaseDBCmdlet : PSCmdlet
 
     protected override void BeginProcessing()
     {
-        if (Database is null)
+        if (Database is { })
+            return;
+
+        // get $db or default
+        Database = GetVariableValue("db").ToBaseObject() as IDatabase ?? DB.DefaultDatabase;
+        if (Database is { })
+            return;
+
+        // can open default?
+        if (Environment.GetEnvironmentVariable("FARNET_REDIS_CONFIGURATION") == null)
+            throw new PSArgumentException("Requires parameter Database or variable $db or $env:FARNET_REDIS_CONFIGURATION.", nameof(Database));
+
+        try
         {
-            Database = GetVariableValue("db").ToBaseObject() as IDatabase;
-            if (Database is null)
-                throw new PSArgumentException("Expected variable $db or parameter Database.", nameof(Database));
+            Database = DB.OpenDefaultDatabase();
+        }
+        catch (Exception ex)
+        {
+            throw new PSArgumentException($"Cannot connect Redis specified by $env:FARNET_REDIS_CONFIGURATION: {ex.Message}", ex);
         }
     }
 }

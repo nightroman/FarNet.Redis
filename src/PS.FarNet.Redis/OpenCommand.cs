@@ -3,23 +3,39 @@ using System.Management.Automation;
 
 namespace PS.FarNet.Redis;
 
-[Cmdlet("Open", "Redis")]
+[Cmdlet("Open", "Redis", DefaultParameterSetName = NDefault)]
 [OutputType(typeof(IDatabase))]
 public sealed class OpenCommand : PSCmdlet
 {
-    [Parameter(Position = 0, Mandatory = true)]
+    const string NDefault = "Default";
+    const string NConfiguration = "Configuration";
+
+    [Parameter(Position = 0, Mandatory = true, ParameterSetName = NConfiguration)]
     public string Configuration { get; set; }
 
-    [Parameter]
+    [Parameter(ParameterSetName = NConfiguration)]
     public SwitchParameter AllowAdmin { get; set; }
 
     protected override void BeginProcessing()
     {
-        var options = ConfigurationOptions.Parse(Configuration);
-        if (AllowAdmin)
-            options.AllowAdmin = true;
+        switch (ParameterSetName)
+        {
+            case NDefault:
+                {
+                    var db = DB.OpenDefaultDatabase();
+                    WriteObject(db);
+                }
+                break;
+            case NConfiguration:
+                {
+                    var options = ConfigurationOptions.Parse(Configuration);
+                    if (AllowAdmin)
+                        options.AllowAdmin = true;
 
-        var db = DB.Open(options);
-        WriteObject(db);
+                    var db = DB.Open(options);
+                    WriteObject(db);
+                }
+                break;
+        }
     }
 }

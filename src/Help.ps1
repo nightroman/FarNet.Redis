@@ -8,7 +8,9 @@ $ParamCount = 'Gets the number of items.'
 $BaseDB = @{
 	parameters = @{
 		Database = @'
-		The database from Open-Redis, the variable $db by default.
+		Specifies the database, usually returned by Open-Redis. When omitted,
+		the variable $db is used if it exists, otherwise the default database
+		is used if it is defined as $env:FARNET_REDIS_CONFIGURATION
 '@
 	}
 }
@@ -47,6 +49,9 @@ $BaseSub = Merge-Helps $BaseDB @{
 	You may close the database by Close-Redis. Or keep it for using later. If
 	you use the same configuration string then the same database instance is
 	returned.
+
+	When $env:FARNET_REDIS_CONFIGURATION is defined, you may call Open-Redis
+	without parameters in order to open this kind of default database.
 '@
 	parameters = @{
 		Configuration = @'

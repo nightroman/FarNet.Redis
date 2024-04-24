@@ -1,5 +1,10 @@
 # FarNet.Redis Release Notes
 
+## v0.6.1
+
+`$env:FARNET_REDIS_CONFIGURATION` is the default database configuration.
+Used by `Open-Redis` when called without parameters and by other cmdlets.
+
 ## v0.6.0
 
 New utilities `Export-Redis`, `Import-Redis`.

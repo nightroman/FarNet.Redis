@@ -6,15 +6,9 @@ namespace PS.FarNet.Redis;
 [Cmdlet("Set", "RedisSet", DefaultParameterSetName = NMain)]
 public sealed class SetSetCommand : BaseKeyCmdlet
 {
-    const string NAdd = "Add";
     const string NRemove = "Remove";
 
     [Parameter(Position = 1, Mandatory = true, ParameterSetName = NMain)]
-    [AllowEmptyString]
-    public object[] Value { set => _Value = value.ToRedisValueArray(); }
-    RedisValue[] _Value;
-
-    [Parameter(Mandatory = true, ParameterSetName = NAdd)]
     [AllowEmptyString]
     public object[] Add { set => _Add = value.ToRedisValueArray(); }
     RedisValue[] _Add;
@@ -30,22 +24,20 @@ public sealed class SetSetCommand : BaseKeyCmdlet
 
         switch (ParameterSetName)
         {
-            case NAdd:
-                {
-                    Database.SetAdd(RKey, _Add);
-                }
-                break;
             case NRemove:
                 {
                     Database.SetRemove(RKey, _Remove);
                 }
-                break;
-            default:
-                {
-                    Database.KeyDelete(RKey);
-                    Database.SetAdd(RKey, _Value);
-                }
-                break;
+                return;
+        }
+
+        if (_Add.Length == 1)
+        {
+            Database.SetAdd(RKey, _Add[0]);
+        }
+        else
+        {
+            Database.SetAdd(RKey, _Add);
         }
     }
 }

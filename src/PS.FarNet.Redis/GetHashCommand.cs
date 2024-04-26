@@ -10,10 +10,9 @@ namespace PS.FarNet.Redis;
 [OutputType(typeof(long))]
 public sealed class GetHashCommand : BaseGetCountCmdlet
 {
-    const string NField = "Field";
-
-    [Parameter(Mandatory = true, ParameterSetName = NField)]
-    public string[] Field { get; set; }
+    [Parameter(Position = 1, ParameterSetName = NMain)]
+    [ValidateNotNullOrEmpty]
+    public RedisValue[] Field { get; set; }
 
     protected override void BeginProcessing()
     {
@@ -26,26 +25,24 @@ public sealed class GetHashCommand : BaseGetCountCmdlet
                     long res = Database.HashLength(RKey);
                     WriteObject(res);
                 }
-                break;
-            case NField when Field.Length == 1:
-                {
-                    RedisValue res = Database.HashGet(RKey, Field[0]);
-                    WriteObject((string)res);
-                }
-                break;
-            case NField:
-                {
-                    RedisValue[] res = Database.HashGet(RKey, Field.ToRedisValueArray());
-                    foreach (var item in res)
-                        WriteObject((string)item);
-                }
-                break;
-            default:
-                {
-                    HashEntry[] res = Database.HashGetAll(RKey);
-                    WriteObject(res.ToStringDictionary());
-                }
-                break;
+                return;
+        }
+
+        if (Field?.Length == 1)
+        {
+            RedisValue res = Database.HashGet(RKey, Field[0]);
+            WriteObject((string)res);
+        }
+        else if (Field?.Length > 1)
+        {
+            RedisValue[] res = Database.HashGet(RKey, Field);
+            foreach (var item in res)
+                WriteObject((string)item);
+        }
+        else
+        {
+            HashEntry[] res = Database.HashGetAll(RKey);
+            WriteObject(res.ToStringDictionary());
         }
     }
 }

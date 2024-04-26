@@ -130,41 +130,15 @@ task export {
 	$r = Get-Content z.2.json -Raw | ConvertFrom-Json -AsHashtable
 	equals (($r.Keys | Sort-Object) -join ',') 'try:b1,try:h1,try:l1,try:s1,try:t1'
 
-	# test expected formatting
-	$result = (Get-Content z.1.json -Raw) -replace '\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d', 'date'
-	$sample = @'
-{
-  "try:t1": "hello",
-  "try:b1": ["AIA="],
-  "try:t2": {
-    "EOL": "date",
-    "Text": "hello"
-  },
-  "try:b2": {
-    "EOL": "date",
-    "Blob": "AIA="
-  },
-  "try:h1": {
-    "Hash": {
-      "hello": "42",
-      "world": ["AIA="]
-    }
-  },
-  "try:l1": {
-    "List": [
-      "hello",
-      ["AIA="]
-    ]
-  },
-  "try:s1": {
-    "Set": [
-      ["AIA="],
-      "hello"
-    ]
-  }
-}
-'@
-	Assert-SameFile.ps1 -Text $sample $result $env:MERGE
+	# test expected formatting, mind random order
+	$r = (Get-Content z.1.json) -join '|' -replace '\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d', 'date' -replace ','
+	assert $r.Contains('|  "try:t1": "hello"|')
+	assert $r.Contains('|  "try:b1": ["AIA="]|')
+	assert $r.Contains('|  "try:t2": {|    "EOL": "date"|    "Text": "hello"|  }|')
+	assert $r.Contains('|  "try:b2": {|    "EOL": "date"|    "Blob": "AIA="|  }|')
+	assert $r.Contains('|  "try:h1": {|    "Hash": {|      "hello": "42"|      "world": ["AIA="]|    }|  }|')
+	assert $r.Contains('|  "try:l1": {|    "List": [|      "hello"|      ["AIA="]|    ]|  }|')
+	assert $r.Contains('|  "try:s1": {|    "Set": [|      ["AIA="]|      "hello"|    ]|  }|')
 
 	Remove-RedisKey (Search-RedisKey try:*)
 	remove z.*.json

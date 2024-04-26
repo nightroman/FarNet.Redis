@@ -8,24 +8,18 @@ namespace PS.FarNet.Redis;
 public sealed class SetListCommand : BaseKeyCmdlet
 {
     const string NLeftPush = "LeftPush";
-    const string NRightPush = "RightPush";
     const string NLeftPop = "LeftPop";
     const string NRightPop = "RightPop";
 
     [Parameter(Position = 1, Mandatory = true, ParameterSetName = NMain)]
     [AllowEmptyString]
-    public object[] Value { set => _Value = value.ToRedisValueArray(); }
-    RedisValue[] _Value;
+    public object[] RightPush { set => _RightPush = value.ToRedisValueArray(); }
+    RedisValue[] _RightPush;
 
     [Parameter(Mandatory = true, ParameterSetName = NLeftPush)]
     [AllowEmptyString]
     public object[] LeftPush { set => _LeftPush = value.ToRedisValueArray(); }
     RedisValue[] _LeftPush;
-
-    [Parameter(Mandatory = true, ParameterSetName = NRightPush)]
-    [AllowEmptyString]
-    public object[] RightPush { set => _RightPush = value.ToRedisValueArray(); }
-    RedisValue[] _RightPush;
 
     [Parameter(Mandatory = true, ParameterSetName = NLeftPop)]
     [ValidateRange(1L, long.MaxValue)]
@@ -41,14 +35,14 @@ public sealed class SetListCommand : BaseKeyCmdlet
 
         switch (ParameterSetName)
         {
+            case NMain:
+                {
+                    Database.ListRightPush(RKey, _RightPush);
+                }
+                break;
             case NLeftPush:
                 {
                     Database.ListLeftPush(RKey, _LeftPush);
-                }
-                break;
-            case NRightPush:
-                {
-                    Database.ListRightPush(RKey, _RightPush);
                 }
                 break;
             case NLeftPop:
@@ -61,12 +55,6 @@ public sealed class SetListCommand : BaseKeyCmdlet
                 {
                     var res = Database.ListRightPop(RKey, RightPop);
                     WriteObject(res.ToStringList(), true);
-                }
-                break;
-            default:
-                {
-                    Database.KeyDelete(RKey);
-                    Database.ListRightPush(RKey, _Value);
                 }
                 break;
         }

@@ -75,13 +75,5 @@ REDIS TYPES
     * Remove-RedisKey
         Removes specified keys.
 
-PARAMETER NAMES
-    Parameter names of Redis{Type} cmdlets follow StackExchange.Redis method
-    and parameter names when possible, to make it easier to find their pairs
-    in StackExchange.Redis and FarNet.Redis manuals.
-
-    That is why some names may deviate from PowerShell traditions (Delete vs.
-    Remove) or look inconsistent (Expire, Expiry, TimeToLive).
-
 SEE ALSO
     StackExchange.Redis https://github.com/StackExchange/StackExchange.Redis

@@ -207,6 +207,35 @@ task bytes {
 	Remove-RedisKey $key
 }
 
+task auto_update_expiring {
+	function GetOrAdd($value) {
+		(Get-RedisString $key) ?? (&{
+			Set-RedisString $key $value -Expiry 00:00:00.05
+			$value
+		})
+	}
+
+	Remove-RedisKey ($key = 'test:1')
+
+	# try and suggest v1 -> new v1
+	$r = GetOrAdd v1
+	equals $r v1
+
+	# try and suggest v2 -> old v1
+	$r = GetOrAdd v2
+	equals $r v1
+
+	# let it expire
+	Start-Sleep -Milliseconds 50
+
+	# try and suggest v2 -> new v3
+	$r = GetOrAdd v3
+	equals $r v3
+	equals (Get-RedisString $key) v3
+
+	Remove-RedisKey $key
+}
+
 task invalid {
 	# Value
 

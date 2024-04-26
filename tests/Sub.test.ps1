@@ -15,7 +15,7 @@ task one_handler {
 	equals $r 1L
 
 	# wait, test
-	$r = Wait-RedisString $key ([timespan]::FromMilliseconds(50)) ([timespan]::FromMilliseconds(5000))
+	$r = Wait-RedisString $key 0:0:0.05 0:0:5
 	equals $r hello
 
 	# unregister

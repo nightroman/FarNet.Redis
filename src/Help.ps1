@@ -123,8 +123,9 @@ Merge-Helps $BaseKey @{
 	parameters = @{
 		Count = $ParamCount
 		Field = @'
-		Gets the values associated with the specified fields. For every field
-		that does not exist in the hash, null is returned.
+		Gets values of the specified fields, including nulls for missing fields.
+
+		If this parameter is omitted then the whole hash is returned as Dictionary.
 '@
 	}
 	outputs = @(
@@ -187,39 +188,51 @@ Merge-Helps $BaseDB @{
 ### Set-RedisHash
 Merge-Helps $BaseKey @{
 	command = 'Set-RedisHash'
-	synopsis = 'Sets or updates the specified hash.'
+	synopsis = 'Sets or updates the hash.'
 	parameters = @{
+		Field = @'
+		Specifies the field.
+'@
 		Value = @'
-		The new hash.
+		Specifies the field value.
 '@
-		Delete = @'
-		Removes the specified hash fields.
+		When = @'
+		Specifies when to set the field and gets the result:
+		Always:
+			true: new field
+			false: updated old field
+		NotExists:
+			true: new field
+			false: old field, not updated
 '@
-		Set = @'
-		Sets the specified hash entries.
+		Many = @'
+		Specifies the fields and values.
+'@
+		Remove = @'
+		Removes the specified fields.
 '@
 	}
+	outputs = @(
+		@{ type = 'System.Boolean'; description = 'with When' }
+	)
 }
 
 ### Set-RedisList
 Merge-Helps $BaseKey @{
 	command = 'Set-RedisList'
-	synopsis = 'Sets or updates the specified list.'
+	synopsis = 'Sets or updates the list.'
 	parameters = @{
-		Value = @'
-		The new list.
+		RightPush = @'
+		Insert the specified items at the tail.
 '@
 		LeftPush = @'
 		Insert the specified items at the head.
 '@
-		RightPush = @'
-		Insert the specified items at the tail.
+		RightPop = @'
+		Removes and returns the specified number of items at the tail.
 '@
 		LeftPop = @'
 		Removes and returns the specified number of items at the head.
-'@
-		RightPop = @'
-		Removes and returns the specified number of items at the tail.
 '@
 	}
 }
@@ -227,11 +240,8 @@ Merge-Helps $BaseKey @{
 ### Set-RedisSet
 Merge-Helps $BaseKey @{
 	command = 'Set-RedisSet'
-	synopsis = 'Sets or updates the specified set.'
+	synopsis = 'Sets or updates the set.'
 	parameters = @{
-		Value = @'
-		The new set.
-'@
 		Add = @'
 		Adds the specified items.
 '@
@@ -244,7 +254,7 @@ Merge-Helps $BaseKey @{
 ### Set-RedisString
 Merge-Helps $BaseDB @{
 	command = 'Set-RedisString'
-	synopsis = 'Sets or updates the specified string.'
+	synopsis = 'Sets or updates the string.'
 	parameters = @{
 		Key = $ParamKey
 		Value = @'

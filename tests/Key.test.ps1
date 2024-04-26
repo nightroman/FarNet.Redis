@@ -66,9 +66,9 @@ task TimeToLive {
 	$r = Get-RedisKey $key -TimeToLive
 	equals $r $null
 
-	Set-RedisKey $key -Expire ([timespan]::FromSeconds(42))
+	Set-RedisKey $key -Expire 00:00:42
 	$r = Get-RedisKey $key -TimeToLive
-	equals ([int]([timespan]::FromSeconds(42) - $r).TotalSeconds) 0
+	equals ([Math]::Round(42 - $r.TotalSeconds)) 0.0
 
 	Set-RedisKey $key -Expire $null
 	$r = Get-RedisKey $key -TimeToLive

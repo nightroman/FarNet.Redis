@@ -20,13 +20,6 @@ task list {
 	equals (Get-RedisList $key -Index -1) '42'
 	equals (Get-RedisList $key -Index 42) $null
 
-	# set new list over existing
-	Set-RedisList $key @('May'; 11)
-	$r = Get-RedisList $key
-	equals $r.Count 2
-	equals $r[0] May
-	equals $r[1] '11'
-
 	Set-RedisList $key -LeftPush left
 	$r = Get-RedisList $key
 	equals $r.Count 3
@@ -63,10 +56,8 @@ task list_pop {
 	Remove-RedisKey $key
 }
 
-task result_List {
-	$key = 'test:1'
-	Remove-RedisKey $key
-	assert (!(Test-RedisKey $key))
+task result_is_List {
+	Remove-RedisKey ($key = 'test:1')
 
 	# key does not exist -> empty list, useful for adding items
 	$r = Get-RedisList $key
@@ -83,37 +74,27 @@ task result_List {
 	equals $r[0] '1'
 	equals $r.GetType() ([System.Collections.Generic.List[string]])
 
-	# add another item, set
-	$r.Add(2)
-	Set-RedisList $key $r
-
-	$r = Get-RedisList $key
-	assert $r.Count 2
-	equals $r[1] '2'
-	equals $r.GetType() ([System.Collections.Generic.List[string]])
-
 	Remove-RedisKey $key
 }
 
 #! fixed
 task empty_strings {
-	$key = 'test:1'
+	Remove-RedisKey ($key = 'test:1')
 
 	Set-RedisList $key '', 1
 	$r = (Get-RedisList $key) -join '|'
 	equals $r '|1'
 
 	Set-RedisList $key ''
-	$r = Get-RedisList $key
-	equals $r.Count 1
-	equals $r[0] ''
+	$r = (Get-RedisList $key) -join '|'
+	equals $r '|1|'
 
 	Remove-RedisKey $key
 }
 
 # Use (,) notation in order to pass byte[] values avoiding unrolling to object[].
 task bytes {
-	$key = 'test:1'
+	Remove-RedisKey ($key = 'test:1')
 
 	[byte[]]$b1 = @(201; 1)
 	Set-RedisList $key (,$b1)

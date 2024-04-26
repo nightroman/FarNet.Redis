@@ -14,24 +14,17 @@ task set {
 	assert $r.Contains('Joe')
 	assert $r.Contains('42')
 
-	# set new set over existing
-	Set-RedisSet $key May, 11
-	$r = Get-RedisSet $key
-	equals $r.Count 2
-	assert $r.Contains('May')
-	assert $r.Contains('11')
-
 	# add one new
-	Set-RedisSet $key -Add Joe
+	Set-RedisSet $key May
 	$r = Get-RedisSet $key
 	equals $r.Count 3
-	assert $r.Contains('Joe')
+	assert $r.Contains('May')
 
 	# add two, one exists
-	Set-RedisSet $key -Add 42, Joe
+	Set-RedisSet $key -Add 11, Joe
 	$r = Get-RedisSet $key
 	equals $r.Count 4
-	assert $r.Contains('42')
+	assert $r.Contains('11')
 
 	equals (Get-RedisSet $key -Count) 4L
 
@@ -70,24 +63,26 @@ task bytes {
 	Remove-RedisKey $key
 }
 
-#! fixed
 task empty_strings {
-	$key = 'test:1'
+	Remove-RedisKey ($key = 'test:1')
 
 	Set-RedisSet $key '', 1
 	$r = (Get-RedisSet $key) -join '|'
 	equals $r '|1'
 
+	Set-RedisSet $key -Remove ''
+	$r = (Get-RedisSet $key) -join '|'
+	equals $r '1'
+
 	Set-RedisSet $key ''
-	$r = Get-RedisSet $key
-	equals $r.Count 1
-	equals @($r)[0] ''
+	$r = (Get-RedisSet $key) -join '|'
+	equals $r '|1'
 
 	Remove-RedisKey $key
 }
 
 task invalid {
-	# Value
+	# Add omitted
 
 	try { throw Set-RedisSet 1 $null }
 	catch { $_; assert ($_ -like '*because it is null.*') }
@@ -98,7 +93,7 @@ task invalid {
 	try { throw Set-RedisSet 1 $Host }
 	catch { $_; assert ($_ -like "*'RedisValue':*") }
 
-	# Add
+	# Add explicit
 
 	try { throw Set-RedisSet 1 -Add $null }
 	catch { $_; assert ($_ -like '*because it is null.*') }

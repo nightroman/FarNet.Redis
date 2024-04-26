@@ -4,7 +4,7 @@
 task hash {
 	Remove-RedisKey ($key = 'test:1')
 
-	# set new hash not yet existed
+	# set two fields
 	Set-RedisHash $key @{name = 'Joe'; age = 42}
 
 	# test with Get-RedisKey, Get-RedisAny
@@ -14,46 +14,92 @@ task hash {
 	equals $r.name Joe
 	equals $r.age '42'
 
-	# set new hash over existing
-	Set-RedisHash $key @{user = 'May'; id = 11}
+	# get dictionary
 	$r = Get-RedisHash $key
 	equals $r.Count 2
-	equals $r.user May
+	equals $r.name Joe
+	equals $r.age '42'
+
+	# get one field
+	$r = Get-RedisHash $key name
+	equals $r Joe
+
+	# get two fields
+	$name, $age = Get-RedisHash $key name, age
+	equals $name Joe
+	equals $age '42'
+
+	# set extra field
+	Set-RedisHash $key id 11
+	$r = Get-RedisHash $key
+	equals $r.Count 3
 	equals $r.id '11'
 
 	# set entries in existing hash
-	Set-RedisHash $key -Set @{name = 'Joe'; age = 42}
+	Set-RedisHash $key @{name = 'May'; age = 33}
 	$r = Get-RedisHash $key
-	equals $r.Count 4
-	equals $r.name Joe
-	equals $r.age '42'
-	equals $r.user May
+	equals $r.Count 3
+	equals $r.name May
+	equals $r.age '33'
 	equals $r.id '11'
 
 	# get 1 field
-	$r = Get-RedisHash $key -Field name
-	equals $r Joe
-	$r = Get-RedisHash $key -Field miss
+	$r = Get-RedisHash $key miss
 	equals $r $null
 
 	# get 3 fields
-	$name, $miss, $age = Get-RedisHash $key -Field name, miss, age
-	equals $name Joe
+	$name, $miss, $age = Get-RedisHash $key name, miss, age
+	equals $name May
 	equals $miss $null
-	equals $age '42'
+	equals $age '33'
 
-	# delete 1 field
-	Set-RedisHash $key -Delete id
-	equals (Get-RedisHash $key -Count) 3L
+	# remove 1 field
+	Set-RedisHash $key -Remove id
+	equals (Get-RedisHash $key -Count) 2L
 
-	# delete 2 fields
-	Set-RedisHash $key -Delete user, age
+	# remove 2 fields, one missing
+	Set-RedisHash $key -Remove miss, age
 	equals (Get-RedisHash $key -Count) 1L
 
 	# test
 	$r = Get-RedisHash $key
 	equals $r.Count 1
-	equals $r.name Joe
+	equals $r.name May
+
+	Remove-RedisKey $key
+}
+
+#! `-When Exists` errors, not supported
+task when {
+	Remove-RedisKey ($key = 'test:1')
+
+	# Always
+
+	# true: new field set
+	$r = Set-RedisHash $key k1 v1 -When Always
+	equals $r $true
+	equals (Get-RedisHash $key k1) v1
+
+	# false: old field, updated
+	$r = Set-RedisHash $key k1 v2 -When Always
+	equals $r $false
+	equals (Get-RedisHash $key k1) v2
+
+	# NotExists
+
+	# true: new field set
+	$r = Set-RedisHash $key k2 v1 -When NotExists
+	equals $r $true
+	equals (Get-RedisHash $key k2) v1
+
+	# false: old field, not changed
+	$r = Set-RedisHash $key k2 v2 -When NotExists
+	equals $r $false
+	equals (Get-RedisHash $key k2) v1
+
+	# two result fields
+	$r = Get-RedisHash $key -Count
+	equals $r 2L
 
 	Remove-RedisKey $key
 }
@@ -67,7 +113,7 @@ task bytes {
 	$r = [byte[]]$db.HashGet($key, 'k1')
 	equals $r[0] 201uy
 
-	Set-RedisHash $key -Set @{k2 = [byte[]](0, 202)}
+	Set-RedisHash $key @{k2 = [byte[]](0, 202)}
 
 	$r = [byte[]]$db.HashGet($key, 'k1')
 	equals $r[0] 201uy
@@ -78,36 +124,76 @@ task bytes {
 	Remove-RedisKey $key
 }
 
+task valid {
+	Remove-RedisKey ($key = 'test:1')
+
+	Set-RedisHash $key empty1 ''
+	equals (Get-RedisHash $key empty1) ''
+
+	Set-RedisHash $key empty2 ''
+	equals (Get-RedisHash $key empty2) ''
+
+	equals (Get-RedisHash $key -Count) 2L
+
+	Remove-RedisKey $key
+}
+
 task invalid {
-	# Field
+	# Get Field
 
-	try { throw Get-RedisHash 1 -Field $null }
+	try { throw Get-RedisHash key $null }
+	catch { $_; assert ($_ -like "*'Field'. The argument is null or empty.*") }
+
+	try { throw Get-RedisHash key -Field $null }
+	catch { $_; assert ($_ -like "*'Field'. The argument is null or empty.*") }
+
+	try { throw Get-RedisHash key @() }
+	catch { $_; assert ($_ -like "*'Field'. The argument is null, empty, or *") }
+
+	try { throw Get-RedisHash key -Field @() }
+	catch { $_; assert ($_ -like "*'Field'. The argument is null, empty, or *") }
+
+	# Set Field
+
+	try { throw Set-RedisHash key $null value }
+	catch { $_; assert ($_ -like "Cannot * 'Many'*") } #! odd 'Many'
+
+	try { throw Set-RedisHash key -Field $null value }
+	catch { $_; assert ($_ -like "Cannot * 'Field'*") }
+
+	try { throw Set-RedisHash key -Field @() value }
+	catch { $_; assert ($_ -like "Cannot * 'Field'*") }
+
+	try { throw Set-RedisHash key -Field $host value }
+	catch { $_; assert ($_ -like "Cannot * 'Field'*") }
+
+	try { throw Set-RedisHash key -Field @($host) value }
+	catch { $_; assert ($_ -like "Cannot * 'Field'*") }
+
+	# Set Value
+
+	try { throw Set-RedisHash key field $null }
+	catch { $_; assert ($_ -like "*'Value' because it is null.*") }
+
+	try { throw Set-RedisHash key field -Value $null }
+	catch { $_; assert ($_ -like "*'Value' because it is null.*") }
+
+	# Set Remove
+
+	try { throw Set-RedisHash key -Remove $null }
 	catch { $_; assert ($_ -like '*because it is null.*') }
 
-	try { throw Get-RedisHash 1 -Field @() }
+	try { throw Set-RedisHash key -Remove @() }
 	catch { $_; assert ($_ -like '*because it is an empty array.*') }
 
-	# Value
+	# Set Many
 
-	try { throw Set-RedisHash 1 $null }
-	catch { $_; assert ($_ -like '*because it is null.*') }
+	try { throw Set-RedisHash key @{k=$Host} }
+	catch { $_; assert ($_ -like "*'Many'*'RedisValue':*") }
 
-	try { throw Set-RedisHash 1 @{k=$Host} }
-	catch { $_; assert ($_ -like "*'RedisValue':*") }
+	try { throw Set-RedisHash key -Many $null }
+	catch { $_; assert ($_ -like "*'Many' because it is null.*") }
 
-	# Delete
-
-	try { throw Set-RedisHash 1 -Delete $null }
-	catch { $_; assert ($_ -like '*because it is null.*') }
-
-	try { throw Set-RedisHash 1 -Delete @() }
-	catch { $_; assert ($_ -like '*because it is an empty array.*') }
-
-	# Set
-
-	try { throw Set-RedisHash 1 -Set $null }
-	catch { $_; assert ($_ -like '*because it is null.*') }
-
-	try { throw Set-RedisHash 1 -Set @{k=$Host} }
-	catch { $_; assert ($_ -like "*'RedisValue':*") }
+	try { throw Set-RedisHash key -Many @{k=$Host} }
+	catch { $_; assert ($_ -like "*'Many'*'RedisValue':*") }
 }

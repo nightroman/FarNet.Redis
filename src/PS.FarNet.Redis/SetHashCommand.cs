@@ -7,19 +7,25 @@ namespace PS.FarNet.Redis;
 [Cmdlet("Set", "RedisHash", DefaultParameterSetName = NMain)]
 public sealed class SetHashCommand : BaseKeyCmdlet
 {
-    const string NDelete = "Delete";
-    const string NSet = "Set";
+    const string NMany = "Many";
+    const string NRemove = "Remove";
 
     [Parameter(Position = 1, Mandatory = true, ParameterSetName = NMain)]
-    public IDictionary Value { set => _Value = value.ToHashEntryArray(); }
-    HashEntry[] _Value;
+    public RedisValue Field { get; set; }
 
-    [Parameter(Mandatory = true, ParameterSetName = NDelete)]
-    public string[] Delete { get; set; }
+    [Parameter(Position = 2, Mandatory = true, ParameterSetName = NMain)]
+    public RedisValue Value { get; set; }
 
-    [Parameter(Mandatory = true, ParameterSetName = NSet)]
-    public IDictionary Set { set => _Set = value.ToHashEntryArray(); }
-    HashEntry[] _Set;
+    [Parameter(ParameterSetName = NMain)]
+    public When When { set => _When = value; }
+    When? _When;
+
+    [Parameter(Position = 1, Mandatory = true, ParameterSetName = NMany)]
+    public IDictionary Many { set => _Many = value.ToHashEntryArray(); }
+    HashEntry[] _Many;
+
+    [Parameter(Mandatory = true, ParameterSetName = NRemove)]
+    public RedisValue[] Remove { get; set; }
 
     protected override void BeginProcessing()
     {
@@ -27,20 +33,21 @@ public sealed class SetHashCommand : BaseKeyCmdlet
 
         switch (ParameterSetName)
         {
-            case NDelete:
+            case NRemove:
                 {
-                    Database.HashDelete(RKey, Delete.ToRedisValueArray());
+                    Database.HashDelete(RKey, Remove);
                 }
                 break;
-            case NSet:
+            case NMany:
                 {
-                    Database.HashSet(RKey, _Set);
+                    Database.HashSet(RKey, _Many);
                 }
                 break;
             default:
                 {
-                    Database.KeyDelete(RKey);
-                    Database.HashSet(RKey, _Value);
+                    bool res = Database.HashSet(RKey, Field, Value, _When ?? When.Always);
+                    if (_When.HasValue)
+                        WriteObject(res);
                 }
                 break;
         }

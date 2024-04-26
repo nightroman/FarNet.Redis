@@ -1,5 +1,12 @@
 # FarNet.Redis Release Notes
 
+## v0.7.0
+
+**Breaking changes**, simplify usage, align with SERedis methods
+
+- `Get-RedisHash`, `Set-RedisList`, `Set-RedisSet` - amend parameters
+- `Set-RedisHash` - rework parameters, add `When`
+
 ## v0.6.1
 
 `$env:FARNET_REDIS_CONFIGURATION` is the default database configuration.

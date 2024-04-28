@@ -24,7 +24,8 @@ public sealed class GetSetCommand : BaseGetCountCmdlet
             default:
                 {
                     RedisValue[] res = Database.SetMembers(RKey);
-                    WriteObject(res.ToStringHashSet());
+                    if (res.Length > 0)
+                        WriteObject(res.ToStringHashSet());
                 }
                 break;
         }

@@ -59,15 +59,7 @@ task list_pop {
 task result_is_List {
 	Remove-RedisKey ($key = 'test:1')
 
-	# key does not exist -> empty list, useful for adding items
-	$r = Get-RedisList $key
-	assert (!$r)
-	equals $r.GetType() ([System.Collections.Generic.List[string]])
-
-	# add one item, set
-	$r.Add(1)
-	Set-RedisList $key $r
-	assert (Test-RedisKey $key)
+	Set-RedisList $key 1
 
 	$r = Get-RedisList $key
 	assert $r.Count 1

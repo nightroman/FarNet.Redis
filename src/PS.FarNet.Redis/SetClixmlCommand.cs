@@ -13,13 +13,14 @@ public sealed class SetClixmlCommand : BaseKeyCmdlet
     public int Depth { get; set; } = 1;
 
     [Parameter]
-    public TimeSpan? Expiry { get; set; }
+    [Alias("Expiry")]
+    public TimeSpan? TimeToLive { get; set; }
 
     protected override void BeginProcessing()
     {
         base.BeginProcessing();
 
         var str = PSSerializer.Serialize(Value, Depth);
-        Database.StringSet(RKey, str, Expiry);
+        Database.StringSet(RKey, str, TimeToLive);
     }
 }

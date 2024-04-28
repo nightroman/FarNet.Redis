@@ -42,7 +42,8 @@ public sealed class GetHashCommand : BaseGetCountCmdlet
         else
         {
             HashEntry[] res = Database.HashGetAll(RKey);
-            WriteObject(res.ToStringDictionary());
+            if (res.Length > 0)
+                WriteObject(res.ToStringDictionary());
         }
     }
 }

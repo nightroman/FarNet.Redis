@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using StackExchange.Redis;
+using System.Collections.Generic;
 using System.Management.Automation;
 
 namespace PS.FarNet.Redis;
@@ -22,20 +23,21 @@ public sealed class GetListCommand : BaseGetCountCmdlet
         {
             case NCount:
                 {
-                    var res = Database.ListLength(RKey);
+                    long res = Database.ListLength(RKey);
                     WriteObject(res);
                 }
                 break;
             case NIndex:
                 {
-                    var res = Database.ListGetByIndex(RKey, Index);
+                    RedisValue res = Database.ListGetByIndex(RKey, Index);
                     WriteObject((string)res);
                 }
                 break;
             default:
                 {
-                    var res = Database.ListRange(RKey);
-                    WriteObject(res.ToStringList());
+                    RedisValue[] res = Database.ListRange(RKey);
+                    if (res.Length > 0)
+                        WriteObject(res.ToStringList());
                 }
                 break;
         }

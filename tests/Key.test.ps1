@@ -31,12 +31,19 @@ task remove {
 
 task search {
 	$list = 1..9
-	$list.ForEach{ Set-RedisString "test:search:$_" $_ }
+	$list.ForEach{ Set-RedisString "test:\search\key-$_" $_ }
 
-	$keys = Search-RedisKey test:search:* | Sort-Object
+	# simple wildcard
+	$keys = Search-RedisKey test:\search\*-? | Sort-Object
 	equals $keys.Count 9
-	equals $keys[0] test:search:1
-	equals $keys[-1] test:search:9
+	equals $keys[0] test:\search\key-1
+	equals $keys[-1] test:\search\key-9
+
+	# glob pattern
+	$keys = Search-RedisKey test:\\search\\*-[1-9] | Sort-Object
+	equals $keys.Count 9
+	equals $keys[0] test:\search\key-1
+	equals $keys[-1] test:\search\key-9
 
 	Remove-RedisKey $keys
 }
@@ -49,7 +56,7 @@ task expiry {
 	$r = Get-RedisKey $key -TimeToLive
 	equals $r $null
 
-	Set-RedisString $key 2 -Expiry (New-TimeSpan -Seconds $seconds)
+	Set-RedisString $key 2 -TimeToLive "00:00:$seconds"
 	$r = Get-RedisKey $key -TimeToLive
 	equals ([Math]::Round($r.TotalSeconds)) $seconds
 
@@ -66,11 +73,11 @@ task TimeToLive {
 	$r = Get-RedisKey $key -TimeToLive
 	equals $r $null
 
-	Set-RedisKey $key -Expire 00:00:42
+	Set-RedisKey $key -TimeToLive 00:00:42
 	$r = Get-RedisKey $key -TimeToLive
 	equals ([Math]::Round(42 - $r.TotalSeconds)) 0.0
 
-	Set-RedisKey $key -Expire $null
+	Set-RedisKey $key -TimeToLive $null
 	$r = Get-RedisKey $key -TimeToLive
 	equals $r $null
 

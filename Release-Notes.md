@@ -1,5 +1,14 @@
 # FarNet.Redis Release Notes
 
+## v0.7.1
+
+Rename `-Expire` and `-Expiry` parameters to `-TimeToLive`. Old names still
+work as aliases but will be removed soon.
+
+`Search-RedisKey`: simple wildcard or glob-style depending on `[]`.
+
+`Open-Redis`: new parameter `SyncTimeout`.
+
 ## v0.7.0
 
 **Breaking changes**, simplify usage, align with SERedis methods

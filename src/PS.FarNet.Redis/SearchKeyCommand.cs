@@ -13,6 +13,12 @@ public sealed class SearchKeyCommand : BaseDBCmdlet
     {
         base.BeginProcessing();
 
+        if (Pattern is { })
+        {
+            if (!Pattern.Contains('[') && !Pattern.Contains(']'))
+                Pattern = Pattern.Replace("\\", "\\\\");
+        }
+
         var server = Database.Multiplexer.GetServers()[0];
         var keys = server.Keys(Database.Database, Pattern);
         foreach (var key in keys)

@@ -14,7 +14,7 @@ $ArgList = @(
 ) -join ' '
 
 task run {
-	Start-Process $ServiceRoot\GarnetServer.exe $ArgList
+	Start-Process $ServiceApp $ArgList
 }
 
 task publish {

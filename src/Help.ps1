@@ -65,6 +65,9 @@ $BaseSub = Merge-Helps $BaseDB @{
 		AllowAdmin = @'
 		Tells to allow admin operations.
 '@
+		SyncTimeout = @'
+		Specifies time (ms) to allow for synchronous operations.
+'@
 	}
 	outputs = @{
 		type = 'StackExchange.Redis.IDatabase'
@@ -275,8 +278,8 @@ Merge-Helps $BaseDB @{
 		SetAndGet = @'
 		Atomically sets the specified string and return the old string.
 '@
-		Expiry = @'
-		Specifies the expiry time span.
+		TimeToLive = @'
+		Specifies the time to live.
 '@
 		When = @'
 		Specifies when the values should be set and returns true if keys were
@@ -295,7 +298,7 @@ Merge-Helps $BaseKey @{
 	command = 'Get-RedisKey'
 	synopsis = 'Gets the key type or other details.'
 	parameters = @{
-		TimeToLive = 'Tells to get the time to live span.'
+		TimeToLive = 'Tells to get the time to live.'
 	}
 	outputs = @(
 		@{ type = 'StackExchange.Redis.RedisType' }
@@ -308,8 +311,8 @@ Merge-Helps $BaseKey @{
 	command = 'Set-RedisKey'
 	synopsis = 'Sets the specified key properties.'
 	parameters = @{
-		Expire = @'
-		Sets the specified time span to live.
+		TimeToLive = @'
+		Sets the specified time to live.
 		Use null in order to persist the key.
 '@
 	}
@@ -344,7 +347,15 @@ Merge-Helps $BaseDB @{
 	command = 'Search-RedisKey'
 	synopsis = 'Searches for keys matching the pattern.'
 	parameters = @{
-		Pattern = 'Specifies the search pattern.'
+		Pattern = @'
+		Specifies the search pattern in one of two forms.
+
+		(1) Without `[` and `]`, treated as simple pattern with `*` and `?` as
+		wildcard characters and all other characters as literal.
+
+		(2) With `[` or `]`, treated as glob-style pattern with `*`, `?`, `[]`,
+		`[^]` and character `\` used for escaping literal characters.
+'@
 	}
 	outputs = @(
 		@{ type = 'System.String' }
@@ -427,8 +438,8 @@ Merge-Helps $BaseKey @{
 		Specifies how many levels of contained objects are included in the XML
 		representation. Default: 1.
 '@
-		Expiry = @'
-		Tells to set the expiry time span.
+		TimeToLive = @'
+		Specifies the time to live.
 '@
 	}
 }
@@ -465,8 +476,8 @@ Merge-Helps $BaseDB @{
 		Path = 'Specifies the output file.'
 		Pattern = 'Specifies the optional key pattern.'
 		TimeToLive = @'
-		Tells to include expiring keys with time to live greater than
-		specified.
+		Tells to include expiring keys with their remaining time to live
+		greater than the specified span.
 '@
 	}
 }

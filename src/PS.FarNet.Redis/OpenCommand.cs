@@ -16,6 +16,9 @@ public sealed class OpenCommand : PSCmdlet
     [Parameter(ParameterSetName = NConfiguration)]
     public SwitchParameter AllowAdmin { get; set; }
 
+    [Parameter(ParameterSetName = NConfiguration)]
+    public int SyncTimeout { get; set; }
+
     protected override void BeginProcessing()
     {
         switch (ParameterSetName)
@@ -31,6 +34,9 @@ public sealed class OpenCommand : PSCmdlet
                     var options = ConfigurationOptions.Parse(Configuration);
                     if (AllowAdmin)
                         options.AllowAdmin = true;
+
+                    if (SyncTimeout > 0)
+                        options.SyncTimeout = SyncTimeout;
 
                     var db = DB.Open(options);
                     WriteObject(db);

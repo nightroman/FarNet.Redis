@@ -27,7 +27,7 @@ static class ExtensionMethods
         }
         catch (Exception ex)
         {
-            throw new ArgumentException($"Cannot bind '{value.GetType().Name}' to 'RedisValue': {ex.Message}", ex);
+            throw new ArgumentException($"Cannot bind '{value.ToBaseObject().GetType().Name}' to 'RedisValue': {ex.Message}", ex);
         }
     }
 

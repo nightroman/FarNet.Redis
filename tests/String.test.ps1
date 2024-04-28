@@ -210,7 +210,7 @@ task bytes {
 task auto_update_expiring {
 	function GetOrAdd($value) {
 		(Get-RedisString $key) ?? (&{
-			Set-RedisString $key $value -Expiry 00:00:00.05
+			Set-RedisString $key $value -TimeToLive 00:00:00.05
 			$value
 		})
 	}

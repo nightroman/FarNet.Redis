@@ -35,7 +35,8 @@ public sealed class SetStringCommand : BaseDBCmdlet
 
     [Parameter(ParameterSetName = NMain)]
     [Parameter(ParameterSetName = NSetAndGet)]
-    public TimeSpan? Expiry { get; set; }
+    [Alias("Expiry")]
+    public TimeSpan? TimeToLive { get; set; }
 
     [Parameter(ParameterSetName = NMain)]
     [Parameter(ParameterSetName = NMany)]
@@ -84,7 +85,7 @@ public sealed class SetStringCommand : BaseDBCmdlet
                 break;
             case NSetAndGet:
                 {
-                    RedisValue res = Database.StringSetAndGet(Key, _SetAndGet, Expiry);
+                    RedisValue res = Database.StringSetAndGet(Key, _SetAndGet, TimeToLive);
                     WriteObject((string)res);
                 }
                 break;
@@ -97,7 +98,7 @@ public sealed class SetStringCommand : BaseDBCmdlet
                 break;
             default:
                 {
-                    bool res = Database.StringSet(Key, _Value, Expiry, false, _When ?? When.Always);
+                    bool res = Database.StringSet(Key, _Value, TimeToLive, false, _When ?? When.Always);
                     if (_When.HasValue)
                         WriteObject(res);
                 }

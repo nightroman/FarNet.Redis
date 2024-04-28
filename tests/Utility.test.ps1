@@ -96,12 +96,12 @@ task export {
 	# set all types, one with expiry
 	Set-RedisString try:t1 hello
 	Set-RedisString try:b1 $blob
-	Set-RedisString try:t2 hello -Expiry ([timespan]::FromMinutes(3))
-	Set-RedisString try:b2 $blob -Expiry ([timespan]::FromMinutes(3))
+	Set-RedisString try:t2 hello -TimeToLive ([timespan]::FromMinutes(3))
+	Set-RedisString try:b2 $blob -TimeToLive ([timespan]::FromMinutes(3))
 	Set-RedisHash try:h1 ([ordered]@{hello=42; world=$blob})
 	Set-RedisList try:l1 hello, $blob
 	Set-RedisSet try:s1 $blob, hello
-	Set-RedisString try:short lived -Expiry ([timespan]::FromMinutes(1))
+	Set-RedisString try:short lived -TimeToLive ([timespan]::FromMinutes(1))
 
 	# export with expiring
 	Export-Redis z.1.json try:* -TimeToLive ([timespan]::FromMinutes(2))
@@ -142,4 +142,31 @@ task export {
 
 	Remove-RedisKey (Search-RedisKey try:*)
 	remove z.*.json
+}
+
+task 'Missing key should return null, not empty collection.' {
+	$r = Get-RedisHash missing
+	equals $r $null
+
+	$r = Get-RedisList missing
+	equals $r $null
+
+	$r = Get-RedisSet missing
+	equals $r $null
+}
+
+task 'Mismatch key should return null, not empty collection.' {
+	$key = 'test:1'
+	Set-RedisString $key 1
+
+	$r = Get-RedisHash $key
+	equals $r $null
+
+	$r = Get-RedisList $key
+	equals $r $null
+
+	$r = Get-RedisSet $key
+	equals $r $null
+
+	Remove-RedisKey $key
 }

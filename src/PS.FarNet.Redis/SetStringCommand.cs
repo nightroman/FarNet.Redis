@@ -35,7 +35,6 @@ public sealed class SetStringCommand : BaseDBCmdlet
 
     [Parameter(ParameterSetName = NMain)]
     [Parameter(ParameterSetName = NSetAndGet)]
-    [Alias("Expiry")]
     public TimeSpan? TimeToLive { get; set; }
 
     [Parameter(ParameterSetName = NMain)]

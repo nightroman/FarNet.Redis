@@ -119,8 +119,8 @@ task export {
 	equals $r['try:l1'].List[1][0] $base64
 	equals $r['try:s1'].Set[0][0] $base64
 	equals $r['try:s1'].Set[1] hello
-	assert ($r['try:t2'].EOL -is [datetime])
-	assert ($r['try:b2'].EOL -is [datetime])
+	assert ($r['try:t2'].EOL -match '^\d\d\d\d-\d\d-\d\d \d\d:\d\d$')
+	assert ($r['try:b2'].EOL -match '^\d\d\d\d-\d\d-\d\d \d\d:\d\d$')
 
 	# import and export again, persistent only this time
 	Import-Redis z.1.json
@@ -131,7 +131,7 @@ task export {
 	equals (($r.Keys | Sort-Object) -join ',') 'try:b1,try:h1,try:l1,try:s1,try:t1'
 
 	# test expected formatting, mind random order
-	$r = (Get-Content z.1.json) -join '|' -replace '\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d', 'date' -replace ','
+	$r = (Get-Content z.1.json) -join '|' -replace '\d\d\d\d-\d\d-\d\d \d\d:\d\d', 'date' -replace ','
 	assert $r.Contains('|  "try:t1": "hello"|')
 	assert $r.Contains('|  "try:b1": ["AIA="]|')
 	assert $r.Contains('|  "try:t2": {|    "EOL": "date"|    "Text": "hello"|  }|')

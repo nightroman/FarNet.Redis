@@ -1,5 +1,11 @@
 # FarNet.Redis Release Notes
 
+## v0.7.2
+
+Amend EOL treatment on `Export-Redis`, `Import-Redis`.
+
+Retire aliases `-Expire` and `-Expiry`, use `-TimeToLive`.
+
 ## v0.7.1
 
 Rename `-Expire` and `-Expiry` parameters to `-TimeToLive`. Old names still

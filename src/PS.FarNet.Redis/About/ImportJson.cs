@@ -1,6 +1,7 @@
 ﻿using StackExchange.Redis;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Text.Json;
 
@@ -150,7 +151,7 @@ class ImportJson(string path, IDatabase database)
                                 reader.Read();
                                 AssertTokenType(JsonTokenType.String, reader.TokenType, key);
 
-                                eol = DateTime.Parse(reader.GetString());
+                                eol = DateTime.Parse(reader.GetString(), null, DateTimeStyles.AssumeUniversal);
                             }
                             break;
                         default:

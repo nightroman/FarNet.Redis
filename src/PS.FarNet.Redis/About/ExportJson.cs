@@ -42,7 +42,7 @@ class ExportJson(string Path, IDatabase Database)
     static void WriteEndOfLife(Utf8JsonWriter writer, TimeSpan? ttl)
     {
         if (ttl.HasValue)
-            writer.WriteString("EOL", (DateTime.UtcNow + ttl.Value).ToString("s"));
+            writer.WriteString("EOL", (DateTime.UtcNow + ttl.Value).ToString("yyyy-MM-dd HH:mm"));
     }
 
     void WriteValue(Utf8JsonWriter writer, RedisKey key, RedisType type, TimeSpan? ttl)

@@ -13,7 +13,6 @@ public sealed class SetClixmlCommand : BaseKeyCmdlet
     public int Depth { get; set; } = 1;
 
     [Parameter]
-    [Alias("Expiry")]
     public TimeSpan? TimeToLive { get; set; }
 
     protected override void BeginProcessing()

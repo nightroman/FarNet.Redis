@@ -10,7 +10,6 @@ public sealed class SetKeyCommand : BaseKeyCmdlet
 
     [Parameter(Mandatory = true, ParameterSetName = NTimeToLive)]
     [AllowNull]
-    [Alias("Expire")]
     public TimeSpan? TimeToLive { get; set; }
 
     protected override void BeginProcessing()

@@ -8,7 +8,6 @@ $DataRoot = 'C:\DATA\Garnet'
 $LogFile = "$DataRoot\service.log"
 $ArgList = @(
 	"--checkpointdir $DataRoot\checkpointdir"
-	'--aof --aof-commit-wait'
 	'--index 512m'
 	'--obj-index 64m'
 	'-q --recover --logger-level Information'

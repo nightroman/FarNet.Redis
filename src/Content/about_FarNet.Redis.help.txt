@@ -16,6 +16,7 @@ MODULE COMMANDS
     Connect and get database instance:
 
         Open-Redis
+        Save-Redis
         Close-Redis
         Get-RedisServer
 

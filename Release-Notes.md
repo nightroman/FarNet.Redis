@@ -1,5 +1,9 @@
 # FarNet.Redis Release Notes
 
+## v0.7.3
+
+Add `Save-Redis`, use on stopping Garnet service.
+
 ## v0.7.2
 
 Amend EOL treatment on `Export-Redis`, `Import-Redis`.

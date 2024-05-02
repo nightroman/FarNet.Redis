@@ -14,6 +14,7 @@
 	VariablesToExport = @()
 	CmdletsToExport = @(
 		'Open-Redis'
+		'Save-Redis'
 		'Close-Redis'
 		'Get-RedisServer'
 

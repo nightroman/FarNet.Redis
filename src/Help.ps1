@@ -4,6 +4,14 @@ Import-Module FarNet.Redis
 
 $ParamKey = 'Specifies the Redis key.'
 $ParamCount = 'Gets the number of items.'
+$ParamConfiguration = @'
+		Specifies the Redis configuration string.
+		Examples:
+			"127.0.0.1:3278"
+			"127.0.0.1:3278,AllowAdmin=true"
+
+		Note that 127.0.0.1 seems to work faster than localhost.
+'@
 
 $BaseDB = @{
 	parameters = @{
@@ -54,14 +62,7 @@ $BaseSub = Merge-Helps $BaseDB @{
 	without parameters in order to open this kind of default database.
 '@
 	parameters = @{
-		Configuration = @'
-		Specifies the Redis configuration string.
-		Examples:
-			"127.0.0.1:3278"
-			"127.0.0.1:3278,AllowAdmin=true"
-
-		Note that 127.0.0.1 seems to work faster than localhost.
-'@
+		Configuration = $ParamConfiguration
 		AllowAdmin = @'
 		Tells to allow admin operations.
 '@
@@ -75,6 +76,18 @@ $BaseSub = Merge-Helps $BaseDB @{
 	links = @(
 		@{ text = 'Close-Redis' }
 	)
+}
+
+### Save-Redis
+Merge-Helps $BaseDB @{
+	command = 'Save-Redis'
+	synopsis = 'Explicitly requests to persist the current state to disk.'
+	description = @'
+	This command calls Save(BackgroundSave) and waits for LastSave() changed.
+'@
+	parameters = @{
+		Configuration = $ParamConfiguration
+	}
 }
 
 ### Close-Redis

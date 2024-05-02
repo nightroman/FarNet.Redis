@@ -1,8 +1,9 @@
 ﻿using Garnet;
 
+Console.WriteLine();
+Console.WriteLine($"{DateTime.Now} server start");
 try
 {
-    Console.WriteLine($"{DateTime.Now} server start");
     using var server = new GarnetServer(args);
     server.Start();
     Thread.Sleep(Timeout.Infinite);

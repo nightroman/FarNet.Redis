@@ -119,9 +119,18 @@ db.StringGet("test:key1")
 Use a tiny project like [GarnetServer] to build and run the server.\
 Or download ready to run binaries from [Garnet Releases](https://github.com/microsoft/garnet/releases).
 
-## Notes
+## Known issues
 
-`Open-Redis 127.0.0.1:3278` seems to work faster than using `localhost`.
+[#358]: https://github.com/microsoft/garnet/issues/358
+[#218]: https://github.com/microsoft/garnet/issues/218
+[FAQ]: https://microsoft.github.io/garnet/docs/welcome/faq
+
+For faster connection to local servers, consider using `127.0.0.1` instead of `localhost` in configuration strings.
+
+Garnet: On setting objects (Hash, List, Set), ensure keys have the same types or do not exist. [#358], [#218]
+
+Garnet: Do not use saved checkpoints with different server versions, format is not yet stabilized, see [FAQ].
+To migrate data, use `Export-Redis`, delete checkpoints, upgrade server, use `Import-Redis`.
 
 ## See also
 

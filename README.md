@@ -47,7 +47,10 @@ help Get-RedisString
 To install as the FarNet library `FarNet.Redis`, follow [these steps](https://github.com/nightroman/FarNet#readme).\
 The [NuGet package](https://www.nuget.org/packages/FarNet.Redis) is installed to `%FARHOME%\FarNet\Lib\FarNet.Redis`.
 
-Included assets:
+See also [FarNet.RedisKit](https://www.nuget.org/packages/FarNet.RedisKit),
+the module for managing Redis data in Far Manager.
+
+Library assets:
 
 - `StackExchange.Redis.dll`, `FarNet.Redis.dll`
 

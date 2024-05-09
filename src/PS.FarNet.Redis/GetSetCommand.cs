@@ -1,11 +1,9 @@
 ﻿using StackExchange.Redis;
-using System.Collections.Generic;
 using System.Management.Automation;
 
 namespace PS.FarNet.Redis;
 
 [Cmdlet("Get", "RedisSet", DefaultParameterSetName = NMain)]
-[OutputType(typeof(HashSet<string>))]
 [OutputType(typeof(long))]
 public sealed class GetSetCommand : BaseGetCountCmdlet
 {
@@ -24,8 +22,8 @@ public sealed class GetSetCommand : BaseGetCountCmdlet
             default:
                 {
                     RedisValue[] res = Database.SetMembers(RKey);
-                    if (res.Length > 0)
-                        WriteObject(res.ToStringHashSet());
+                    foreach (var value in res)
+                        WriteObject((string)value);
                 }
                 break;
         }

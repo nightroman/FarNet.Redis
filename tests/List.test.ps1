@@ -10,6 +10,7 @@ task list {
 	# test with Get-RedisKey, Get-RedisAny
 	equals (Get-RedisKey $Key) ([StackExchange.Redis.RedisType]::List)
 	$r = Get-RedisAny $key
+	equals $r.GetType() ([System.Collections.Generic.List[string]])
 	equals $r.Count 2
 	equals $r[0] Joe
 	equals $r[1] '42'
@@ -56,15 +57,19 @@ task list_pop {
 	Remove-RedisKey $key
 }
 
-task result_is_List {
+task result_types {
 	Remove-RedisKey ($key = 'test:1')
 
-	Set-RedisList $key 1
-
+	Set-RedisList $key v1
 	$r = Get-RedisList $key
-	assert $r.Count 1
-	equals $r[0] '1'
-	equals $r.GetType() ([System.Collections.Generic.List[string]])
+	assert $r.GetType() ([string])
+	equals $r v1
+
+	Set-RedisList $key v2
+	$r = Get-RedisList $key
+	assert $r.GetType() ([object[]])
+	equals $r[0] v1
+	equals $r[1] v2
 
 	Remove-RedisKey $key
 }

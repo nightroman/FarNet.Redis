@@ -1,5 +1,9 @@
 # FarNet.Redis Release Notes
 
+## v0.7.4
+
+`Get-RedisList`, `Get-RedisSet`: unroll results to avoid adverse effects.
+
 ## v0.7.3
 
 Add `Save-Redis`, use on stopping Garnet service.

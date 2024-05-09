@@ -1,11 +1,9 @@
 ﻿using StackExchange.Redis;
-using System.Collections.Generic;
 using System.Management.Automation;
 
 namespace PS.FarNet.Redis;
 
 [Cmdlet("Get", "RedisList", DefaultParameterSetName = NMain)]
-[OutputType(typeof(List<string>))]
 [OutputType(typeof(string))]
 [OutputType(typeof(long))]
 public sealed class GetListCommand : BaseGetCountCmdlet
@@ -36,8 +34,8 @@ public sealed class GetListCommand : BaseGetCountCmdlet
             default:
                 {
                     RedisValue[] res = Database.ListRange(RKey);
-                    if (res.Length > 0)
-                        WriteObject(res.ToStringList());
+                    foreach (var value in res)
+                        WriteObject((string)value);
                 }
                 break;
         }

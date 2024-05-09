@@ -154,7 +154,7 @@ Merge-Helps $BaseKey @{
 ### Get-RedisList
 Merge-Helps $BaseKey @{
 	command = 'Get-RedisList'
-	synopsis = 'Gets the list or its details.'
+	synopsis = 'Gets the list items or details.'
 	parameters = @{
 		Count = $ParamCount
 		Index = @'
@@ -163,8 +163,7 @@ Merge-Helps $BaseKey @{
 '@
 	}
 	outputs = @(
-		@{ type = 'System.Collections.Generic.List[System.String]' }
-		@{ type = 'System.String'; description = 'with Index' }
+		@{ type = 'System.String' }
 		@{ type = 'System.Int64'; description = 'with Count' }
 	)
 }
@@ -172,12 +171,12 @@ Merge-Helps $BaseKey @{
 ### Get-RedisSet
 Merge-Helps $BaseKey @{
 	command = 'Get-RedisSet'
-	synopsis = 'Gets the set or its details.'
+	synopsis = 'Gets the set members or details.'
 	parameters = @{
 		Count = $ParamCount
 	}
 	outputs = @(
-		@{ type = 'System.Collections.Generic.HashSet[System.String]' }
+		@{ type = 'System.String' }
 		@{ type = 'System.Int64'; description = 'with Count' }
 	)
 }

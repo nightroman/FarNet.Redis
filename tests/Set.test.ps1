@@ -63,6 +63,23 @@ task bytes {
 	Remove-RedisKey $key
 }
 
+task result_types {
+	Remove-RedisKey ($key = 'test:1')
+
+	Set-RedisSet $key v1
+	$r = Get-RedisSet $key
+	assert $r.GetType() ([string])
+	equals $r v1
+
+	Set-RedisSet $key v2
+	$r = Get-RedisSet $key
+	assert $r.GetType() ([object[]])
+	equals $r[0] v1
+	equals $r[1] v2
+
+	Remove-RedisKey $key
+}
+
 task empty_strings {
 	Remove-RedisKey ($key = 'test:1')
 

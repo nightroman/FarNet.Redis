@@ -1,5 +1,7 @@
 # FarNet.Redis Release Notes
 
+Garnet 1.0.8
+
 ## v0.7.4
 
 `Get-RedisList`, `Get-RedisSet`: unroll results to avoid adverse effects.

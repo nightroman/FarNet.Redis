@@ -10,12 +10,14 @@ task hash {
 	# test with Get-RedisKey, Get-RedisAny
 	equals (Get-RedisKey $Key) ([StackExchange.Redis.RedisType]::Hash)
 	$r = Get-RedisAny $key
+	equals $r.GetType() ([hashtable])
 	equals $r.Count 2
 	equals $r.name Joe
 	equals $r.age '42'
 
-	# get dictionary
+	# get hashtable
 	$r = Get-RedisHash $key
+	equals $r.GetType() ([hashtable])
 	equals $r.Count 2
 	equals $r.name Joe
 	equals $r.age '42'

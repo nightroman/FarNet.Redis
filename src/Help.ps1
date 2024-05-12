@@ -126,9 +126,9 @@ Merge-Helps $BaseKey @{
 	}
 	outputs = @(
 		@{ type = 'System.String'; description = 'when key is String' }
+		@{ type = 'System.Collections.Hashtable'; description = 'when key is Hash' }
 		@{ type = 'System.Collections.Generic.List[System.String]'; description = 'when key is List' }
 		@{ type = 'System.Collections.Generic.HashSet[System.String]'; description = 'when key is Set' }
-		@{ type = 'System.Collections.Generic.Dictionary[System.String, System.String]'; description = 'when key is Hash' }
 	)
 }
 
@@ -141,11 +141,11 @@ Merge-Helps $BaseKey @{
 		Field = @'
 		Gets values of the specified fields, including nulls for missing fields.
 
-		If this parameter is omitted then the whole hash is returned as Dictionary.
+		If this parameter is omitted then the whole hash is returned as hashtable.
 '@
 	}
 	outputs = @(
-		@{ type = 'System.Collections.Generic.Dictionary[System.String, System.String]' }
+		@{ type = 'System.Collections.Hashtable' }
 		@{ type = 'System.String'; description = 'with Field' }
 		@{ type = 'System.Int64'; description = 'with Count' }
 	)

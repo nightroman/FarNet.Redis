@@ -1,5 +1,9 @@
 # FarNet.Redis Release Notes
 
+## v0.7.5
+
+Use hashtable to return hashes instead of string dictionary.
+
 Garnet 1.0.8
 
 ## v0.7.4

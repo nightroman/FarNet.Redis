@@ -1,4 +1,5 @@
 ﻿using StackExchange.Redis;
+using System.Collections;
 using System.Collections.Generic;
 using System.Management.Automation;
 
@@ -6,9 +7,9 @@ namespace PS.FarNet.Redis;
 
 [Cmdlet("Get", "RedisAny")]
 [OutputType(typeof(string))]
+[OutputType(typeof(Hashtable))]
 [OutputType(typeof(List<string>))]
 [OutputType(typeof(HashSet<string>))]
-[OutputType(typeof(Dictionary<string, string>))]
 public sealed class GetAnyCommand : BaseKeyCmdlet
 {
     [Parameter(Position = 1)]
@@ -32,7 +33,7 @@ public sealed class GetAnyCommand : BaseKeyCmdlet
             case RedisType.Hash:
                 {
                     HashEntry[] res = Database.HashGetAll(RKey);
-                    WriteObject(res.ToStringDictionary());
+                    WriteObject(res.ToHashtable());
                 }
                 break;
             case RedisType.List:

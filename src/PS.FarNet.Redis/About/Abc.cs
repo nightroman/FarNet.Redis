@@ -31,6 +31,14 @@ static class ExtensionMethods
         }
     }
 
+    public static Hashtable ToHashtable(this HashEntry[] hash)
+    {
+        var result = new Hashtable(hash.Length, StringComparer.Ordinal);
+        for (int i = 0; i < hash.Length; i++)
+            result.Add((string)hash[i].Name, (string)hash[i].Value);
+        return result;
+    }
+
     public static HashSet<string> ToStringHashSet(this RedisValue[] values)
     {
         var result = new HashSet<string>();

@@ -1,11 +1,11 @@
 ﻿using StackExchange.Redis;
-using System.Collections.Generic;
+using System.Collections;
 using System.Management.Automation;
 
 namespace PS.FarNet.Redis;
 
 [Cmdlet("Get", "RedisHash", DefaultParameterSetName = NMain)]
-[OutputType(typeof(Dictionary<string, string>))]
+[OutputType(typeof(Hashtable))]
 [OutputType(typeof(string))]
 [OutputType(typeof(long))]
 public sealed class GetHashCommand : BaseGetCountCmdlet
@@ -43,7 +43,7 @@ public sealed class GetHashCommand : BaseGetCountCmdlet
         {
             HashEntry[] res = Database.HashGetAll(RKey);
             if (res.Length > 0)
-                WriteObject(res.ToStringDictionary());
+                WriteObject(res.ToHashtable());
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using StackExchange.Redis;
 using System;
 using System.IO;
+using System.Text.Encodings.Web;
 using System.Text.Json;
 
 namespace PS.FarNet.Redis;
@@ -157,7 +158,12 @@ class ExportJson(string Path, IDatabase Database)
         var server = Database.Multiplexer.GetServers()[0];
         var keys = server.Keys(Database.Database, Pattern);
 
-        var options = new JsonWriterOptions { Indented = true, };
+        var options = new JsonWriterOptions
+        {
+            Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+            Indented = true,
+        };
+
         using var stream = new FileStream(Path, FileMode.Create);
         using var writer = new Utf8JsonWriter(stream, options);
 

@@ -1,5 +1,9 @@
 # FarNet.Redis Release Notes
 
+## v0.7.6
+
+`Export-Redis`: relax JSON escaping.
+
 ## v0.7.5
 
 Use hashtable to return hashes instead of string dictionary.

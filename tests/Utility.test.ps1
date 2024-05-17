@@ -94,13 +94,13 @@ task export {
 	(Search-RedisKey try:*).ForEach{Remove-RedisKey $_}
 
 	# set all types, one with expiry
-	Set-RedisString try:t1 hello
+	Set-RedisString try:t1 привет
 	Set-RedisString try:b1 $blob
-	Set-RedisString try:t2 hello -TimeToLive ([timespan]::FromMinutes(3))
+	Set-RedisString try:t2 привет -TimeToLive ([timespan]::FromMinutes(3))
 	Set-RedisString try:b2 $blob -TimeToLive ([timespan]::FromMinutes(3))
-	Set-RedisHash try:h1 ([ordered]@{hello=42; world=$blob})
-	Set-RedisList try:l1 hello, $blob
-	Set-RedisSet try:s1 $blob, hello
+	Set-RedisHash try:h1 ([ordered]@{привет=42; world=$blob})
+	Set-RedisList try:l1 привет, $blob
+	Set-RedisSet try:s1 $blob, привет
 	Set-RedisString try:short lived -TimeToLive ([timespan]::FromMinutes(1))
 
 	# export with expiring
@@ -109,16 +109,16 @@ task export {
 	# test expected JSON
 	$r = Get-Content z.1.json -Raw | ConvertFrom-Json -AsHashtable
 	equals $r.Count 7
-	equals $r['try:t1'] hello
+	equals $r['try:t1'] привет
 	equals $r['try:b1'][0] $base64
-	equals $r['try:t2'].Text hello
+	equals $r['try:t2'].Text привет
 	equals $r['try:b2'].Blob $base64
-	equals $r['try:h1'].Hash.hello '42'
+	equals $r['try:h1'].Hash.привет '42'
 	equals $r['try:h1'].Hash.world[0] $base64
-	equals $r['try:l1'].List[0] hello
+	equals $r['try:l1'].List[0] привет
 	equals $r['try:l1'].List[1][0] $base64
 	equals $r['try:s1'].Set[0][0] $base64
-	equals $r['try:s1'].Set[1] hello
+	equals $r['try:s1'].Set[1] привет
 	assert ($r['try:t2'].EOL -match '^\d\d\d\d-\d\d-\d\d \d\d:\d\d$')
 	assert ($r['try:b2'].EOL -match '^\d\d\d\d-\d\d-\d\d \d\d:\d\d$')
 
@@ -132,13 +132,13 @@ task export {
 
 	# test expected formatting, mind random order
 	$r = (Get-Content z.1.json) -join '|' -replace '\d\d\d\d-\d\d-\d\d \d\d:\d\d', 'date' -replace ','
-	assert $r.Contains('|  "try:t1": "hello"|')
+	assert $r.Contains('|  "try:t1": "привет"|')
 	assert $r.Contains('|  "try:b1": ["AIA="]|')
-	assert $r.Contains('|  "try:t2": {|    "EOL": "date"|    "Text": "hello"|  }|')
+	assert $r.Contains('|  "try:t2": {|    "EOL": "date"|    "Text": "привет"|  }|')
 	assert $r.Contains('|  "try:b2": {|    "EOL": "date"|    "Blob": "AIA="|  }|')
-	assert $r.Contains('|  "try:h1": {|    "Hash": {|      "hello": "42"|      "world": ["AIA="]|    }|  }|')
-	assert $r.Contains('|  "try:l1": {|    "List": [|      "hello"|      ["AIA="]|    ]|  }|')
-	assert $r.Contains('|  "try:s1": {|    "Set": [|      ["AIA="]|      "hello"|    ]|  }|')
+	assert $r.Contains('|  "try:h1": {|    "Hash": {|      "привет": "42"|      "world": ["AIA="]|    }|  }|')
+	assert $r.Contains('|  "try:l1": {|    "List": [|      "привет"|      ["AIA="]|    ]|  }|')
+	assert $r.Contains('|  "try:s1": {|    "Set": [|      ["AIA="]|      "привет"|    ]|  }|')
 
 	Remove-RedisKey (Search-RedisKey try:*)
 	remove z.*.json

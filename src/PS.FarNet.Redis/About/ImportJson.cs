@@ -78,6 +78,11 @@ class ImportJson(string path, IDatabase database)
     public void Invoke()
     {
         using var stream = File.OpenRead(path);
+
+        // skip BOM
+        if (stream.ReadByte() != 0xEF || stream.ReadByte() != 0xBB || stream.ReadByte() != 0xBF)
+            stream.Position = 0;
+
         var reader = new Utf8JsonStreamReader(stream, 32 * 1024);
         try
         {
@@ -107,7 +112,7 @@ class ImportJson(string path, IDatabase database)
                     var name = reader.GetString();
                     switch (name)
                     {
-                        case "Text":
+                        case ExportJson.KeyText:
                             {
                                 reader.Read();
                                 AssertTokenType(JsonTokenType.String, reader.TokenType, key);
@@ -116,7 +121,7 @@ class ImportJson(string path, IDatabase database)
                                 save = () => database.StringSet(key, value);
                             }
                             break;
-                        case "Blob":
+                        case ExportJson.KeyBlob:
                             {
                                 reader.Read();
                                 AssertTokenType(JsonTokenType.String, reader.TokenType, key);
@@ -125,28 +130,28 @@ class ImportJson(string path, IDatabase database)
                                 save = () => database.StringSet(key, value);
                             }
                             break;
-                        case "Hash":
+                        case ExportJson.KeyHash:
                             {
                                 var items = ReadHashEntryArray(ref reader, key);
                                 database.KeyDelete(key);
                                 save = () => database.HashSet(key, items);
                             }
                             break;
-                        case "List":
+                        case ExportJson.KeyList:
                             {
                                 var items = ReadRedisValueArray(ref reader, key);
                                 database.KeyDelete(key);
                                 save = () => database.ListRightPush(key, items);
                             }
                             break;
-                        case "Set":
+                        case ExportJson.KeySet:
                             {
                                 var items = ReadRedisValueArray(ref reader, key);
                                 database.KeyDelete(key);
                                 save = () => database.SetAdd(key, items);
                             }
                             break;
-                        case "EOL":
+                        case ExportJson.KeyEol:
                             {
                                 reader.Read();
                                 AssertTokenType(JsonTokenType.String, reader.TokenType, key);

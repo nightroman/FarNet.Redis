@@ -1,5 +1,11 @@
 # FarNet.Redis Release Notes
 
+## v0.7.7
+
+`Export-Redis`: write more values as strings.
+
+`Import-Redis`: support files with UTF8 BOM.
+
 Garnet 1.0.9
 
 ## v0.7.6

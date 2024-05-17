@@ -1,5 +1,7 @@
 # FarNet.Redis Release Notes
 
+Garnet 1.0.9
+
 ## v0.7.6
 
 `Export-Redis`: relax JSON escaping.

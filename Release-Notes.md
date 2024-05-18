@@ -1,5 +1,7 @@
 # FarNet.Redis Release Notes
 
+Garnet 1.0.11
+
 ## v0.7.7
 
 `Export-Redis`: write more values as strings.

@@ -288,7 +288,7 @@ Merge-Helps $BaseDB @{
 		Decrements by the specified number and gets the result integer.
 '@
 		SetAndGet = @'
-		Atomically sets the specified string and return the old string.
+		Atomically sets the specified string and returns the old string.
 '@
 		TimeToLive = @'
 		Specifies the time to live.

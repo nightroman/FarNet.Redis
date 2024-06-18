@@ -1,6 +1,6 @@
 # FarNet.Redis Release Notes
 
-Garnet 1.0.12
+Garnet 1.0.14
 
 ## v0.7.7
 

@@ -125,12 +125,12 @@ Or download ready to run binaries from [Garnet Releases](https://github.com/micr
 ## Known issues
 
 [#358]: https://github.com/microsoft/garnet/issues/358
-[#218]: https://github.com/microsoft/garnet/issues/218
 [FAQ]: https://microsoft.github.io/garnet/docs/welcome/faq
 
 For faster connection to local servers, consider using `127.0.0.1` instead of `localhost` in configuration strings.
 
-Garnet: On setting objects (Hash, List, Set), ensure keys have the same types or do not exist. [#358], [#218]
+Garnet: The same key may simultaneously exist as string and object, see [#358].
+Mind expected inconsistencies and not unique `Search-RedisKey` results.
 
 Garnet: Do not use saved checkpoints with different server versions, format is not yet stabilized, see [FAQ].
 To migrate data, use `Export-Redis`, delete checkpoints, upgrade server, use `Import-Redis`.

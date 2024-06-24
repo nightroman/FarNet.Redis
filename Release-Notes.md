@@ -1,5 +1,9 @@
 # FarNet.Redis Release Notes
 
+## v0.7.8
+
+StackExchange.Redis 2.8.0
+
 Garnet 1.0.14
 
 ## v0.7.7

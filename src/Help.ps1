@@ -66,9 +66,6 @@ $BaseSub = Merge-Helps $BaseDB @{
 		AllowAdmin = @'
 		Tells to allow admin operations.
 '@
-		SyncTimeout = @'
-		Specifies time (ms) to allow for synchronous operations.
-'@
 	}
 	outputs = @{
 		type = 'StackExchange.Redis.IDatabase'

@@ -1,5 +1,9 @@
 # FarNet.Redis Release Notes
 
+## v0.7.9
+
+`Open-Redis`: removed parameter `SyncTimeout`.
+
 ## v0.7.8
 
 StackExchange.Redis 2.8.0

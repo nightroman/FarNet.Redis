@@ -1,5 +1,7 @@
 # FarNet.Redis Release Notes
 
+Garnet 1.0.15, use default --index 128m --obj-index 16m
+
 ## v0.7.9
 
 `Open-Redis`: removed parameter `SyncTimeout`.

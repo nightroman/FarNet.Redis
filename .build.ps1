@@ -41,12 +41,6 @@ task content -After publish {
 task help {
 	. Helps.ps1
 	Convert-Helps src\Help.ps1 $ModuleRoot\PS.FarNet.Redis.dll-Help.xml
-
-	(Get-Command -Module FarNet.Redis | Get-Help).ForEach{
-		if (!$_.Synopsis.EndsWith('.')) {
-			Write-Warning "$($_.Name) : unexpected/missing synopsis"
-		}
-	}
 }
 
 task version {

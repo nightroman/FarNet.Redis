@@ -45,53 +45,10 @@ help Get-RedisString
 ## FarNet library
 
 To install as the FarNet library `FarNet.Redis`, follow [these steps](https://github.com/nightroman/FarNet#readme).\
-The [NuGet package](https://www.nuget.org/packages/FarNet.Redis) is installed to `%FARHOME%\FarNet\Lib\FarNet.Redis`.
+See [PowerShell FarNet modules](https://github.com/nightroman/FarNet/wiki/PowerShell-FarNet-modules) for details.
 
 See also [FarNet.RedisKit](https://www.nuget.org/packages/FarNet.RedisKit),
 the module for managing Redis data in Far Manager.
-
-Library assets:
-
-- `StackExchange.Redis.dll`, `FarNet.Redis.dll`
-
-    General purpose Redis client and helper assemblies.\
-    They are designed for using in C#, F#, PowerShell.
-
-- `FarNet.Redis.psd1`, `PS.FarNet.Redis.dll`
-
-    PowerShell module files.
-
-- `FarNet.Redis.ini`
-
-    F# scripts configuration, `FarNet.FSharpFar`.
-
-The PowerShell module may be imported as:
-
-```powershell
-Import-Module $env:FARHOME\FarNet\Lib\FarNet.Redis
-```
-
-**Expose the module as a symbolic link or junction**
-
-Consider exposing this module, so that you can:
-
-```powershell
-Import-Module FarNet.Redis
-```
-
-(1) Choose one of the module directories, see `$env:PSModulePath`.
-
-(2) Change to the selected directory and create the symbolic link
-
-```powershell
-New-Item FarNet.Redis -ItemType SymbolicLink -Value $env:FARHOME\FarNet\Lib\FarNet.Redis
-```
-
-(3) Alternatively, you may create the similar folder junction point in Far
-Manager using `AltF6`.
-
-Then you may update the FarNet package with new versions. The symbolic link or
-junction do not have to be updated, they point to the same location.
 
 ## Examples
 
@@ -124,10 +81,13 @@ Or download ready to run binaries from [Garnet Releases](https://github.com/micr
 
 ## Known issues
 
+[#61]: https://github.com/microsoft/garnet/issues/61
 [#358]: https://github.com/microsoft/garnet/issues/358
 [FAQ]: https://microsoft.github.io/garnet/docs/welcome/faq
 
 For faster connection to local servers, consider using `127.0.0.1` instead of `localhost` in configuration strings.
+
+Garnet supports the only database (0), see [#61].
 
 Garnet: The same key may simultaneously exist as string and object, see [#358].
 Mind expected inconsistencies and not unique `Search-RedisKey` results.

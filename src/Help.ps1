@@ -12,6 +12,13 @@ $ParamConfiguration = @'
 
 		Note that 127.0.0.1 seems to work faster than localhost.
 '@
+$ParamTimeToLive = @'
+		Specifies the time to live.
+'@
+$ParamWhen = @'
+		Specifies when the values should be set and returns true if keys were
+		set and false otherwise.
+'@
 
 $BaseDB = @{
 	parameters = @{
@@ -249,6 +256,41 @@ Merge-Helps $BaseKey @{
 	}
 }
 
+### Set-RedisNumber
+Merge-Helps $BaseDB @{
+	command = 'Set-RedisNumber'
+	synopsis = 'Sets or updates the number.'
+	parameters = @{
+		Key = $ParamKey
+		Value = @'
+		The new number.
+'@
+		Increment = @'
+		Increments by the specified integer and gets the result [long].
+		Existing values should be integers, missing are treated as 0.
+'@
+		Decrement = @'
+		Decrements by the specified integer and gets the result [long].
+		Existing values should be integers, missing are treated as 0.
+'@
+		Add = @'
+		Adds the specified real number and gets the result [double].
+		Existing values should be numbers, missing are treated as 0.
+'@
+		Subtract = @'
+		Subtracts the specified real number and gets the result [double].
+		Existing values should be numbers, missing are treated as 0.
+'@
+		TimeToLive = $ParamTimeToLive
+		When = $ParamWhen
+	}
+	outputs = @(
+		@{ type = 'System.Int64'; description = 'with Increment, Decrement' }
+		@{ type = 'System.Double'; description = 'with Add, Subtract' }
+		@{ type = 'System.Boolean'; description = 'with When' }
+	)
+}
+
 ### Set-RedisSet
 Merge-Helps $BaseKey @{
 	command = 'Set-RedisSet'
@@ -278,25 +320,13 @@ Merge-Helps $BaseDB @{
 		Append = @'
 		Appends the specified string and gets the result string length.
 '@
-		Increment = @'
-		Increments by the specified number and gets the result integer.
-'@
-		Decrement = @'
-		Decrements by the specified number and gets the result integer.
-'@
 		SetAndGet = @'
 		Atomically sets the specified string and returns the old string.
 '@
-		TimeToLive = @'
-		Specifies the time to live.
-'@
-		When = @'
-		Specifies when the values should be set and returns true if keys were
-		set and false otherwise.
-'@
+		TimeToLive = $ParamTimeToLive
+		When = $ParamWhen
 	}
 	outputs = @(
-		@{ type = 'System.Int64'; description = 'with Increment, Decrement' }
 		@{ type = 'System.String'; description = 'with SetAndGet' }
 		@{ type = 'System.Boolean'; description = 'with When' }
 	)
@@ -447,9 +477,7 @@ Merge-Helps $BaseKey @{
 		Specifies how many levels of contained objects are included in the XML
 		representation. Default: 1.
 '@
-		TimeToLive = @'
-		Specifies the time to live.
-'@
+		TimeToLive = $ParamTimeToLive
 	}
 }
 

@@ -6,21 +6,16 @@ using System.Management.Automation;
 namespace PS.FarNet.Redis;
 
 [Cmdlet("Set", "RedisString", DefaultParameterSetName = NMain)]
-[OutputType(typeof(long))]
-[OutputType(typeof(double))]
 [OutputType(typeof(string))]
+[OutputType(typeof(bool))]
 public sealed class SetStringCommand : BaseDBCmdlet
 {
     const string NMany = "Many";
     const string NAppend = "Append";
-    const string NIncrement = "Increment";
-    const string NDecrement = "Decrement";
     const string NSetAndGet = "SetAndGet";
 
     [Parameter(Position = 0, Mandatory = true, ParameterSetName = NMain)]
     [Parameter(Position = 0, Mandatory = true, ParameterSetName = NAppend)]
-    [Parameter(Position = 0, Mandatory = true, ParameterSetName = NIncrement)]
-    [Parameter(Position = 0, Mandatory = true, ParameterSetName = NDecrement)]
     [Parameter(Position = 0, Mandatory = true, ParameterSetName = NSetAndGet)]
     public string Key { get; set; }
 
@@ -46,12 +41,6 @@ public sealed class SetStringCommand : BaseDBCmdlet
     public object Append { set => _Append = value.ToRedisValue(); }
     RedisValue _Append;
 
-    [Parameter(Mandatory = true, ParameterSetName = NIncrement)]
-    public long Increment { get; set; }
-
-    [Parameter(Mandatory = true, ParameterSetName = NDecrement)]
-    public long Decrement { get; set; }
-
     [Parameter(Mandatory = true, ParameterSetName = NSetAndGet)]
     [AllowEmptyString]
     [AllowNull]
@@ -67,18 +56,6 @@ public sealed class SetStringCommand : BaseDBCmdlet
             case NAppend:
                 {
                     long res = Database.StringAppend(Key, _Append);
-                    WriteObject(res);
-                }
-                break;
-            case NIncrement:
-                {
-                    long res = Database.StringIncrement(Key, Increment);
-                    WriteObject(res);
-                }
-                break;
-            case NDecrement:
-                {
-                    long res = Database.StringDecrement(Key, Decrement);
                     WriteObject(res);
                 }
                 break;

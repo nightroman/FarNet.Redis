@@ -26,6 +26,7 @@
 
 		'Set-RedisHash'
 		'Set-RedisList'
+		'Set-RedisNumber'
 		'Set-RedisSet'
 		'Set-RedisString'
 

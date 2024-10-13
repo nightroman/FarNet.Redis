@@ -1,5 +1,14 @@
 # FarNet.Redis Release Notes
 
+## v0.8.0
+
+New cmdlet `Set-RedisNumber`, cleaner for number operations than `Set-RedisString`,
+implements `Add`, `Subtract` (double) in addition to `Increment`, `Decrement` (long).
+
+**Breaking** `Set-RedisString`: `Increment`, `Decrement` moved to `Set-RedisNumber`.
+
+Garnet 1.0.32
+
 ## v0.7.11
 
 StackExchange.Redis 2.8.16

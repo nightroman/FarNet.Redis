@@ -13,7 +13,7 @@ LONG DESCRIPTION
     Input values may be anything supported by SERedis, including byte[].
 
 MODULE COMMANDS
-    Connect and get database instance:
+    Database commands:
 
         Open-Redis
         Save-Redis
@@ -32,6 +32,7 @@ MODULE COMMANDS
 
         Set-RedisHash
         Set-RedisList
+        Set-RedisNumber
         Set-RedisSet
         Set-RedisString
 

@@ -8,7 +8,7 @@ task string {
 	Set-RedisString $key hello
 
 	# test with Get-RedisKey, Get-RedisAny
-	equals (Get-RedisKey $Key) ([StackExchange.Redis.RedisType]::String)
+	equals (Get-RedisKey $key) ([StackExchange.Redis.RedisType]::String)
 	equals (Get-RedisAny $key) hello
 
 	# get string
@@ -152,24 +152,6 @@ task append {
 	Remove-RedisKey $key
 }
 
-task increment {
-	Remove-RedisKey ($key = 'test:1')
-
-	$r = Set-RedisString $key -Increment 2
-	equals $r 2L
-
-	$r = Set-RedisString $key -Increment (-1)
-	equals $r 1L
-
-	$r = Set-RedisString $key -Decrement 2
-	equals $r (-1L)
-
-	$r = Set-RedisString $key -Decrement (-1)
-	equals $r 0L
-
-	Remove-RedisKey $key
-}
-
 # In order to use byte[] values, ensure the type is byte[].
 task bytes {
 	Remove-RedisKey ($key = 'test:1')
@@ -228,7 +210,7 @@ task auto_update_expiring {
 	# let it expire
 	Start-Sleep -Milliseconds 50
 
-	# try and suggest v2 -> new v3
+	# try and suggest v3 -> new v3
 	$r = GetOrAdd v3
 	equals $r v3
 	equals (Get-RedisString $key) v3

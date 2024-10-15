@@ -34,6 +34,7 @@
 		'Set-RedisKey'
 		'Test-RedisKey'
 		'Remove-RedisKey'
+		'Rename-RedisKey'
 		'Search-RedisKey'
 
 		'Register-RedisSub'

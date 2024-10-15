@@ -42,6 +42,7 @@ MODULE COMMANDS
         Set-RedisKey
         Test-RedisKey
         Remove-RedisKey
+        Rename-RedisKey
         Search-RedisKey
 
     Subscriptions:

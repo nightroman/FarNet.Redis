@@ -381,6 +381,22 @@ Merge-Helps $BaseKeys @{
 	)
 }
 
+### Rename-RedisKey
+Merge-Helps $BaseKey @{
+	command = 'Rename-RedisKey'
+	synopsis = 'Renames the specified key.'
+	parameters = @{
+		NewKey = 'Specifies the new Redis key.'
+		When = @'
+		Specifies when the key should be renamed and returns true if the key
+		was renamed and false otherwise.
+'@
+	}
+	outputs = @(
+		@{ type = 'System.Boolean'; description = 'with When' }
+	)
+}
+
 ### Search-RedisKey
 Merge-Helps $BaseDB @{
 	command = 'Search-RedisKey'

@@ -83,3 +83,41 @@ task TimeToLive {
 
 	Remove-RedisKey $key
 }
+
+task rename {
+	Remove-RedisKey ($key = 'test:1')
+	Remove-RedisKey ($newKey = 'test:2')
+
+	Set-RedisString $key 2024-10-15-0054
+	Rename-RedisKey $key $newKey
+
+	equals (Test-RedisKey $key) 0L
+	equals (Get-RedisString $newKey) 2024-10-15-0054
+
+	Remove-RedisKey $newKey
+}
+
+task renameWhen {
+	Remove-RedisKey ($key1 = 'test:1')
+	Remove-RedisKey ($key2 = 'test:2')
+
+	Set-RedisString -Many @{$key1 = '2024-10-15-0105'; $key2 = '2024-10-15-0106'}
+
+	$r = Rename-RedisKey $key1 $key2 -When NotExists
+	equals $r $false
+	equals (Get-RedisString $key1) 2024-10-15-0105
+	equals (Get-RedisString $key2) 2024-10-15-0106
+
+	$r = Rename-RedisKey $key1 $key2 -When Always
+	equals $r $true
+	equals (Test-RedisKey $key1) 0L
+	equals (Get-RedisString $key2) 2024-10-15-0105
+
+	try { throw Rename-RedisKey $key2 $key1 -When Exists }
+	catch { equals "$_" 'Exists is not valid in this context; the permitted values are: Always, NotExists' }
+
+	equals (Test-RedisKey $key1) 0L
+	equals (Get-RedisString $key2) 2024-10-15-0105
+
+	Remove-RedisKey $key2
+}

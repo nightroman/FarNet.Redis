@@ -1,5 +1,9 @@
 # FarNet.Redis Release Notes
 
+## v0.9.0
+
+New cmdlet `Rename-RedisKey`.
+
 ## v0.8.0
 
 New cmdlet `Set-RedisNumber`, cleaner for number operations than `Set-RedisString`,

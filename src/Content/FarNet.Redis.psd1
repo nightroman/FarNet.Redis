@@ -17,6 +17,7 @@
 		'Save-Redis'
 		'Close-Redis'
 		'Get-RedisServer'
+		'Use-RedisPrefix'
 
 		'Get-RedisAny'
 		'Get-RedisHash'

@@ -39,7 +39,7 @@ $BaseKey = Merge-Helps $BaseDB @{
 $BaseKeys = Merge-Helps $BaseDB @{
 	parameters = @{
 		Key = @'
-		Specifies one or more Redis keys.
+		Specifies the Redis keys.
 '@
 	}
 }
@@ -112,6 +112,30 @@ Merge-Helps $BaseDB @{
 	synopsis = 'Gets the database server instance.'
 	outputs = @(
 		@{ type = 'StackExchange.Redis.IServer' }
+	)
+}
+
+### Use-RedisPrefix
+Merge-Helps $BaseDB @{
+	command = 'Use-RedisPrefix'
+	synopsis = 'Gets a prefixed database.'
+	description = @'
+	This command creates a new database that provides an isolated key space of
+	the specified underlying database. The underlying database may be prefixed,
+	in this case the specified prefix works as sub-prefix.
+
+	With such a prefixed database input keys are automatically prefixed for all
+	commands. Note that output keys are still absolute.
+'@
+	parameters = @{
+		Prefix = @'
+		Specifies the prefix that defines a key space isolation for the
+		returned database. If the underlying database is prefixed, the
+		prefix works as sub-prefix.
+'@
+	}
+	outputs = @(
+		@{ type = 'StackExchange.Redis.IDatabase' }
 	)
 }
 

@@ -121,3 +121,15 @@ task renameWhen {
 
 	Remove-RedisKey $key2
 }
+
+# Allow no keys for `Remove-RedisKey` and `Test-RedisKey`.
+task no_keys {
+	equals $null (Remove-RedisKey $null)
+	equals $null (Remove-RedisKey @())
+
+	equals 0L (Remove-RedisKey $null -Result)
+	equals 0L (Remove-RedisKey @() -Result)
+
+	equals 0L (Test-RedisKey $null)
+	equals 0L (Test-RedisKey @())
+}

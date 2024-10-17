@@ -19,6 +19,7 @@ MODULE COMMANDS
         Save-Redis
         Close-Redis
         Get-RedisServer
+        Use-RedisPrefix
 
     Get data commands:
 

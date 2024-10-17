@@ -11,6 +11,14 @@ public sealed class RemoveKeyCommand : BaseKeysCmdlet
 
     protected override void BeginProcessing()
     {
+        if (Key is null || Key.Length == 0)
+        {
+            if (Result)
+                WriteObject(0L);
+
+            return;
+        }
+
         base.BeginProcessing();
 
         if (Key.Length == 1)

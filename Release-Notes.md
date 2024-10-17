@@ -1,5 +1,13 @@
 # FarNet.Redis Release Notes
 
+## v0.10.0
+
+New cmdlet `Use-RedisPrefix`.
+
+Allow no keys for `Remove-RedisKey` and `Test-RedisKey`.
+
+Garnet 1.0.33
+
 ## v0.9.0
 
 New cmdlet `Rename-RedisKey`.

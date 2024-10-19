@@ -42,3 +42,18 @@ task new_db_variables {
 
 	Remove-RedisKey test:prefix:name, test:prefix:meta:age
 }
+
+task open_with_prefix {
+	Remove-RedisKey test:2024-10-19-0637
+	& {
+		$db = Open-Redis -Prefix test:
+		Set-RedisString 2024-10-19-0637 v1
+		equals (Get-RedisString 2024-10-19-0637) v1
+	}
+	equals (Get-RedisString test:2024-10-19-0637) v1
+	& {
+		$db = Open-Redis -Prefix test:
+		equals (Remove-RedisKey 2024-10-19-0637 -Result) 1L
+	}
+	equals (Test-RedisKey test:2024-10-19-0637) 0L
+}

@@ -1,5 +1,9 @@
 # FarNet.Redis Release Notes
 
+## v0.10.1
+
+`Open-Redis`: new parameter `Prefix`.
+
 ## v0.10.0
 
 New cmdlet `Use-RedisPrefix`.

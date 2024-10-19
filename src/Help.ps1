@@ -70,6 +70,10 @@ $BaseSub = Merge-Helps $BaseDB @{
 '@
 	parameters = @{
 		Configuration = $ParamConfiguration
+		Prefix = @'
+		Specifies the key prefix and tells to return the prefixed database.
+		See Use-RedisPrefix for the details.
+'@
 		AllowAdmin = @'
 		Tells to allow admin operations.
 '@
@@ -79,6 +83,7 @@ $BaseSub = Merge-Helps $BaseDB @{
 	}
 	links = @(
 		@{ text = 'Close-Redis' }
+		@{ text = 'Use-RedisPrefix' }
 	)
 }
 
@@ -120,12 +125,15 @@ Merge-Helps $BaseDB @{
 	command = 'Use-RedisPrefix'
 	synopsis = 'Gets a prefixed database.'
 	description = @'
-	This command creates a new database that provides an isolated key space of
+	This command returns a new database that provides an isolated key space of
 	the specified underlying database. The underlying database may be prefixed,
-	in this case the specified prefix works as sub-prefix.
+	too, in this case the specified prefix works as sub-prefix.
 
 	With such a prefixed database input keys are automatically prefixed for all
 	commands. Note that output keys are still absolute.
+
+	If all operations use the same key prefix then you may open the prefixed
+	database right away by Open-Redis -Prefix.
 '@
 	parameters = @{
 		Prefix = @'
@@ -136,6 +144,9 @@ Merge-Helps $BaseDB @{
 	}
 	outputs = @(
 		@{ type = 'StackExchange.Redis.IDatabase' }
+	)
+	links = @(
+		@{ text = 'Open-Redis' }
 	)
 }
 

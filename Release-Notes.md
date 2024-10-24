@@ -1,5 +1,11 @@
 # FarNet.Redis Release Notes
 
+## v0.10.2
+
+Add `TimeToLive` to `Get-RedisString` (SETNX, Garnet 1.0.34).
+
+Garnet 1.0.34
+
 ## v0.10.1
 
 `Open-Redis`: new parameter `Prefix`.

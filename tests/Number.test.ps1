@@ -19,6 +19,7 @@ task number {
 	Remove-RedisKey $key
 }
 
+# (similar to String test)
 task set_when {
 	Remove-RedisKey ($key = 'test:1')
 
@@ -28,10 +29,15 @@ task set_when {
 
 	$r = Set-RedisNumber $key 1 -When Always
 	equals $r $true
-	equals (Test-RedisKey $key) 1L
+	equals (Get-RedisString $key) '1'
 
-	try { throw Set-RedisNumber $key 1 -When NotExists }
-	catch { assert ('ERR unknown command' -eq $_) }
+	# Garnet v1.0.34, was "unknown command"
+	$r = Set-RedisNumber $key 2 -When NotExists
+	equals $r $false
+	Remove-RedisKey $key
+	$r = Set-RedisNumber $key 2 -When NotExists
+	equals $r $true
+	equals (Get-RedisString $key) '2'
 
 	Remove-RedisKey $key
 }

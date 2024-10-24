@@ -82,6 +82,7 @@ task set_and_get {
 	Remove-RedisKey $key
 }
 
+# (similar to Number test)
 task set_when_one {
 	Remove-RedisKey ($key = 'test:1')
 
@@ -91,10 +92,15 @@ task set_when_one {
 
 	$r = Set-RedisString $key 1 -When Always
 	equals $r $true
-	equals (Test-RedisKey $key) 1L
+	equals (Get-RedisString $key) '1'
 
-	try { throw Set-RedisString $key 1 -When NotExists }
-	catch { assert ('ERR unknown command' -eq $_) }
+	# Garnet v1.0.34, was "unknown command"
+	$r = Set-RedisString $key 2 -When NotExists
+	equals $r $false
+	Remove-RedisKey $key
+	$r = Set-RedisString $key 2 -When NotExists
+	equals $r $true
+	equals (Get-RedisString $key) '2'
 
 	Remove-RedisKey $key
 }
@@ -185,6 +191,36 @@ task bytes {
 	$r = [byte[]]$db.StringGet($key)
 	equals $r.Length 1
 	equals $r[0] 11uy
+
+	Remove-RedisKey $key
+}
+
+# Garnet 1.0.34 | Get-RedisString -TimeToLive
+task SETNX-Get-RedisString-TimeToLive {
+	Remove-RedisKey ($key = 'test:1')
+
+	# set fresh string, TTL none
+	Set-RedisString $key ttl
+	$r = Get-RedisKey $key -TimeToLive
+	equals $r $null
+
+	# get string, TTL some
+	$r = Get-RedisString $key -TimeToLive 0:1:30
+	equals $r ttl
+	$r = Get-RedisKey $key -TimeToLive
+	equals ([int]$r.TotalMinutes) 1
+
+	# get string, TTL none, intact
+	$r = Get-RedisString $key
+	equals $r ttl
+	$r = Get-RedisKey $key -TimeToLive
+	equals ([int]$r.TotalMinutes) 1
+
+	# get string, TTL null, removed
+	$r = Get-RedisString $key -TimeToLive $null
+	equals $r ttl
+	$r = Get-RedisKey $key -TimeToLive
+	equals $r $null
 
 	Remove-RedisKey $key
 }

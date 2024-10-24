@@ -1,4 +1,5 @@
 ﻿using StackExchange.Redis;
+using System;
 using System.Management.Automation;
 
 namespace PS.FarNet.Redis;
@@ -21,6 +22,11 @@ public sealed class GetStringCommand : BaseDBCmdlet
     [Parameter(Mandatory = true, ParameterSetName = NLength)]
     public SwitchParameter Length { get; set; }
 
+    [Parameter(ParameterSetName = NMain)]
+    public TimeSpan? TimeToLive { set { _TimeToLive = value; _hasTimeToLive = true; } }
+    TimeSpan? _TimeToLive;
+    bool _hasTimeToLive;
+
     protected override void BeginProcessing()
     {
         base.BeginProcessing();
@@ -42,8 +48,16 @@ public sealed class GetStringCommand : BaseDBCmdlet
                 break;
             default:
                 {
-                    RedisValue res = Database.StringGet(Key);
-                    WriteObject((string)res);
+                    if (_hasTimeToLive)
+                    {
+                        RedisValue res = Database.StringGetSetExpiry(Key, _TimeToLive);
+                        WriteObject((string)res);
+                    }
+                    else
+                    {
+                        RedisValue res = Database.StringGet(Key);
+                        WriteObject((string)res);
+                    }
                 }
                 break;
         }

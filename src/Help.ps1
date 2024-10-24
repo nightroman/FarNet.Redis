@@ -232,6 +232,10 @@ Merge-Helps $BaseDB @{
 		Length = @'
 		Gets the string length.
 '@
+		TimeToLive = @'
+		Tells to update the time to live.
+		Null will remove expiry.
+'@
 	}
 	outputs = @(
 		@{ type = 'System.String' }

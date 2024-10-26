@@ -144,6 +144,28 @@ task export {
 	remove z.*.json
 }
 
+task export_empty {
+	$key = 'test:1'
+	Set-RedisString $key ''
+	Export-Redis z.json $key
+	$r = ConvertFrom-Json (Get-Content z.json -Raw) -AsHashtable
+	equals $r.Count 1
+	equals $r[$key] ''
+	Remove-RedisKey $key
+	remove z.json
+}
+
+task export_exclude {
+	$1, $2, $3 = 'test:wild-1', 'test:wild-apple', 'test:wild-banana'
+	Set-RedisString -Many @{$1 = 1; $2 = 2; $3 = 3}
+	Export-Redis z.json test:wild-* -Exclude *-app*, *nana
+	$r = ConvertFrom-Json (Get-Content z.json -Raw) -AsHashtable
+	equals $r.Count 1
+	equals $r[$1] '1'
+	Remove-RedisKey $1, $2, $3
+	remove z.json
+}
+
 task 'Missing key should return null, not empty collection.' {
 	$r = Get-RedisHash missing
 	equals $r $null

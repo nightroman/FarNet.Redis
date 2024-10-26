@@ -19,6 +19,7 @@ class ExportJson(string Path, IDatabase Database)
 
     public string Pattern { get; set; }
     public TimeSpan? TimeToLive { get; set; }
+    public Predicate<string> Exclude { get; set; }
     public Action<string> WriteWarning { get; set; }
 
     static object GetBlobOrText(RedisValue value)
@@ -73,7 +74,7 @@ class ExportJson(string Path, IDatabase Database)
             case RedisType.String:
                 {
                     RedisValue res = Database.StringGet(key);
-                    if (!res.HasValue)
+                    if (res.IsNull)
                         return;
 
                     writer.WritePropertyName(key);
@@ -189,8 +190,12 @@ class ExportJson(string Path, IDatabase Database)
 
         writer.WriteStartObject();
         foreach (RedisKey key in keys)
-            WriteKey(writer, key);
+        {
+            if (Exclude is { } && Exclude(key))
+                continue;
 
+            WriteKey(writer, key);
+        }
 
         writer.WriteEndObject();
     }

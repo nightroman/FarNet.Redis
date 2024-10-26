@@ -1,5 +1,11 @@
 # FarNet.Redis Release Notes
 
+## v0.10.3
+
+`Export-Redis`
+- New parameter `Exclude`
+- Empty strings should be exported
+
 ## v0.10.2
 
 Add `TimeToLive` to `Get-RedisString` (SETNX, Garnet 1.0.34).

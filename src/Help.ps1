@@ -567,6 +567,9 @@ Merge-Helps $BaseDB @{
 	parameters = @{
 		Path = 'Specifies the output file.'
 		Pattern = 'Specifies the optional key pattern.'
+		Exclude = @'
+		Tells to exclude keys matching the specified wildcard patterns.
+'@
 		TimeToLive = @'
 		Tells to include expiring keys with their remaining time to live
 		greater than the specified span.

@@ -14,9 +14,13 @@ $DataRoot = 'C:\Data\Garnet'
 $Log = "$DataRoot\service.log"
 $App = "$AppRoot\GarnetServer.exe"
 $Arg = @(
-	"--port $Port --checkpointdir $DataRoot\checkpointdir"
-	'--index 128m --obj-index 16m'
-	'-q --recover --logger-level Information'
+	'--port', $Port
+	'--checkpointdir', "$DataRoot\checkpointdir"
+	'--index', '128m'
+	'--obj-index', '16m'
+	'-q'
+	'--recover'
+	'--logger-level', 'Information'
 ) -join ' '
 
 task run {

@@ -34,4 +34,12 @@ public abstract class BaseDBCmdlet : PSCmdlet
             throw new PSArgumentException($"Cannot connect Redis specified by $env:FARNET_REDIS_CONFIGURATION: {ex.Message}", ex);
         }
     }
+
+    protected static string ConvertPatternToRedis(string pattern)
+    {
+        if (pattern.Contains('[') || pattern.Contains(']'))
+            return pattern;
+        else
+            return pattern.Replace("\\", "\\\\");
+    }
 }

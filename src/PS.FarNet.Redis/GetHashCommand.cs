@@ -1,5 +1,6 @@
 ﻿using StackExchange.Redis;
 using System.Collections;
+using System.Collections.Generic;
 using System.Management.Automation;
 
 namespace PS.FarNet.Redis;
@@ -10,9 +11,16 @@ namespace PS.FarNet.Redis;
 [OutputType(typeof(long))]
 public sealed class GetHashCommand : BaseGetCountCmdlet
 {
+    const string NPattern = "Pattern";
+
     [Parameter(Position = 1, ParameterSetName = NMain)]
     [ValidateNotNullOrEmpty]
     public RedisValue[] Field { get; set; }
+
+    [Parameter(ParameterSetName = NPattern, Mandatory = true)]
+    [AllowEmptyString]
+    [AllowNull]
+    public string Pattern { get; set; }
 
     protected override void BeginProcessing()
     {
@@ -24,6 +32,15 @@ public sealed class GetHashCommand : BaseGetCountCmdlet
                 {
                     long res = Database.HashLength(RKey);
                     WriteObject(res);
+                }
+                return;
+            case NPattern:
+                {
+                    if (Pattern is { })
+                        Pattern = ConvertPatternToRedis(Pattern);
+
+                    IEnumerable<HashEntry> res = Database.HashScan(RKey, RedisValue.Unbox(Pattern), 250, CommandFlags.None);
+                    WriteObject(res.ToHashtable());
                 }
                 return;
         }

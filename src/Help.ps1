@@ -3,7 +3,9 @@ Set-StrictMode -Version 3
 Import-Module FarNet.Redis
 
 $ParamKey = 'Specifies the Redis key.'
+
 $ParamCount = 'Gets the number of items.'
+
 $ParamConfiguration = @'
 		Specifies the Redis configuration string.
 		Examples:
@@ -12,12 +14,44 @@ $ParamConfiguration = @'
 
 		Note that 127.0.0.1 seems to work faster than localhost.
 '@
+
+$ParamPattern = @'
+		Specifies the search pattern in one of two forms.
+
+		(1) Without `[` and `]`, treated as simple pattern with `*` and `?` as
+		wildcard characters and all other characters as literal.
+
+		(2) With `[` or `]`, treated as glob-style pattern with `*`, `?`, `[]`,
+		`[^]` and character `\` used for escaping literal characters.
+'@
+
 $ParamTimeToLive = @'
 		Specifies the time to live.
 '@
+
 $ParamWhen = @'
 		Specifies when the values should be set and returns true if keys were
 		set and false otherwise.
+'@
+
+$ParamIncrement = @'
+		Increments by the specified integer and gets the result [long].
+		Existing values should be integers, missing are treated as 0.
+'@
+
+$ParamDecrement = @'
+		Decrements by the specified integer and gets the result [long].
+		Existing values should be integers, missing are treated as 0.
+'@
+
+$ParamAdd = @'
+		Adds the specified real number and gets the result [double].
+		Existing values should be numbers, missing are treated as 0.
+'@
+
+$ParamSubtract = @'
+		Subtracts the specified real number and gets the result [double].
+		Existing values should be numbers, missing are treated as 0.
 '@
 
 $BaseDB = @{
@@ -182,6 +216,11 @@ Merge-Helps $BaseKey @{
 
 		If this parameter is omitted then the whole hash is returned as hashtable.
 '@
+		Pattern = @"
+$ParamPattern
+
+		The result is Hashtable of found keys and values.
+"@
 	}
 	outputs = @(
 		@{ type = 'System.Collections.Hashtable' }
@@ -213,6 +252,11 @@ Merge-Helps $BaseKey @{
 	synopsis = 'Gets the set members or details.'
 	parameters = @{
 		Count = $ParamCount
+		Pattern = @"
+$ParamPattern
+
+		The result is strings matching the pattern.
+"@
 	}
 	outputs = @(
 		@{ type = 'System.String' }
@@ -269,6 +313,10 @@ Merge-Helps $BaseKey @{
 		Remove = @'
 		Removes the specified fields.
 '@
+		Increment = $ParamIncrement
+		Decrement = $ParamDecrement
+		Add = $ParamAdd
+		Subtract = $ParamSubtract
 	}
 	outputs = @(
 		@{ type = 'System.Boolean'; description = 'with When' }
@@ -304,24 +352,12 @@ Merge-Helps $BaseDB @{
 		Value = @'
 		The new number.
 '@
-		Increment = @'
-		Increments by the specified integer and gets the result [long].
-		Existing values should be integers, missing are treated as 0.
-'@
-		Decrement = @'
-		Decrements by the specified integer and gets the result [long].
-		Existing values should be integers, missing are treated as 0.
-'@
-		Add = @'
-		Adds the specified real number and gets the result [double].
-		Existing values should be numbers, missing are treated as 0.
-'@
-		Subtract = @'
-		Subtracts the specified real number and gets the result [double].
-		Existing values should be numbers, missing are treated as 0.
-'@
 		TimeToLive = $ParamTimeToLive
 		When = $ParamWhen
+		Increment = $ParamIncrement
+		Decrement = $ParamDecrement
+		Add = $ParamAdd
+		Subtract = $ParamSubtract
 	}
 	outputs = @(
 		@{ type = 'System.Int64'; description = 'with Increment, Decrement' }
@@ -441,15 +477,7 @@ Merge-Helps $BaseDB @{
 	command = 'Search-RedisKey'
 	synopsis = 'Searches for keys matching the pattern.'
 	parameters = @{
-		Pattern = @'
-		Specifies the search pattern in one of two forms.
-
-		(1) Without `[` and `]`, treated as simple pattern with `*` and `?` as
-		wildcard characters and all other characters as literal.
-
-		(2) With `[` or `]`, treated as glob-style pattern with `*`, `?`, `[]`,
-		`[^]` and character `\` used for escaping literal characters.
-'@
+		Pattern = $ParamPattern
 	}
 	outputs = @(
 		@{ type = 'System.String' }

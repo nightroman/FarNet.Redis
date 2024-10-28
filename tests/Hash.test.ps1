@@ -71,6 +71,29 @@ task hash {
 	Remove-RedisKey $key
 }
 
+task pattern {
+	Remove-RedisKey ($key = 'test:1')
+
+	Set-RedisHash $key @{apple = 1; banana = 2; orange = 3}
+
+	$r = Get-RedisHash $key -Pattern $null
+	equals $r.Count 3
+
+	$r = Get-RedisHash $key -Pattern ''
+	equals $r.Count 3
+
+	$r = Get-RedisHash $key -Pattern *n*
+	equals $r.Count 2
+
+	$r = Get-RedisHash $key -Pattern a*
+	equals $r.Count 1
+
+	$r = Get-RedisHash $key -Pattern z*
+	equals $r.Count 0
+
+	Remove-RedisKey $key
+}
+
 #! `-When Exists` errors, not supported
 task when {
 	Remove-RedisKey ($key = 'test:1')
@@ -122,6 +145,42 @@ task bytes {
 
 	$r = [byte[]]$db.HashGet($key, 'k2')
 	equals $r[1] 202uy
+
+	Remove-RedisKey $key
+}
+
+task increment_decrement {
+	Remove-RedisKey ($key = 'test:1')
+
+	$r = Set-RedisHash $key k1 -Increment 2
+	equals $r 2L
+
+	$r = Set-RedisHash $key k1 -Increment (-1)
+	equals $r 1L
+
+	$r = Set-RedisHash $key k1 -Decrement 2
+	equals $r (-1L)
+
+	$r = Set-RedisHash $key k1 -Decrement (-1)
+	equals $r 0L
+
+	Remove-RedisKey $key
+}
+
+task add_subtract {
+	Remove-RedisKey ($key = 'test:1')
+
+	$r = Set-RedisHash $key k1 -Add 2.1
+	equals $r 2.1
+
+	$r = Set-RedisHash $key k1 -Add (-1.2)
+	equals $r 0.89999986
+
+	$r = Set-RedisHash $key k1 -Subtract 2.3
+	equals $r (-1.4000001)
+
+	$r = Set-RedisHash $key k1 -Subtract (-1.4)
+	equals $r (-1.1920929E-07)
 
 	Remove-RedisKey $key
 }

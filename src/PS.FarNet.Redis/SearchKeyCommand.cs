@@ -14,10 +14,7 @@ public sealed class SearchKeyCommand : BaseDBCmdlet
         base.BeginProcessing();
 
         if (Pattern is { })
-        {
-            if (!Pattern.Contains('[') && !Pattern.Contains(']'))
-                Pattern = Pattern.Replace("\\", "\\\\");
-        }
+            Pattern = ConvertPatternToRedis(Pattern);
 
         var server = Database.Multiplexer.GetServers()[0];
         var keys = server.Keys(Database.Database, Pattern);

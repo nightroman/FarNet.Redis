@@ -39,6 +39,29 @@ task set {
 	Remove-RedisKey $key
 }
 
+task pattern {
+	Remove-RedisKey ($key = 'test:1')
+
+	Set-RedisSet $key apple, banana, orange
+
+	$r = Get-RedisSet $key -Pattern $null
+	equals $r.Count 3
+
+	$r = Get-RedisSet $key -Pattern ''
+	equals $r.Count 3
+
+	$r = Get-RedisSet $key -Pattern *n*
+	equals $r.Count 2
+
+	$r = Get-RedisSet $key -Pattern a*
+	equals $r apple
+
+	$r = Get-RedisSet $key -Pattern z*
+	equals $r $null
+
+	Remove-RedisKey $key
+}
+
 # Use (,) notation in order to pass byte[] values avoiding unrolling to object[].
 task bytes {
 	$key = 'test:1'

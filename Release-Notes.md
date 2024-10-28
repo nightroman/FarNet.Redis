@@ -1,5 +1,11 @@
 # FarNet.Redis Release Notes
 
+## v0.10.4
+
+`Get-RedisHash`, `Get-RedisSet`: new parameter `Pattern`.
+
+`Set-RedisHash`: new parameters `Increment`, `Decrement`, `Add`, `Subtract`.
+
 ## v0.10.3
 
 `Export-Redis`

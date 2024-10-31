@@ -174,13 +174,13 @@ task add_subtract {
 	equals $r 2.1
 
 	$r = Set-RedisHash $key k1 -Add (-1.2)
-	equals $r 0.89999986
+	assert ([Math]::Abs($r - 0.9) -lt 1e-15)
 
 	$r = Set-RedisHash $key k1 -Subtract 2.3
-	equals $r (-1.4000001)
+	assert ([Math]::Abs($r - (-1.4)) -lt 1e-15)
 
 	$r = Set-RedisHash $key k1 -Subtract (-1.4)
-	equals $r (-1.1920929E-07)
+	assert ([Math]::Abs($r) -lt 1e-15)
 
 	Remove-RedisKey $key
 }

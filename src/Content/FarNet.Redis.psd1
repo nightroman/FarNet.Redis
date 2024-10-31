@@ -45,6 +45,7 @@
 		'Import-Redis'
 		'Get-RedisClixml'
 		'Set-RedisClixml'
+		'Merge-RedisSet'
 		'Wait-RedisString'
 	)
 

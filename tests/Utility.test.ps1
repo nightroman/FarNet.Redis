@@ -192,3 +192,39 @@ task 'Mismatch key should return null, not empty collection.' {
 
 	Remove-RedisKey $key
 }
+
+task merge_set {
+	Remove-RedisKey ($key1 = 'test:1'), ($key2 = 'test:2'), ($key3 = 'test:3')
+	Set-RedisSet $key1 apple, banana
+	Set-RedisSet $key2 banana, orange
+
+	# no destination
+
+	$r = Merge-RedisSet Intersect $key1, $key2
+	equals $r banana
+
+	$r = Merge-RedisSet Difference $key1, $key2
+	equals $r apple
+
+	$r = Merge-RedisSet Union $key1, $key2
+	equals "$r" 'apple banana orange'
+
+	# destination
+
+	$r = Merge-RedisSet Intersect $key1, $key2 -Destination $key3
+	equals $r $null
+	$r = Get-RedisSet $key3
+	equals $r banana
+
+	$r = Merge-RedisSet Difference $key1, $key2 -Destination $key3
+	equals $r $null
+	$r = Get-RedisSet $key3
+	equals $r apple
+
+	$r = Merge-RedisSet Union $key1, $key2 -Destination $key3 -Result
+	equals $r 3L
+	$r = Get-RedisSet $key3
+	equals "$r" 'apple banana orange'
+
+	Remove-RedisKey $key1, $key2, $key3
+}

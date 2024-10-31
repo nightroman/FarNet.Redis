@@ -54,6 +54,8 @@ $ParamSubtract = @'
 		Existing values should be numbers, missing are treated as 0.
 '@
 
+### Base
+
 $BaseDB = @{
 	parameters = @{
 		Database = @'
@@ -615,4 +617,49 @@ Merge-Helps $BaseDB @{
 	parameters = @{
 		Path = 'Specifies the input file.'
 	}
+}
+
+### Merge-RedisSet
+Merge-Helps $BaseDB @{
+	command = 'Merge-RedisSet'
+	synopsis = 'Combines the specified sets.'
+	description = @'
+	This command performs Union, Intersect, Difference operations with the
+	given source sets. Use the switch Destination in order to store results
+	as the new set.
+'@
+	parameters = @{
+		Operation = @'
+		Specifies one of the set operations:
+
+		Union
+			Returns the members of the set resulting from the union of all the
+			given sets.
+
+		Intersect
+			Returns the members of the set resulting from the intersection of
+			all the given sets.
+
+		Difference
+			Returns the members of the set resulting from the difference
+			between the first set and all the successive sets.
+
+		Keys that do not exist are treated as empty sets.
+'@
+		Source = @'
+		Specifies the source set keys.
+		Keys that do not exist are treated as empty sets.
+'@
+		Destination = @'
+		Tells to store the result as the specified set.
+		If the destination key exists, it is overwritten.
+'@
+		Result = @'
+		With Destination, tells to return the result number of elements.
+'@
+	}
+	outputs = @(
+		@{ type = 'System.String' }
+		@{ type = 'System.Int64'; description = 'with Destination + Result' }
+	)
 }

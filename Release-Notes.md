@@ -1,5 +1,11 @@
 # FarNet.Redis Release Notes
 
+## v0.11.0
+
+New cmdlet `Merge-RedisSet`.
+
+Garnet 1.0.35
+
 ## v0.10.4
 
 `Get-RedisHash`, `Get-RedisSet`: new parameter `Pattern`.

@@ -663,3 +663,36 @@ Merge-Helps $BaseDB @{
 		@{ type = 'System.Int64'; description = 'with Destination + Result' }
 	)
 }
+
+### New-RedisTransaction
+Merge-Helps $BaseDB @{
+	command = 'New-RedisTransaction'
+	synopsis = 'Creates a transaction builder.'
+	description = @'
+	Use this cmdlet together with Invoke-RedisTransaction in order to avoid
+	some known PowerShell pitfalls.
+'@
+	outputs = @(
+		@{ type = 'StackExchange.Redis.ITransaction' }
+	)
+}
+
+### Invoke-RedisTransaction
+@{
+	command = 'Invoke-RedisTransaction'
+	synopsis = 'Executes the transaction.'
+	description = @'
+	This command executes the transaction and returns true if the transaction
+	was committed and false otherwise.
+
+	Use this cmdlet in order to avoid some known PowerShell pitfalls.
+'@
+	parameters = @{
+		Transaction = @'
+		Specifies the transaction builder, for example from New-RedisTransaction.
+'@
+	}
+	outputs = @(
+		@{ type = 'System.Boolean' }
+	)
+}

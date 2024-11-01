@@ -8,11 +8,11 @@
 
 [StackExchange.Redis] PowerShell module and FarNet library
 
-The module provides PowerShell friendly wrappers for basic Redis types and
-operations. For not yet implemented or advanced operations (like getting
-`byte[]` data) use SERedis API methods directly, see examples in tests.
+The module provides PowerShell friendly wrappers for the basic SERedis API.
+For not yet implemented or planned, e.g. getting `byte[]` data or building
+transactions, use SERedis API directly, see tests.
 
-Redis keys, output simple values and complex type items are strings.\
+Redis keys, simple output values, and complex type items are strings.\
 Input values may be anything supported by SERedis, including `byte[]`.
 
 Packages:

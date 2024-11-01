@@ -41,6 +41,9 @@
 		'Register-RedisSub'
 		'Unregister-RedisSub'
 
+		'New-RedisTransaction'
+		'Invoke-RedisTransaction'
+
 		'Export-Redis'
 		'Import-Redis'
 		'Get-RedisClixml'

@@ -51,6 +51,11 @@ MODULE COMMANDS
         Register-RedisSub
         Unregister-RedisSub
 
+    Transactions:
+
+		New-RedisTransaction
+		Invoke-RedisTransaction
+
     Utility commands:
 
         Export-Redis

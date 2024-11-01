@@ -1,5 +1,10 @@
 # FarNet.Redis Release Notes
 
+## v0.12.0
+
+New cmdlets `New-RedisTransaction`, `Invoke-RedisTransaction`.
+They work around some known PowerShell pitfalls, see tests.
+
 ## v0.11.0
 
 New cmdlet `Merge-RedisSet`.

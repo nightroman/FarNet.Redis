@@ -4,7 +4,7 @@ using System.Management.Automation;
 
 namespace PS.FarNet.Redis;
 
-public abstract class BaseDBCmdlet : PSCmdlet
+public abstract class BaseDBCmdlet : AnyCmdlet
 {
     protected const string NMain = "Main";
 

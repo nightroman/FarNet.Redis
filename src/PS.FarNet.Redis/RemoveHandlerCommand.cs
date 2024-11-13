@@ -4,8 +4,8 @@ using System.Management.Automation;
 
 namespace PS.FarNet.Redis;
 
-[Cmdlet("Unregister", "RedisSub")]
-public sealed class UnregisterSubCommand : BaseSubCmdlet
+[Cmdlet("Remove", "RedisHandler")]
+public sealed class RemoveHandlerCommand : BaseSubCmdlet
 {
     [Parameter(Position = 1)]
     public PSObject Handler { get; set; }
@@ -20,10 +20,9 @@ public sealed class UnregisterSubCommand : BaseSubCmdlet
             if (Handler.BaseObject is Action<RedisChannel, RedisValue> action2)
                 action = action2;
             else
-                throw new PSArgumentException($"The parameter Handler must be an object from Register-RedisSub or null.");
+                throw new PSArgumentException($"The parameter Handler must be an object from Add-RedisHandler or null.");
         }
 
-        var sub = Database.Multiplexer.GetSubscriber();
-        sub.Unsubscribe(Channel, action);
+        Database.Multiplexer.GetSubscriber().Unsubscribe(Channel, action);
     }
 }

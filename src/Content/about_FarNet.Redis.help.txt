@@ -48,13 +48,14 @@ MODULE COMMANDS
 
     Subscriptions:
 
-        Register-RedisSub
-        Unregister-RedisSub
+        Add-RedisHandler
+        Send-RedisMessage
+        Remove-RedisHandler
 
     Transactions:
 
-		New-RedisTransaction
-		Invoke-RedisTransaction
+        New-RedisTransaction
+        Invoke-RedisTransaction
 
     Utility commands:
 
@@ -63,6 +64,7 @@ MODULE COMMANDS
         Get-RedisClixml
         Set-RedisClixml
         Merge-RedisSet
+        Use-RedisLock
         Wait-RedisString
 
 REDIS TYPES

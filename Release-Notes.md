@@ -1,5 +1,15 @@
 # FarNet.Redis Release Notes
 
+## v0.13.0
+
+**Breaking** Change pub/sub names
+- `Register-RedisSub` --> `Add-RedisHandler`, parameter `Script` --> `Handler`
+- `Unregister-RedisSub` --> `Remove-RedisHandler`
+
+New cmdlets `Use-RedisLock`, `Send-RedisMessage`.
+
+Garnet 1.0.38
+
 ## v0.12.0
 
 New cmdlets `New-RedisTransaction`, `Invoke-RedisTransaction`.

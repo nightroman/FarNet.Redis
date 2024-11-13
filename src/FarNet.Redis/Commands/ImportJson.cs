@@ -5,10 +5,13 @@ using System.Globalization;
 using System.IO;
 using System.Text.Json;
 
-namespace PS.FarNet.Redis;
+namespace FarNet.Redis.Commands;
 
-class ImportJson(string path, IDatabase database)
+public sealed class ImportJson : BaseDBCommand
 {
+    // required
+    public required string Path { get; init; }
+
     static void AssertTokenType(JsonTokenType expected, JsonTokenType actual, object context)
     {
         if (expected != actual)
@@ -75,9 +78,9 @@ class ImportJson(string path, IDatabase database)
         return [.. items];
     }
 
-    public void Invoke()
+    protected override void Execute()
     {
-        using var stream = File.OpenRead(path);
+        using var stream = File.OpenRead(Path);
 
         // skip BOM
         if (stream.ReadByte() != 0xEF || stream.ReadByte() != 0xBB || stream.ReadByte() != 0xBF)
@@ -97,14 +100,14 @@ class ImportJson(string path, IDatabase database)
                 var res = TryReadRedisValue(ref reader, key);
                 if (res.HasValue)
                 {
-                    database.StringSet(key, res.Value);
+                    Database.StringSet(key, res.Value);
                     continue;
                 }
 
                 AssertTokenType(JsonTokenType.StartObject, reader.TokenType, key);
 
                 DateTime? eol = null;
-                Action save = null;
+                Action? save = null;
                 while (reader.Read() && reader.TokenType != JsonTokenType.EndObject)
                 {
                     AssertTokenType(JsonTokenType.PropertyName, reader.TokenType, key);
@@ -118,7 +121,7 @@ class ImportJson(string path, IDatabase database)
                                 AssertTokenType(JsonTokenType.String, reader.TokenType, key);
 
                                 string value = reader.GetString();
-                                save = () => database.StringSet(key, value);
+                                save = () => Database.StringSet(key, value);
                             }
                             break;
                         case ExportJson.KeyBlob:
@@ -127,28 +130,28 @@ class ImportJson(string path, IDatabase database)
                                 AssertTokenType(JsonTokenType.String, reader.TokenType, key);
 
                                 byte[] value = reader.GetBytesFromBase64();
-                                save = () => database.StringSet(key, value);
+                                save = () => Database.StringSet(key, value);
                             }
                             break;
                         case ExportJson.KeyHash:
                             {
                                 var items = ReadHashEntryArray(ref reader, key);
-                                database.KeyDelete(key);
-                                save = () => database.HashSet(key, items);
+                                Database.KeyDelete(key);
+                                save = () => Database.HashSet(key, items);
                             }
                             break;
                         case ExportJson.KeyList:
                             {
                                 var items = ReadRedisValueArray(ref reader, key);
-                                database.KeyDelete(key);
-                                save = () => database.ListRightPush(key, items);
+                                Database.KeyDelete(key);
+                                save = () => Database.ListRightPush(key, items);
                             }
                             break;
                         case ExportJson.KeySet:
                             {
                                 var items = ReadRedisValueArray(ref reader, key);
-                                database.KeyDelete(key);
-                                save = () => database.SetAdd(key, items);
+                                Database.KeyDelete(key);
+                                save = () => Database.SetAdd(key, items);
                             }
                             break;
                         case ExportJson.KeyEol:
@@ -168,9 +171,9 @@ class ImportJson(string path, IDatabase database)
 
                 if (!eol.HasValue || eol > DateTime.UtcNow)
                 {
-                    save();
+                    save!();
                     if (eol.HasValue)
-                        database.KeyExpire(key, eol - DateTime.Now);
+                        Database.KeyExpire(key, eol - DateTime.Now);
                 }
             }
         }

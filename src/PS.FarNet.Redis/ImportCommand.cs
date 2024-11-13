@@ -1,4 +1,5 @@
-﻿using System.Management.Automation;
+﻿using FarNet.Redis.Commands;
+using System.Management.Automation;
 
 namespace PS.FarNet.Redis;
 
@@ -13,9 +14,12 @@ public sealed class ImportCommand : BaseDBCmdlet
     {
         base.BeginProcessing();
 
-        Path = GetUnresolvedProviderPathFromPSPath(Path);
+        var command = new ImportJson
+        {
+            Database = Database,
+            Path = GetUnresolvedProviderPathFromPSPath(Path),
+        };
 
-        var command = new ImportJson(Path, Database);
-        command.Invoke();
+        Invoke(command);
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FarNet.Redis.Commands;
+using System;
 using System.Linq;
 using System.Management.Automation;
 
@@ -32,15 +33,16 @@ public sealed class ExportCommand : BaseDBCmdlet
     {
         base.BeginProcessing();
 
-        Path = GetUnresolvedProviderPathFromPSPath(Path);
-
-        var command = new ExportJson(Path, Database)
+        var command = new ExportJson
         {
+            Database = Database,
+            Path = GetUnresolvedProviderPathFromPSPath(Path),
             Pattern = Pattern,
             TimeToLive = TimeToLive,
             Exclude = _excludePatterns is null ? null : key => _excludePatterns.Any(x => x.IsMatch(key)),
             WriteWarning = WriteWarning,
         };
-        command.Invoke();
+
+        Invoke(command);
     }
 }

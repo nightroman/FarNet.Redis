@@ -1,7 +1,6 @@
-﻿using System;
-using System.Diagnostics;
+﻿using FarNet.Redis.Commands;
+using System;
 using System.Management.Automation;
-using System.Threading;
 
 namespace PS.FarNet.Redis;
 
@@ -19,23 +18,16 @@ public sealed class WaitStringCommand : BaseKeyCmdlet
     {
         base.BeginProcessing();
 
-        if (Delay >= Timeout)
-            throw new PSArgumentException("Parameter Delay must less than Timeout.");
-
-        var sw = Stopwatch.StartNew();
-        while (true)
+        var command = new WaitString
         {
-            var res = Database.StringGet(RKey);
-            if (!res.IsNull)
-            {
-                WriteObject((string)res);
-                return;
-            }
+            Database = Database,
+            Key = RKey,
+            Delay = Delay,
+            Timeout = Timeout,
+        };
 
-            if (sw.Elapsed >= Timeout)
-                return;
+        Invoke(command);
 
-            Thread.Sleep(Delay);
-        }
+        WriteObject(command.Result);
     }
 }

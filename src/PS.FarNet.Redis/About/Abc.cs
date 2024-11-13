@@ -2,18 +2,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Management.Automation;
 
 namespace PS.FarNet.Redis;
 
 static class ExtensionMethods
 {
-    public static bool IsAscii(this string value)
-    {
-        return value.All(x => x < 128);
-    }
-
     public static object ToBaseObject(this object value)
     {
         return value is PSObject ps ? ps.BaseObject : value;

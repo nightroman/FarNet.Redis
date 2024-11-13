@@ -4,22 +4,22 @@
 task one_handler {
 	Remove-RedisKey ($key = 'test:1')
 
-	# register
-	$handler = Register-RedisSub test {
+	# subscribe
+	$handler = Add-RedisHandler test {
 		param($channel, $message)
 		Set-RedisString $key $message
 	}
 
 	# send message
-	$r = $db.Publish('test', 'hello')
+	$r = Send-RedisMessage test hello -Result
 	equals $r 1L
 
 	# wait, test
 	$r = Wait-RedisString $key 0:0:0.05 0:0:5
 	equals $r hello
 
-	# unregister
-	Unregister-RedisSub test $handler
+	# unsubscribe
+	Remove-RedisHandler test $handler
 
 	Remove-RedisKey $key
 }
@@ -27,38 +27,38 @@ task one_handler {
 task many_handlers {
 	$log = [System.Collections.Concurrent.ConcurrentQueue[string]]::new()
 
-	# register 3 handlers
-	$handler1 = Register-RedisSub test {
+	# add 3 handlers
+	$handler1 = Add-RedisHandler test {
 		param($channel, $message)
 		$log.Enqueue("1 $message")
 	}
-	$handler2 = Register-RedisSub test {
+	$handler2 = Add-RedisHandler test {
 		param($channel, $message)
 		$log.Enqueue("2 $message")
 	}
-	$handler3 = Register-RedisSub test {
+	$handler3 = Add-RedisHandler test {
 		param($channel, $message)
 		$log.Enqueue("3 $message")
 	}
 
 	# send to 3 handlers
-	$r = $db.Publish('test', 'message1')
+	Send-RedisMessage test message1
 	$log.Enqueue("publish 1")
 	Start-Sleep 1
 
 	# remove handler 1
-	Unregister-RedisSub test $handler1
+	Remove-RedisHandler test $handler1
 
 	# send to 2 handlers
-	$r = $db.Publish('test', 'message2')
+	Send-RedisMessage test message2
 	$log.Enqueue("publish 2")
 	Start-Sleep 1
 
 	# remove handlers
-	Unregister-RedisSub test
+	Remove-RedisHandler test
 
 	# send to none
-	$r = $db.Publish('test', 'message3')
+	Send-RedisMessage test message3
 	$log.Enqueue("publish 3")
 	Start-Sleep 1
 

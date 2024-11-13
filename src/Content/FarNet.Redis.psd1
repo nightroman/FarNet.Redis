@@ -38,8 +38,9 @@
 		'Rename-RedisKey'
 		'Search-RedisKey'
 
-		'Register-RedisSub'
-		'Unregister-RedisSub'
+		'Add-RedisHandler'
+		'Send-RedisMessage'
+		'Remove-RedisHandler'
 
 		'New-RedisTransaction'
 		'Invoke-RedisTransaction'
@@ -49,6 +50,7 @@
 		'Get-RedisClixml'
 		'Set-RedisClixml'
 		'Merge-RedisSet'
+		'Use-RedisLock'
 		'Wait-RedisString'
 	)
 

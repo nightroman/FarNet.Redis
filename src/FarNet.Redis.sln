@@ -13,6 +13,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Content\FarNet.Redis.psd1 = Content\FarNet.Redis.psd1
 	EndProjectSection
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FarNet.Redis.Tests", "FarNet.Redis.Tests\FarNet.Redis.Tests.csproj", "{18955F60-D0D4-45AD-A126-81BDF875A3F6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{07DB1E3D-08CA-46F3-9AC0-563965F57F06}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{07DB1E3D-08CA-46F3-9AC0-563965F57F06}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{07DB1E3D-08CA-46F3-9AC0-563965F57F06}.Release|Any CPU.Build.0 = Release|Any CPU
+		{18955F60-D0D4-45AD-A126-81BDF875A3F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{18955F60-D0D4-45AD-A126-81BDF875A3F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{18955F60-D0D4-45AD-A126-81BDF875A3F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{18955F60-D0D4-45AD-A126-81BDF875A3F6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

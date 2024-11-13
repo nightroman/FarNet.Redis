@@ -5,10 +5,9 @@ using System.Buffers;
 using System.IO;
 using System.Text.Json;
 
-namespace PS.FarNet.Redis;
-#nullable enable
+namespace FarNet.Redis;
 
-public ref struct Utf8JsonStreamReader(Stream stream, int bufferSize)
+ref struct Utf8JsonStreamReader(Stream stream, int bufferSize)
 {
     private readonly Stream _stream = stream;
     private readonly int _bufferSize = bufferSize;

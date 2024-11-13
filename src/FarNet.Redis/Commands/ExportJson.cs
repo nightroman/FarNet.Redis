@@ -6,9 +6,9 @@ using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 
-namespace PS.FarNet.Redis;
+namespace FarNet.Redis.Commands;
 
-class ExportJson(string Path, IDatabase Database)
+public sealed class ExportJson : BaseDBCommand
 {
     public const string KeyBlob = "Blob";
     public const string KeyText = "Text";
@@ -17,14 +17,18 @@ class ExportJson(string Path, IDatabase Database)
     public const string KeySet = "Set";
     public const string KeyEol = "EOL";
 
-    public string Pattern { get; set; }
-    public TimeSpan? TimeToLive { get; set; }
-    public Predicate<string> Exclude { get; set; }
-    public Action<string> WriteWarning { get; set; }
+    // required
+    public required string Path { get; init; }
+
+    // optional
+    public string? Pattern { get; init; }
+    public TimeSpan? TimeToLive { get; init; }
+    public Predicate<string>? Exclude { get; init; }
+    public Action<string>? WriteWarning { get; init; }
 
     static object GetBlobOrText(RedisValue value)
     {
-        var blob = (byte[])value;
+        var blob = (byte[])value!;
         var text = Encoding.UTF8.GetString(blob);
         if (text.IsAscii())
             return text;
@@ -77,7 +81,7 @@ class ExportJson(string Path, IDatabase Database)
                     if (res.IsNull)
                         return;
 
-                    writer.WritePropertyName(key);
+                    writer.WritePropertyName(key!);
                     if (ttl.HasValue)
                     {
                         writer.WriteStartObject();
@@ -99,7 +103,7 @@ class ExportJson(string Path, IDatabase Database)
                     if (res.Length == 0)
                         return;
 
-                    writer.WritePropertyName(key);
+                    writer.WritePropertyName(key!);
                     writer.WriteStartObject();
                     WriteEndOfLife(writer, ttl);
 
@@ -107,7 +111,7 @@ class ExportJson(string Path, IDatabase Database)
                     writer.WriteStartObject();
                     foreach (HashEntry entry in res)
                     {
-                        writer.WritePropertyName(entry.Name);
+                        writer.WritePropertyName(entry.Name!);
                         WriteString(writer, entry.Value);
                     }
                     writer.WriteEndObject();
@@ -121,7 +125,7 @@ class ExportJson(string Path, IDatabase Database)
                     if (res.Length == 0)
                         return;
 
-                    writer.WritePropertyName(key);
+                    writer.WritePropertyName(key!);
                     writer.WriteStartObject();
                     WriteEndOfLife(writer, ttl);
 
@@ -140,7 +144,7 @@ class ExportJson(string Path, IDatabase Database)
                     if (res.Length == 0)
                         return;
 
-                    writer.WritePropertyName(key);
+                    writer.WritePropertyName(key!);
                     writer.WriteStartObject();
                     WriteEndOfLife(writer, ttl);
 
@@ -174,7 +178,7 @@ class ExportJson(string Path, IDatabase Database)
         WriteValue(writer, key, type, ttl);
     }
 
-    public void Invoke()
+    protected override void Execute()
     {
         var server = Database.Multiplexer.GetServers()[0];
         var keys = server.Keys(Database.Database, Pattern);
@@ -191,7 +195,7 @@ class ExportJson(string Path, IDatabase Database)
         writer.WriteStartObject();
         foreach (RedisKey key in keys)
         {
-            if (Exclude is { } && Exclude(key))
+            if (Exclude is { } && Exclude(key!))
                 continue;
 
             WriteKey(writer, key);

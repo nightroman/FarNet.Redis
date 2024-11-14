@@ -51,7 +51,7 @@ static class ExtensionMethods
 
     public static RedisKey[] ToRedisKeyArray(this string[] keys)
     {
-        return Array.ConvertAll(keys, x => new RedisKey(x));
+        return keys is null ? null : Array.ConvertAll(keys, x => new RedisKey(x));
     }
 
     public static List<string> ToStringList(this RedisValue[] values)

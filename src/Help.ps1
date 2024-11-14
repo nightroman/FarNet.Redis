@@ -760,3 +760,40 @@ Merge-Helps $BaseKey @{
 		@{ type = 'System.Management.Automation.PSObject'; description = 'Script output, if any' }
 	)
 }
+
+### Invoke-RedisScript
+Merge-Helps $BaseDB @{
+	command = 'Invoke-RedisScript'
+	synopsis = 'Executes Lua scripts against the server.'
+	description = @'
+	This command executes the script against the server and returns the result.
+'@
+	parameters = @{
+		Script = @'
+		The normal Lua script to execute.
+
+		Normal Lua scripts use KEYS and ARGV arrays of keys and values provided
+		by the parameters Keys and Argv.
+'@
+		Keys = @'
+		Provides the keys referenced by Script as KEYS[1], KEYS[2], ...
+'@
+		Argv = @'
+		Provides the values referenced by Script as ARGV[1], ARGV[2], ...
+'@
+		LuaScript = @'
+		The prepared Lua script to execute, either string (to be prepared) or
+		StackExchange.Redis.LuaScript (already prepared).
+
+		Prepared scripts use @name parameter notation instead of KEYS and ARGV.
+		Values are provided by the parameter Parameters properties and fields.
+'@
+		Parameters = @'
+		An object with properties or fields referenced by LuaScript.
+		All parameters referenced by the script must be available.
+'@
+	}
+	outputs = @(
+		@{ type = 'StackExchange.Redis.RedisResult' }
+	)
+}

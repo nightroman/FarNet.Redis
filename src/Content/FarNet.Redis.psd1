@@ -49,6 +49,7 @@
 		'Import-Redis'
 		'Get-RedisClixml'
 		'Set-RedisClixml'
+		'Invoke-RedisScript'
 		'Merge-RedisSet'
 		'Use-RedisLock'
 		'Wait-RedisString'

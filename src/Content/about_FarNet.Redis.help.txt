@@ -57,12 +57,13 @@ MODULE COMMANDS
         New-RedisTransaction
         Invoke-RedisTransaction
 
-    Utility commands:
+    Other commands:
 
         Export-Redis
         Import-Redis
         Get-RedisClixml
         Set-RedisClixml
+        Invoke-RedisScript
         Merge-RedisSet
         Use-RedisLock
         Wait-RedisString

@@ -1,5 +1,9 @@
 # FarNet.Redis Release Notes
 
+## v0.14.0
+
+New cmdlet `Invoke-RedisScript`.
+
 ## v0.13.0
 
 **Breaking** Change pub/sub names

@@ -18,6 +18,8 @@ $Arg = @(
 	'--checkpointdir', "$DataRoot\checkpointdir"
 	'--index', '128m'
 	'--obj-index', '16m'
+	'--lua'
+	'--lua-transaction-mode'
 	'-q'
 	'--recover'
 	'--logger-level', 'Information'
@@ -60,5 +62,8 @@ task stop {
 task uninstall stop, {
 	nssm remove $Service confirm
 }
+
+# Synopsis: Use on changing server or nssm options.
+task reset_service stop, uninstall, install, start
 
 task . run

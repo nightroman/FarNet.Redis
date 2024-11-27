@@ -31,7 +31,7 @@ task run {
 
 task publish {
 	remove $AppRoot
-	exec { dotnet publish -c Release -o $AppRoot }
+	exec { dotnet publish --use-current-runtime -c Release -o $AppRoot }
 	remove bin, obj
 }
 
@@ -63,7 +63,10 @@ task uninstall stop, {
 	nssm remove $Service confirm
 }
 
-# Synopsis: Use on changing server or nssm options.
-task reset_service stop, uninstall, install, start
+# Synopsis: Use on changing code.
+task rebuild stop, publish, start
+
+# Synopsis: Use on changing options.
+task reinstall stop, uninstall, install, start
 
 task . run

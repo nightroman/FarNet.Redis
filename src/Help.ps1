@@ -412,7 +412,7 @@ Merge-Helps $BaseDB @{
 ### Get-RedisKey
 Merge-Helps $BaseKey @{
 	command = 'Get-RedisKey'
-	synopsis = 'Gets the key type or other details.'
+	synopsis = 'Gets the key type or details.'
 	parameters = @{
 		TimeToLive = 'Tells to get the time to live.'
 	}

@@ -1,5 +1,11 @@
 # FarNet.Redis Release Notes
 
+## v0.14.1
+
+StackExchange.Redis 2.8.22
+
+Garnet 1.0.44
+
 ## v0.14.0
 
 New cmdlet `Invoke-RedisScript`.

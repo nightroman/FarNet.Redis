@@ -61,32 +61,43 @@ MODULE COMMANDS
 
         Export-Redis
         Import-Redis
+
         Get-RedisClixml
         Set-RedisClixml
+
         Invoke-RedisScript
         Merge-RedisSet
         Use-RedisLock
         Wait-RedisString
 
-REDIS TYPES
-    For a Redis type { String | Hash | List | Set } use these cmdlets:
-
+TYPE COMMANDS
     * Set-Redis{Type}
-        Sets or updates values. It returns nothing on simple set operations.
-        On updates, it returns some result depending on parameters.
+        Sets or updates values.
+        It usually returns nothing on simple set operations.
+        On updates it usually returns some result of updates.
 
     * Get-Redis{Type}
-        Gets values or other details. It always returns some result.
-        The result type depends on the command and parameters.
+        Gets values or other details.
+        It always returns some result.
 
     * Get-RedisAny
         Use this command when the type is unknown or variable.
 
+KEY COMMANDS
+    * Get-RedisKey
+        Gets the key type or details.
+
+    * Set-RedisKey
+        Sets the key properties.
+
     * Test-RedisKey
-        Checks for existence of specified keys.
+        Checks keys existence.
+
+    * Rename-RedisKey
+        Renames the key.
 
     * Remove-RedisKey
-        Removes specified keys.
+        Removes keys.
 
 SEE ALSO
     StackExchange.Redis https://github.com/StackExchange/StackExchange.Redis

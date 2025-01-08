@@ -76,8 +76,9 @@ db.StringGet("test:key1")
 
 [Microsoft.Garnet] is the Redis like server, especially useful on Windows.
 
-Use a tiny project like [GarnetServer] to build and run the server.\
-Or download ready to run binaries from [Garnet Releases](https://github.com/microsoft/garnet/releases).
+- Use a tiny project like [GarnetServer] to build and run your own.
+- Or download ready to run binaries from [Garnet Releases](https://github.com/microsoft/garnet/releases).
+- Or install and use as the dotnet tool [garnet-server](https://www.nuget.org/packages/garnet-server).
 
 ## Known issues
 

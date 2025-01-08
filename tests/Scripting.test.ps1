@@ -54,13 +54,20 @@ task prepared_script_parameters {
 	equals $type1 $type2
 }
 
+# https://github.com/microsoft/garnet/issues/902
 task errors {
+	<#
 	$r = Invoke-RedisScript 'redis.call("missing")'
 	equals ([string]$r) ''
+	#>
 
+	<#
 	$r = Invoke-RedisScript 'return redis.call("missing")'
 	equals ([string]$r) 'ERR unknown command'
+	#>
 
+	<# works but makes unwanted fail records in log
 	try { throw Invoke-RedisScript 'return redis.pcall("missing")' }
 	catch { equals "$_" 'ERR [string "return redis.pcall("missing")"]:1: attempt to call a nil value (field ''pcall'')' }
+	#>
 }

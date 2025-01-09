@@ -46,6 +46,9 @@ task install {
 	# let required network services start first
 	exec { nssm set $Service Start SERVICE_DELAYED_AUTO_START }
 
+	# https://github.com/microsoft/garnet/issues/902
+	exec { nssm set $Service AppEnvironmentExtra "DOTNET_LegacyExceptionHandling=1" }
+
 	# save before stopping, using FarNet.Redis all users module
 	$pwsh = (Get-Command pwsh.exe).Definition
 	exec { nssm set $Service AppEvents Stop/Pre "$pwsh -c Import-Module FarNet.Redis; Save-Redis 127.0.0.1:$Port" }
@@ -67,6 +70,6 @@ task uninstall stop, {
 task rebuild stop, publish, start
 
 # Synopsis: Use on changing options.
-task reinstall stop, uninstall, install, start
+task reinstall stop, uninstall, publish, install, start
 
 task . run

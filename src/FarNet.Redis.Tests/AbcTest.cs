@@ -2,11 +2,11 @@
 
 namespace FarNet.Redis.Tests;
 
-public class AnyTest
+public class AbcTest
 {
     protected IDatabase Database { get; }
 
-    public AnyTest()
+    public AbcTest()
     {
         Database = DB.OpenDefaultDatabase();
     }

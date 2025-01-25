@@ -223,11 +223,19 @@ $ParamPattern
 
 		The result is Hashtable of found keys and values.
 "@
+		TimeToLive = @'
+		Tells to get times to live for the specified fields as [timespan].
+
+		Special cases:
+		- [timespan](-1) time to live not set
+		- [timespan](-2) field does not exist
+'@
 	}
 	outputs = @(
 		@{ type = 'System.Collections.Hashtable' }
 		@{ type = 'System.String'; description = 'with Field' }
 		@{ type = 'System.Int64'; description = 'with Count' }
+		@{ type = 'System.TimeSpan'; description = 'with TimeToLive' }
 	)
 }
 
@@ -313,7 +321,13 @@ Merge-Helps $BaseKey @{
 		Specifies the fields and values.
 '@
 		Remove = @'
-		Removes the specified fields.
+		Specifies the fields to remove.
+'@
+		Persist = @'
+		Specifies the fields to persist or set their times to live.
+'@
+		TimeToLive = @'
+		With Persist, specifies the time to live to be set.
 '@
 		Increment = $ParamIncrement
 		Decrement = $ParamDecrement

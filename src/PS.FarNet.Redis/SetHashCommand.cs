@@ -1,4 +1,5 @@
 ﻿using StackExchange.Redis;
+using System;
 using System.Collections;
 using System.Management.Automation;
 
@@ -9,6 +10,7 @@ public sealed class SetHashCommand : BaseKeyCmdlet
 {
     const string NMany = "Many";
     const string NRemove = "Remove";
+    const string NPersist = "Persist";
     const string NIncrement = "Increment";
     const string NDecrement = "Decrement";
     const string NAdd = "Add";
@@ -35,6 +37,12 @@ public sealed class SetHashCommand : BaseKeyCmdlet
     [Parameter(Mandatory = true, ParameterSetName = NRemove)]
     public RedisValue[] Remove { get; set; }
 
+    [Parameter(Mandatory = true, ParameterSetName = NPersist)]
+    public RedisValue[] Persist { get; set; }
+
+    [Parameter(ParameterSetName = NPersist)]
+    public TimeSpan? TimeToLive { get; set; }
+
     [Parameter(Mandatory = true, ParameterSetName = NIncrement)]
     public long Increment { get; set; }
 
@@ -53,14 +61,22 @@ public sealed class SetHashCommand : BaseKeyCmdlet
 
         switch (ParameterSetName)
         {
+            case NMany:
+                {
+                    Database.HashSet(RKey, _Many);
+                }
+                break;
             case NRemove:
                 {
                     Database.HashDelete(RKey, Remove);
                 }
                 break;
-            case NMany:
+            case NPersist:
                 {
-                    Database.HashSet(RKey, _Many);
+                    if (TimeToLive.HasValue)
+                        Database.HashFieldExpire(RKey, Persist, TimeToLive.Value);
+                    else
+                        Database.HashFieldPersist(RKey, Persist);
                 }
                 break;
             case NIncrement:

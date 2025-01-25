@@ -14,15 +14,15 @@ $DataRoot = 'C:\Data\Garnet'
 $Log = "$DataRoot\service.log"
 $App = "$AppRoot\GarnetServer.exe"
 $Arg = @(
-	'--port', $Port
-	'--checkpointdir', "$DataRoot\checkpointdir"
-	'--index', '128m'
-	'--obj-index', '16m'
+	"--port=$Port"
+	"--checkpointdir=$DataRoot\checkpointdir"
+	'--index=128m'
+	'--obj-index=16m'
 	'--lua'
 	'--lua-transaction-mode'
 	'-q'
 	'--recover'
-	'--logger-level', 'Information'
+	'--logger-level=Information'
 ) -join ' '
 
 task run {
@@ -66,10 +66,10 @@ task uninstall stop, {
 	nssm remove $Service confirm
 }
 
-# Synopsis: Use on changing code.
+# Synopsis: Use on changing code or packages.
 task rebuild stop, publish, start
 
-# Synopsis: Use on changing options.
+# Synopsis: Use on changing service options.
 task reinstall stop, uninstall, publish, install, start
 
 task . run

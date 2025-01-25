@@ -2,7 +2,7 @@
 
 namespace FarNet.Redis.Tests;
 
-public class UtilityTest : AnyTest
+public class UtilityTest : AbcTest
 {
     [Fact]
     public void WaitStringNull()
@@ -45,7 +45,7 @@ public class UtilityTest : AnyTest
         {
             Thread.Sleep(300);
             Database.StringSet(key, value);
-        });
+        }, TestContext.Current.CancellationToken);
 
         command.Invoke();
         Assert.Equal(value, command.Result);

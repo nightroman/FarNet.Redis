@@ -258,3 +258,51 @@ task invalid {
 	try { throw Set-RedisHash key -Many @{k=$Host} }
 	catch { $_; assert ($_ -like "*'Many'*'RedisValue':*") }
 }
+
+# How to set, get, and remove hash fields times to live.
+# Also covers https://github.com/microsoft/garnet/issues/954
+task TimeToLive {
+	Remove-RedisKey ($key = 'test:1')
+
+	Set-RedisHash $key f1 v1
+
+	Set-RedisHash $key f2 v2
+	Set-RedisHash $key -Persist f2 -TimeToLive 0:1:0
+
+	Set-RedisHash $key f3 v3
+	Set-RedisHash $key -Persist f3 -TimeToLive 23:0:0
+
+	# TTL ~ 1 minute
+	$r = Get-RedisHash $key f2 -TimeToLive
+	assert ($r.TotalSeconds -gt 59 -and $r.TotalSeconds -lt 60)
+
+	# TTL ~ 23 hours
+	$r = Get-RedisHash $key f3 -TimeToLive
+	assert ($r.TotalHours -gt 22 -and $r.TotalHours -lt 23)
+
+	# TTL is not set
+	$r = Get-RedisHash $key f1 -TimeToLive
+	assert ($r -lt 0)
+	assert ($r -eq -1)
+	equals $r ([timespan](-1))
+
+	# field does not exist
+	$r = Get-RedisHash $key f0 -TimeToLive
+	assert ($r -lt 0)
+	assert ($r -eq -2)
+	equals $r ([timespan](-2))
+
+	# to remove TTL, either omit TimeToLive
+	Set-RedisHash $key -Persist f2
+	$r = Get-RedisHash $key f2 -TimeToLive
+	assert ($r -eq -1)
+
+	# ... or set TimeToLive to $null
+	Set-RedisHash $key -Persist f3 -TimeToLive $null
+	<#TODO
+	$r = Get-RedisHash $key f3 -TimeToLive
+	assert ($r -eq -1)
+	#>
+
+	Remove-RedisKey $key
+}

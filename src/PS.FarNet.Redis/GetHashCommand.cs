@@ -1,4 +1,5 @@
 ﻿using StackExchange.Redis;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Management.Automation;
@@ -9,6 +10,7 @@ namespace PS.FarNet.Redis;
 [OutputType(typeof(Hashtable))]
 [OutputType(typeof(string))]
 [OutputType(typeof(long))]
+[OutputType(typeof(TimeSpan))]
 public sealed class GetHashCommand : BaseGetCountCmdlet
 {
     const string NPattern = "Pattern";
@@ -16,6 +18,9 @@ public sealed class GetHashCommand : BaseGetCountCmdlet
     [Parameter(Position = 1, ParameterSetName = NMain)]
     [ValidateNotNullOrEmpty]
     public RedisValue[] Field { get; set; }
+
+    [Parameter(ParameterSetName = NMain)]
+    public SwitchParameter TimeToLive { get; set; }
 
     [Parameter(ParameterSetName = NPattern, Mandatory = true)]
     [AllowEmptyString]
@@ -43,6 +48,15 @@ public sealed class GetHashCommand : BaseGetCountCmdlet
                     WriteObject(res.ToHashtable());
                 }
                 return;
+        }
+
+        if (TimeToLive)
+        {
+            long[] res = Database.HashFieldGetTimeToLive(RKey, Field);
+            foreach (long ttl in res)
+                WriteObject(ttl > 0 ? TimeSpan.FromMilliseconds(ttl) : new TimeSpan(ttl));
+
+            return;
         }
 
         if (Field?.Length == 1)

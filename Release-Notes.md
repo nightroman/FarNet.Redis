@@ -1,5 +1,16 @@
 # FarNet.Redis Release Notes
 
+## v0.15.0
+
+Implement hash field get/set time to live
+
+- `Get-RedisHash -TimeToLive`
+- `Set-RedisHash -Persist [-TimeToLive]`
+
+Requires Garnet 1.0.53 (if it is used as Redis).
+
+StackExchange.Redis 2.8.24
+
 ## v0.14.1
 
 StackExchange.Redis 2.8.22

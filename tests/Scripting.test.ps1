@@ -63,5 +63,5 @@ task errors {
 	catch { equals "$_" 'ERR Unknown Redis command called from script' }
 
 	try { throw Invoke-RedisScript 'return redis.pcall("missing")' }
-	catch { equals "$_" '[string "return redis.pcall("missing")"]:1: attempt to call a nil value (field ''pcall'')' }
+	catch { equals "$_" 'ERR Lua encountered an error: [string "return redis.pcall("missing")"]:1: attempt to call a nil value (field ''pcall'')' }
 }

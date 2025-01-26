@@ -1,5 +1,11 @@
 # FarNet.Redis Release Notes
 
+## v0.15.1
+
+`Open-Redis`, omitted or empty `Configuration` is treated as default.
+
+`Set-RedisString -Append` returns the result only if `Result` (new switch) is set.
+
 ## v0.15.0
 
 Implement hash field get/set time to live

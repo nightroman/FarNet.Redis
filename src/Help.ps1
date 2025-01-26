@@ -101,8 +101,8 @@ $BaseSub = Merge-Helps $BaseDB @{
 	you use the same configuration string then the same database instance is
 	returned.
 
-	When $env:FARNET_REDIS_CONFIGURATION is defined, you may call Open-Redis
-	without parameters in order to open this kind of default database.
+	If Configuration is omitted or empty then $env:FARNET_REDIS_CONFIGURATION
+	is used and should be defined as the default configuration.
 '@
 	parameters = @{
 		Configuration = $ParamConfiguration
@@ -409,7 +409,10 @@ Merge-Helps $BaseDB @{
 		Sets several strings specified as hashtable or dictionary.
 '@
 		Append = @'
-		Appends the specified string and gets the result string length.
+		Appends the string and returns result length if Result is set.
+'@
+		Result = @'
+		Tells to return the result.
 '@
 		SetAndGet = @'
 		Atomically sets the specified string and returns the old string.
@@ -420,6 +423,7 @@ Merge-Helps $BaseDB @{
 	outputs = @(
 		@{ type = 'System.String'; description = 'with SetAndGet' }
 		@{ type = 'System.Boolean'; description = 'with When' }
+		@{ type = 'System.Int64'; description = 'with Append and Result' }
 	)
 }
 

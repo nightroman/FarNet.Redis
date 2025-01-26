@@ -4,20 +4,17 @@ using System.Management.Automation;
 
 namespace PS.FarNet.Redis;
 
-[Cmdlet("Open", "Redis", DefaultParameterSetName = NMain)]
+[Cmdlet("Open", "Redis")]
 [OutputType(typeof(IDatabase))]
 public sealed class OpenCommand : PSCmdlet
 {
-    const string NMain = "Main";
-    const string NConfiguration = "Configuration";
-
-    [Parameter(Position = 0, Mandatory = true, ParameterSetName = NConfiguration)]
+    [Parameter(Position = 0)]
     public string Configuration { get; set; }
 
     [Parameter]
     public string Prefix { get; set; }
 
-    [Parameter(ParameterSetName = NConfiguration)]
+    [Parameter]
     public SwitchParameter AllowAdmin { get; set; }
 
     void WriteDatabase(IDatabase db)
@@ -28,26 +25,26 @@ public sealed class OpenCommand : PSCmdlet
         WriteObject(db);
     }
 
+    void Configure(ConfigurationOptions options)
+    {
+        if (AllowAdmin)
+            options.AllowAdmin = true;
+    }
+
     protected override void BeginProcessing()
     {
-        switch (ParameterSetName)
+        if (string.IsNullOrEmpty(Configuration))
         {
-            case NMain:
-                {
-                    var db = DB.OpenDefaultDatabase();
-                    WriteDatabase(db);
-                }
-                break;
-            case NConfiguration:
-                {
-                    var options = ConfigurationOptions.Parse(Configuration);
-                    if (AllowAdmin)
-                        options.AllowAdmin = true;
+            var db = DB.OpenDefaultDatabase(Configure);
+            WriteDatabase(db);
+        }
+        else
+        {
+            var options = ConfigurationOptions.Parse(Configuration);
+            Configure(options);
 
-                    var db = DB.Open(options);
-                    WriteDatabase(db);
-                }
-                break;
+            var db = DB.Open(options);
+            WriteDatabase(db);
         }
     }
 }

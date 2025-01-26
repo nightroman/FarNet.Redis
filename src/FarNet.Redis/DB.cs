@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Linq;
 
+#pragma warning disable IDE0130
 namespace StackExchange.Redis;
 
 public static class DB
@@ -11,7 +12,7 @@ public static class DB
 
     public static IDatabase? DefaultDatabase => s_database;
 
-    public static IDatabase OpenDefaultDatabase()
+    public static IDatabase OpenDefaultDatabase(Action<ConfigurationOptions>? configure = null)
     {
         if (s_database is { })
             return s_database;
@@ -19,7 +20,10 @@ public static class DB
         var configuration = Environment.GetEnvironmentVariable("FARNET_REDIS_CONFIGURATION")
             ?? throw new InvalidOperationException("Requires environment variable FARNET_REDIS_CONFIGURATION.");
 
-        return s_database = Open(configuration);
+        var options = ConfigurationOptions.Parse(configuration);
+        configure?.Invoke(options);
+
+        return s_database = Open(options);
     }
 
     public static IDatabase Open(string configuration)

@@ -8,6 +8,7 @@ namespace PS.FarNet.Redis;
 [Cmdlet("Set", "RedisString", DefaultParameterSetName = NMain)]
 [OutputType(typeof(string))]
 [OutputType(typeof(bool))]
+[OutputType(typeof(long))]
 public sealed class SetStringCommand : BaseDBCmdlet
 {
     const string NMany = "Many";
@@ -41,6 +42,9 @@ public sealed class SetStringCommand : BaseDBCmdlet
     public object Append { set => _Append = value.ToRedisValue(); }
     RedisValue _Append;
 
+    [Parameter(ParameterSetName = NAppend)]
+    public SwitchParameter Result { get; set; }
+
     [Parameter(Mandatory = true, ParameterSetName = NSetAndGet)]
     [AllowEmptyString]
     [AllowNull]
@@ -56,7 +60,8 @@ public sealed class SetStringCommand : BaseDBCmdlet
             case NAppend:
                 {
                     long res = Database.StringAppend(Key, _Append);
-                    WriteObject(res);
+                    if (Result)
+                        WriteObject(res);
                 }
                 break;
             case NSetAndGet:

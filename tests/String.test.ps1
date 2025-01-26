@@ -146,14 +146,21 @@ task set_when_many {
 task append {
 	Remove-RedisKey ($key = 'test:1')
 
-	$r = Set-RedisString $key -Append a
-	equals $r 1L
+	# -Append gets nothing without -Result
+	equals (Set-RedisString $key -Append v0) $null
+	equals (Get-RedisString $key) v0
+	Remove-RedisKey $key
 
-	$r = Set-RedisString $key -Append b
+	# -Append when key is missing
+	$r = Set-RedisString $key -Append v1 -Result
 	equals $r 2L
 
+	# -Append when key is present
+	$r = Set-RedisString $key -Append v2 -Result
+	equals $r 4L
+
 	$r = Get-RedisString $key
-	equals $r ab
+	equals $r v1v2
 
 	Remove-RedisKey $key
 }
@@ -172,7 +179,7 @@ task bytes {
 	equals $r[1] 255uy
 
 	# append bytes
-	$r = Set-RedisString $key -Append ([byte[]]@(42))
+	$r = Set-RedisString $key -Append ([byte[]]@(42)) -Result
 	equals $r 3L
 
 	# cast to byte[]

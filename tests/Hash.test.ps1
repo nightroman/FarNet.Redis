@@ -306,3 +306,30 @@ task TimeToLive {
 
 	Remove-RedisKey $key
 }
+
+# hash is removed when its last field is removed
+task last_field_removed {
+	Remove-RedisKey ($key = 'test:1')
+
+	Set-RedisHash $key f1 v1
+	equals (Test-RedisKey $key) 1L
+
+	Set-RedisHash $key -Remove f1
+	equals (Test-RedisKey $key) 0L
+}
+
+# hash is empty when its last field is expired
+task last_field_expired {
+	Remove-RedisKey ($key = 'test:1')
+
+	Set-RedisHash $key f1 v1
+	Set-RedisHash $key -Persist f1 -TimeToLive 0:0:0.1
+	equals (Test-RedisKey $key) 1L
+
+	Start-Sleep -Milliseconds 100
+
+	equals (Test-RedisKey $key) 1L
+	equals (Get-RedisHash $key -Count) 0L
+
+	Remove-RedisKey $key
+}

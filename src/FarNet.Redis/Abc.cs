@@ -1,6 +1,4 @@
-﻿using System.Linq;
-
-namespace FarNet.Redis;
+﻿namespace FarNet.Redis;
 
 static class ExtensionMethods
 {

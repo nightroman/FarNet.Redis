@@ -18,9 +18,13 @@ task build meta, {
 	exec { dotnet build -c $Configuration }
 }
 
-task clean {
-	remove src\*\bin, src\*\obj, README.htm, *.nupkg, z
+function do_clean {
+	Push-Location $PSScriptRoot
+	remove README.htm, *.nupkg, z, src\*\bin, src\*\obj, src\TestResults
+	Pop-Location
 }
+
+task clean {do_clean}
 
 task publish {
 	Set-Location src
@@ -150,8 +154,16 @@ task pushPSGallery package, {
 
 task push pushNuGet, pushPSGallery, clean
 
-task test {
+task testUnit {
+	Set-Location src\FarNet.Redis.Tests
+	exec { dotnet run -c Release }
+	do_clean
+}
+
+task testStar {
 	Invoke-Build ** tests
 }
+
+task test testUnit, testStar
 
 task . build, clean

@@ -1,8 +1,7 @@
-﻿using StackExchange.Redis;
-using System;
-using System.Collections.Generic;
+﻿using FarNet.Redis.About;
+using StackExchange.Redis;
 using System.Globalization;
-using System.IO;
+using System.Text;
 using System.Text.Json;
 
 namespace FarNet.Redis.Commands;
@@ -10,46 +9,107 @@ namespace FarNet.Redis.Commands;
 public sealed class ImportJson : BaseDBCommand
 {
     // required
-    public required string Path { get; init; }
+    public required Stream Stream { get; init; }
 
-    static void AssertTokenType(JsonTokenType expected, JsonTokenType actual, object context)
+    string _key = "";
+    string _name = "";
+    string _field = "";
+
+    void AssertTokenType(JsonTokenType expected, JsonTokenType actual)
     {
         if (expected != actual)
-            throw new InvalidOperationException($"JSON: Expected token '{expected}', actual '{actual}', context: '{context}'.");
+            throw new InvalidOperationException($"Unexpected token '{actual}'.");
     }
 
-    static RedisValue? TryReadRedisValue(ref Utf8JsonStreamReader reader, object context)
+    RedisValue? TryReadStringOrBytes(ref Utf8JsonStreamReader reader)
     {
         reader.Read();
-        if (reader.TokenType == JsonTokenType.String)
-            return reader.GetString();
+        switch (reader.TokenType)
+        {
+            case JsonTokenType.String:
+                {
+                    return reader.GetString();
+                }
+            case JsonTokenType.StartArray:
+                {
+                    reader.Read();
+                    AssertTokenType(JsonTokenType.String, reader.TokenType);
 
-        if (reader.TokenType != JsonTokenType.StartArray)
-            return null;
+                    var bytes = reader.GetBytesFromBase64();
 
-        reader.Read();
-        AssertTokenType(JsonTokenType.String, reader.TokenType, context);
+                    reader.Read();
+                    AssertTokenType(JsonTokenType.EndArray, reader.TokenType);
 
-        var bytes = reader.GetBytesFromBase64();
-
-        reader.Read();
-        AssertTokenType(JsonTokenType.EndArray, reader.TokenType, context);
-
-        return bytes;
+                    return bytes;
+                }
+        }
+        return null;
     }
 
-    static RedisValue[] ReadRedisValueArray(ref Utf8JsonStreamReader reader, object context)
+    (RedisValue, DateTime?) ReadStringOrBytesWithEol(ref Utf8JsonStreamReader reader)
+    {
+        var res = TryReadStringOrBytes(ref reader);
+        if (res.HasValue)
+            return (res.Value, null);
+
+        AssertTokenType(JsonTokenType.StartObject, reader.TokenType);
+
+        RedisValue? value = null;
+        DateTime? eol = null;
+        while (reader.Read() && reader.TokenType != JsonTokenType.EndObject)
+        {
+            var name = reader.GetString();
+            switch (name)
+            {
+                case ExportJson.KeyEol:
+                    {
+                        reader.Read();
+                        AssertTokenType(JsonTokenType.String, reader.TokenType);
+
+                        eol = DateTime.Parse(reader.GetString(), null, DateTimeStyles.AssumeUniversal);
+                    }
+                    break;
+                case ExportJson.KeyText:
+                    {
+                        reader.Read();
+                        AssertTokenType(JsonTokenType.String, reader.TokenType);
+
+                        value = reader.GetString();
+                    }
+                    break;
+                case ExportJson.KeyBlob:
+                    {
+                        reader.Read();
+                        AssertTokenType(JsonTokenType.String, reader.TokenType);
+
+                        value = reader.GetBytesFromBase64();
+                    }
+                    break;
+                default:
+                    {
+                        throw new InvalidOperationException($"Unexpected property '{name}'.");
+                    }
+            }
+        }
+
+        if (value.HasValue)
+            return (value.Value, eol);
+
+        throw new InvalidOperationException("Missing expected value.");
+    }
+
+    RedisValue[] ReadRedisValueArray(ref Utf8JsonStreamReader reader)
     {
         reader.Read();
-        AssertTokenType(JsonTokenType.StartArray, reader.TokenType, context);
+        AssertTokenType(JsonTokenType.StartArray, reader.TokenType);
 
         var items = new List<RedisValue>();
         while (true)
         {
-            var res = TryReadRedisValue(ref reader, context);
+            var res = TryReadStringOrBytes(ref reader);
             if (!res.HasValue)
             {
-                AssertTokenType(JsonTokenType.EndArray, reader.TokenType, context);
+                AssertTokenType(JsonTokenType.EndArray, reader.TokenType);
                 break;
             }
 
@@ -58,124 +118,162 @@ public sealed class ImportJson : BaseDBCommand
         return [.. items];
     }
 
-    static HashEntry[] ReadHashEntryArray(ref Utf8JsonStreamReader reader, object context)
+    List<(HashEntry entry, DateTime? eol)> ReadHashEntriesWithEol(ref Utf8JsonStreamReader reader)
     {
         reader.Read();
-        AssertTokenType(JsonTokenType.StartObject, reader.TokenType, context);
+        AssertTokenType(JsonTokenType.StartObject, reader.TokenType);
 
-        var items = new List<HashEntry>();
+        var items = new List<(HashEntry entry, DateTime? eol)>();
         while (reader.Read() && reader.TokenType != JsonTokenType.EndObject)
         {
-            AssertTokenType(JsonTokenType.PropertyName, reader.TokenType, context);
+            _field = reader.GetString();
+            var (value, eol) = ReadStringOrBytesWithEol(ref reader);
 
-            var key = reader.GetString();
-            var res = TryReadRedisValue(ref reader, context);
-            if (!res.HasValue)
-                throw new InvalidOperationException($"JSON: Expected token 'String' or 'StartArray', actual '{reader.TokenType}', context: '{context}/{key}'.");
-
-            items.Add(new HashEntry(key, res.Value));
+            if (!eol.HasValue || eol.Value > DateTime.UtcNow)
+                items.Add((new HashEntry(_field, value), eol));
         }
-        return [.. items];
+
+        _field = "";
+        return items;
+    }
+
+    // Ensures at least a millisecond, to avoid errors.
+    static TimeSpan PositiveTimeToLive(DateTime eol)
+    {
+        var ttl = eol - DateTime.UtcNow;
+        return ttl.TotalMilliseconds >= 1 ? ttl : TimeSpan.FromMilliseconds(1);
     }
 
     protected override void Execute()
     {
-        using var stream = File.OpenRead(Path);
-
         // skip BOM
-        if (stream.ReadByte() != 0xEF || stream.ReadByte() != 0xBB || stream.ReadByte() != 0xBF)
-            stream.Position = 0;
+        if (Stream.ReadByte() != 0xEF || Stream.ReadByte() != 0xBB || Stream.ReadByte() != 0xBF)
+            Stream.Position = 0;
 
-        var reader = new Utf8JsonStreamReader(stream, 32 * 1024);
+        var reader = new Utf8JsonStreamReader(Stream, 32 * 1024);
         try
         {
             reader.Read();
-            AssertTokenType(JsonTokenType.StartObject, reader.TokenType, "ROOT");
+            AssertTokenType(JsonTokenType.StartObject, reader.TokenType);
 
             while (reader.Read() && reader.TokenType != JsonTokenType.EndObject)
             {
-                AssertTokenType(JsonTokenType.PropertyName, reader.TokenType, "KEY");
-                var key = reader.GetString();
+                _key = reader.GetString();
+                _name = "";
 
-                var res = TryReadRedisValue(ref reader, key);
+                var res = TryReadStringOrBytes(ref reader);
                 if (res.HasValue)
                 {
-                    Database.StringSet(key, res.Value);
+                    Database.StringSet(_key, res.Value);
                     continue;
                 }
 
-                AssertTokenType(JsonTokenType.StartObject, reader.TokenType, key);
+                AssertTokenType(JsonTokenType.StartObject, reader.TokenType);
 
+                // read {"key": {...
                 DateTime? eol = null;
                 Action? save = null;
                 while (reader.Read() && reader.TokenType != JsonTokenType.EndObject)
                 {
-                    AssertTokenType(JsonTokenType.PropertyName, reader.TokenType, key);
-
-                    var name = reader.GetString();
-                    switch (name)
+                    _name = reader.GetString();
+                    switch (_name)
                     {
+                        case ExportJson.KeyEol:
+                            {
+                                reader.Read();
+                                AssertTokenType(JsonTokenType.String, reader.TokenType);
+
+                                eol = DateTime.Parse(reader.GetString(), null, DateTimeStyles.AssumeUniversal);
+                            }
+                            break;
                         case ExportJson.KeyText:
                             {
                                 reader.Read();
-                                AssertTokenType(JsonTokenType.String, reader.TokenType, key);
+                                AssertTokenType(JsonTokenType.String, reader.TokenType);
 
                                 string value = reader.GetString();
-                                save = () => Database.StringSet(key, value);
+                                save = () => Database.StringSet(_key, value);
                             }
                             break;
                         case ExportJson.KeyBlob:
                             {
                                 reader.Read();
-                                AssertTokenType(JsonTokenType.String, reader.TokenType, key);
+                                AssertTokenType(JsonTokenType.String, reader.TokenType);
 
                                 byte[] value = reader.GetBytesFromBase64();
-                                save = () => Database.StringSet(key, value);
-                            }
-                            break;
-                        case ExportJson.KeyHash:
-                            {
-                                var items = ReadHashEntryArray(ref reader, key);
-                                Database.KeyDelete(key);
-                                save = () => Database.HashSet(key, items);
+                                save = () => Database.StringSet(_key, value);
                             }
                             break;
                         case ExportJson.KeyList:
                             {
-                                var items = ReadRedisValueArray(ref reader, key);
-                                Database.KeyDelete(key);
-                                save = () => Database.ListRightPush(key, items);
+                                var items = ReadRedisValueArray(ref reader);
+                                Database.KeyDelete(_key);
+                                save = () => Database.ListRightPush(_key, items);
                             }
                             break;
                         case ExportJson.KeySet:
                             {
-                                var items = ReadRedisValueArray(ref reader, key);
-                                Database.KeyDelete(key);
-                                save = () => Database.SetAdd(key, items);
+                                var items = ReadRedisValueArray(ref reader);
+                                Database.KeyDelete(_key);
+                                save = () => Database.SetAdd(_key, items);
                             }
                             break;
-                        case ExportJson.KeyEol:
+                        case ExportJson.KeyHash:
                             {
-                                reader.Read();
-                                AssertTokenType(JsonTokenType.String, reader.TokenType, key);
+                                var items = ReadHashEntriesWithEol(ref reader);
+                                Database.KeyDelete(_key);
 
-                                eol = DateTime.Parse(reader.GetString(), null, DateTimeStyles.AssumeUniversal);
+                                var entries = items.Select(x => x.entry).ToArray();
+                                if (entries.Length > 0)
+                                {
+                                    save = () =>
+                                    {
+                                        Database.HashSet(_key, entries);
+
+                                        foreach (var item in items)
+                                        {
+                                            if (item.eol.HasValue)
+                                                Database.HashFieldExpire(_key, [item.entry.Name], PositiveTimeToLive(item.eol.Value));
+                                        }
+                                    };
+                                }
                             }
                             break;
                         default:
                             {
-                                throw new InvalidOperationException($"JSON: Unexpected property '{name}'.");
+                                throw new InvalidOperationException($"Unexpected property '{_name}'.");
                             }
                     }
                 }
 
+                if (save is null)
+                    continue;
+
                 if (!eol.HasValue || eol > DateTime.UtcNow)
                 {
-                    save!();
+                    save();
                     if (eol.HasValue)
-                        Database.KeyExpire(key, eol - DateTime.Now);
+                        Database.KeyExpire(_key, PositiveTimeToLive(eol.Value));
                 }
             }
+        }
+        catch (Exception ex)
+        {
+            var sb = new StringBuilder("JSON: ");
+            if (_key.Length > 0)
+            {
+                sb.Append(_key);
+                if (_name.Length > 0)
+                {
+                    sb.Append('/').Append(_name);
+                    if (_field.Length > 0)
+                        sb.Append('/').Append(_field);
+                }
+                sb.Append(": ");
+            }
+            sb.Append(ex.Message);
+
+            throw new InvalidOperationException(sb.ToString(), ex);
         }
         finally
         {

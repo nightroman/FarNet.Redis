@@ -1,11 +1,9 @@
 ﻿//https://stackoverflow.com/a/55429664/323582
 
-using System;
 using System.Buffers;
-using System.IO;
 using System.Text.Json;
 
-namespace FarNet.Redis;
+namespace FarNet.Redis.About;
 
 ref struct Utf8JsonStreamReader(Stream stream, int bufferSize)
 {

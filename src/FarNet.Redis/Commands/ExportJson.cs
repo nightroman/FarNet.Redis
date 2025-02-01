@@ -1,7 +1,4 @@
 ﻿using StackExchange.Redis;
-using System;
-using System.IO;
-using System.Linq;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
@@ -18,7 +15,7 @@ public sealed class ExportJson : BaseDBCommand
     public const string KeyEol = "EOL";
 
     // required
-    public required string Path { get; init; }
+    public required Stream Stream { get; init; }
 
     // optional
     public string? Pattern { get; init; }
@@ -103,16 +100,39 @@ public sealed class ExportJson : BaseDBCommand
                     if (res.Length == 0)
                         return;
 
+                    long[] ttls = Database.HashFieldGetTimeToLive(key, res.Select(x => x.Name).ToArray());
+
                     writer.WritePropertyName(key!);
                     writer.WriteStartObject();
                     WriteEndOfLife(writer, ttl);
 
                     writer.WritePropertyName(KeyHash);
                     writer.WriteStartObject();
-                    foreach (HashEntry entry in res)
+                    for (int i = 0; i < res.Length; ++i)
                     {
-                        writer.WritePropertyName(entry.Name!);
-                        WriteString(writer, entry.Value);
+                        // TTL? skip not needed or to be expired
+                        var ttl2 = ttls[i];
+                        if (ttl2 > 0 && (!TimeToLive.HasValue || ttl2 < TimeToLive.Value.TotalMilliseconds))
+                            continue;
+
+                        HashEntry entry = res[i];
+
+                        var field = entry.Name.ToString();
+                        writer.WritePropertyName(field);
+
+                        if (ttl2 > 0)
+                        {
+                            writer.WriteStartObject();
+                            WriteEndOfLife(writer, TimeSpan.FromMilliseconds(ttl2));
+
+                            WriteBlobOrText(writer, entry.Value);
+
+                            writer.WriteEndObject();
+                        }
+                        else
+                        {
+                            WriteString(writer, entry.Value);
+                        }
                     }
                     writer.WriteEndObject();
 
@@ -189,8 +209,7 @@ public sealed class ExportJson : BaseDBCommand
             Indented = true,
         };
 
-        using var stream = new FileStream(Path, FileMode.Create);
-        using var writer = new Utf8JsonWriter(stream, options);
+        using var writer = new Utf8JsonWriter(Stream, options);
 
         writer.WriteStartObject();
         foreach (RedisKey key in keys)

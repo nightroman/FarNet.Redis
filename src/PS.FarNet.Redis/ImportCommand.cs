@@ -14,10 +14,12 @@ public sealed class ImportCommand : BaseDBCmdlet
     {
         base.BeginProcessing();
 
+        using var stream = File.OpenRead(GetUnresolvedProviderPathFromPSPath(Path));
+
         var command = new ImportJson
         {
             Database = Database,
-            Path = GetUnresolvedProviderPathFromPSPath(Path),
+            Stream = stream,
         };
 
         Invoke(command);

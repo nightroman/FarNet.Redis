@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace FarNet.Redis.Commands;
+﻿namespace FarNet.Redis.Commands;
 
 public abstract class AnyCommand
 {

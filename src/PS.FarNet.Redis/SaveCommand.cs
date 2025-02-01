@@ -1,6 +1,5 @@
 ﻿using StackExchange.Redis;
 using System.Management.Automation;
-using System.Threading;
 
 namespace PS.FarNet.Redis;
 

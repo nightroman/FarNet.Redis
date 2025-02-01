@@ -299,10 +299,8 @@ task TimeToLive {
 
 	# ... or set TimeToLive to $null
 	Set-RedisHash $key -Persist f3 -TimeToLive $null
-	<#TODO
 	$r = Get-RedisHash $key f3 -TimeToLive
 	assert ($r -eq -1)
-	#>
 
 	Remove-RedisKey $key
 }

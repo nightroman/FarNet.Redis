@@ -1,5 +1,11 @@
 # FarNet.Redis Release Notes
 
+## v0.15.2
+
+Export / import expiring hash fields with end of life.
+
+Requires Garnet 1.0.54, if used as Redis.
+
 ## v0.15.1
 
 `Open-Redis`, omitted or empty `Configuration` is treated as default.
@@ -13,7 +19,7 @@ Implement hash field get/set time to live
 - `Get-RedisHash -TimeToLive`
 - `Set-RedisHash -Persist [-TimeToLive]`
 
-Requires Garnet 1.0.53 (if it is used as Redis).
+Requires Garnet 1.0.53, if used as Redis.
 
 StackExchange.Redis 2.8.24
 

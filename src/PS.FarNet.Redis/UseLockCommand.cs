@@ -1,6 +1,5 @@
 ﻿using FarNet.Redis.Commands;
 using StackExchange.Redis;
-using System;
 using System.Management.Automation;
 
 namespace PS.FarNet.Redis;

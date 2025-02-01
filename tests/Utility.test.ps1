@@ -89,26 +89,29 @@ task clixml_deep {
 }
 
 task export {
+	Remove-RedisKey (Search-RedisKey try:*)
+
 	[byte[]]$blob = 0, 128
 	$base64 = [Convert]::ToBase64String($blob)
-	(Search-RedisKey try:*).ForEach{Remove-RedisKey $_}
 
-	# set all types, one with expiry
+	# set all types, some expiring
 	Set-RedisString try:t1 привет
 	Set-RedisString try:b1 $blob
-	Set-RedisString try:t2 привет -TimeToLive ([timespan]::FromMinutes(3))
-	Set-RedisString try:b2 $blob -TimeToLive ([timespan]::FromMinutes(3))
+	Set-RedisString try:t2 привет -TimeToLive 0:3
+	Set-RedisString try:b2 $blob -TimeToLive 0:3
 	Set-RedisHash try:h1 ([ordered]@{привет=42; world=$blob})
+	Set-RedisHash try:h2 ([ordered]@{привет=42; world=$blob})
+	Set-RedisHash try:h2 -Persist привет, world -TimeToLive 0:3
 	Set-RedisList try:l1 привет, $blob
 	Set-RedisSet try:s1 $blob, привет
-	Set-RedisString try:short lived -TimeToLive ([timespan]::FromMinutes(1))
+	Set-RedisString try:short lived -TimeToLive 0:1
 
 	# export with expiring
-	Export-Redis z.1.json try:* -TimeToLive ([timespan]::FromMinutes(2))
+	Export-Redis temp:\1.json try:* -TimeToLive 0:2
 
 	# test expected JSON
-	$r = Get-Content z.1.json -Raw | ConvertFrom-Json -AsHashtable
-	equals $r.Count 7
+	$r = Get-Content temp:\1.json -Raw | ConvertFrom-Json -AsHashtable
+	equals $r.Count 8
 	equals $r['try:t1'] привет
 	equals $r['try:b1'][0] $base64
 	equals $r['try:t2'].Text привет
@@ -123,15 +126,15 @@ task export {
 	assert ($r['try:b2'].EOL -match '^\d\d\d\d-\d\d-\d\d \d\d:\d\d$')
 
 	# import and export again, persistent only this time
-	Import-Redis z.1.json
-	Export-Redis z.2.json try:*
+	Import-Redis temp:\1.json
+	Export-Redis temp:\2.json try:*
 
 	# expiring keys were excluded
-	$r = Get-Content z.2.json -Raw | ConvertFrom-Json -AsHashtable
-	equals (($r.Keys | Sort-Object) -join ',') 'try:b1,try:h1,try:l1,try:s1,try:t1'
+	$r = Get-Content temp:\2.json -Raw | ConvertFrom-Json -AsHashtable
+	equals (($r.Keys | Sort-Object) -join ',') 'try:b1,try:h1,try:h2,try:l1,try:s1,try:t1'
 
 	# test expected formatting, mind random order
-	$r = (Get-Content z.1.json) -join '|' -replace '\d\d\d\d-\d\d-\d\d \d\d:\d\d', 'date' -replace ','
+	$r = (Get-Content temp:\1.json) -join '|' -replace '\d\d\d\d-\d\d-\d\d \d\d:\d\d', 'date' -replace ','
 	assert $r.Contains('|  "try:t1": "привет"|')
 	assert $r.Contains('|  "try:b1": ["AIA="]|')
 	assert $r.Contains('|  "try:t2": {|    "EOL": "date"|    "Text": "привет"|  }|')
@@ -141,7 +144,6 @@ task export {
 	assert $r.Contains('|  "try:s1": {|    "Set": [|      ["AIA="]|      "привет"|    ]|  }|')
 
 	Remove-RedisKey (Search-RedisKey try:*)
-	remove z.*.json
 }
 
 task export_empty {

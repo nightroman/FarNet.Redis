@@ -1,5 +1,4 @@
 ﻿using FarNet.Redis.Commands;
-using System;
 using System.Management.Automation;
 
 namespace PS.FarNet.Redis;

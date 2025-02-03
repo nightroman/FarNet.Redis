@@ -1,5 +1,9 @@
 # FarNet.Redis Release Notes
 
+## v0.15.4
+
+Order `HashToText`, fix `ValuesToText`.
+
 ## v0.15.3
 
 Refactoring and helpers for FarNet.RedisKit.

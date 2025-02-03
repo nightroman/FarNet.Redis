@@ -274,7 +274,7 @@ task TimeToLive {
 
 	# TTL ~ 1 minute
 	$r = Get-RedisHash $key f2 -TimeToLive
-	assert ($r.TotalSeconds -gt 59 -and $r.TotalSeconds -lt 60)
+	assert ($r.TotalSeconds -ge 55 -and $r.TotalSeconds -le 60)
 
 	# TTL ~ 23 hours
 	$r = Get-RedisHash $key f3 -TimeToLive

@@ -235,7 +235,7 @@ task SETNX-Get-RedisString-TimeToLive {
 task auto_update_expiring {
 	function GetOrAdd($value) {
 		(Get-RedisString $key) ?? (&{
-			Set-RedisString $key $value -TimeToLive 00:00:00.05
+			Set-RedisString $key $value -TimeToLive 0:0:0.05
 			$value
 		})
 	}
@@ -251,7 +251,7 @@ task auto_update_expiring {
 	equals $r v1
 
 	# let it expire
-	Start-Sleep -Milliseconds 50
+	Start-Sleep -Duration 0:0:0.1
 
 	# try and suggest v3 -> new v3
 	$r = GetOrAdd v3

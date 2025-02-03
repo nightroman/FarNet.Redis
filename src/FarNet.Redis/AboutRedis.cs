@@ -38,7 +38,7 @@ public static class AboutRedis
     public static string? HashToText(HashEntry[] items)
     {
         var sb = new StringBuilder();
-        foreach (var item in items)
+        foreach (var item in items.OrderBy(x => x.Name))
         {
             var name = GetLineText(item.Name);
             if (name is null)
@@ -80,17 +80,20 @@ public static class AboutRedis
         return res;
     }
 
-    public static string? ValuesToText(RedisValue[] items)
+    public static string? ValuesToText(IEnumerable<RedisValue> items)
     {
         var sb = new StringBuilder();
+        bool needsNewLine = false;
         foreach (var item in items)
         {
             var line = GetLineText(item);
             if (line is null)
                 return null;
 
-            if (sb.Length > 0)
+            if (needsNewLine)
                 sb.AppendLine();
+            else
+                needsNewLine = true;
 
             sb.Append(line);
         }

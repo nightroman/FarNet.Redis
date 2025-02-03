@@ -10,9 +10,6 @@
     <PackageReference Include="StackExchange.Redis" Version="2.8.24" />
     <PackageReference Include="PowerShellStandard.Library" Version="5.1.1" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="About\" />
-  </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="ib publish -Configuration $(Configuration) -FarHome $(FarHome)" />
   </Target>

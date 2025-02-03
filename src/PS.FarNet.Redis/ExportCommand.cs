@@ -1,4 +1,5 @@
 ﻿using FarNet.Redis.Commands;
+using StackExchange.Redis;
 using System.Management.Automation;
 
 namespace PS.FarNet.Redis;
@@ -17,10 +18,7 @@ public sealed class ExportCommand : BaseDBCmdlet
     [SupportsWildcards]
     public string[] Exclude
     {
-        set
-        {
-            _excludePatterns = value.Select(x => new WildcardPattern(x)).ToArray();
-        }
+        set => _excludePatterns = value.Select(x => new WildcardPattern(x)).ToArray();
     }
     WildcardPattern[] _excludePatterns;
 
@@ -33,13 +31,16 @@ public sealed class ExportCommand : BaseDBCmdlet
 
         using var stream = new FileStream(GetUnresolvedProviderPathFromPSPath(Path), FileMode.Create);
 
+        IEnumerable<RedisKey> keys = DB.Keys(Database, Pattern);
+        if (_excludePatterns is { })
+            keys = keys.Where(key => !_excludePatterns.Any(x => x.IsMatch(key)));
+
         var command = new ExportJson
         {
             Database = Database,
             Stream = stream,
-            Pattern = Pattern,
+            Keys = keys,
             TimeToLive = TimeToLive,
-            Exclude = _excludePatterns is null ? null : key => _excludePatterns.Any(x => x.IsMatch(key)),
             WriteWarning = WriteWarning,
         };
 

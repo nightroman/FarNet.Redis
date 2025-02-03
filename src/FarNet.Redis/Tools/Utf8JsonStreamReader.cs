@@ -3,7 +3,7 @@
 using System.Buffers;
 using System.Text.Json;
 
-namespace FarNet.Redis.About;
+namespace FarNet.Redis.Tools;
 
 ref struct Utf8JsonStreamReader(Stream stream, int bufferSize)
 {

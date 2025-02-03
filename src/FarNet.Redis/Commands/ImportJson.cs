@@ -1,4 +1,4 @@
-﻿using FarNet.Redis.About;
+﻿using FarNet.Redis.Tools;
 using StackExchange.Redis;
 using System.Globalization;
 using System.Text;

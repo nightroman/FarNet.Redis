@@ -65,4 +65,10 @@ public static class DB
                 s_databases.TryRemove(kv.Key, out _);
         }
     }
+
+    public static IEnumerable<RedisKey> Keys(IDatabase db, RedisValue pattern)
+    {
+        var server = db.Multiplexer.GetServers()[0];
+        return server.Keys(db.Database, pattern);
+    }
 }

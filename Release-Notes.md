@@ -1,5 +1,9 @@
 # FarNet.Redis Release Notes
 
+## v0.15.3
+
+Refactoring and helpers for FarNet.RedisKit.
+
 ## v0.15.2
 
 Export / import expiring hash fields with end of life.

@@ -1,5 +1,4 @@
 ﻿using StackExchange.Redis;
-using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 
@@ -16,27 +15,16 @@ public sealed class ExportJson : BaseDBCommand
 
     // required
     public required Stream Stream { get; init; }
+    public required IEnumerable<RedisKey> Keys { get; init; }
 
     // optional
-    public string? Pattern { get; init; }
     public TimeSpan? TimeToLive { get; init; }
-    public Predicate<string>? Exclude { get; init; }
+    public bool FormatAsObjects { get; init; }
     public Action<string>? WriteWarning { get; init; }
-
-    static object GetBlobOrText(RedisValue value)
-    {
-        var blob = (byte[])value!;
-        var text = Encoding.UTF8.GetString(blob);
-        if (text.IsAscii())
-            return text;
-
-        var temp = Encoding.UTF8.GetBytes(text);
-        return blob.SequenceEqual(temp) ? text : blob;
-    }
 
     static void WriteBlobOrText(Utf8JsonWriter writer, RedisValue value)
     {
-        var obj = GetBlobOrText(value);
+        var obj = AboutRedis.GetBlobOrText(value);
         if (obj is string text)
         {
             writer.WriteString(KeyText, text);
@@ -49,7 +37,7 @@ public sealed class ExportJson : BaseDBCommand
 
     static void WriteString(Utf8JsonWriter writer, RedisValue value, bool isList = false)
     {
-        var obj = GetBlobOrText(value);
+        var obj = AboutRedis.GetBlobOrText(value);
         if (obj is string text)
         {
             writer.WriteStringValue(text);
@@ -79,10 +67,13 @@ public sealed class ExportJson : BaseDBCommand
                         return;
 
                     writer.WritePropertyName(key!);
-                    if (ttl.HasValue)
+
+                    if (FormatAsObjects || ttl.HasValue)
                     {
                         writer.WriteStartObject();
-                        WriteEndOfLife(writer, ttl);
+
+                        if (ttl.HasValue)
+                            WriteEndOfLife(writer, ttl);
 
                         WriteBlobOrText(writer, res);
 
@@ -200,9 +191,6 @@ public sealed class ExportJson : BaseDBCommand
 
     protected override void Execute()
     {
-        var server = Database.Multiplexer.GetServers()[0];
-        var keys = server.Keys(Database.Database, Pattern);
-
         var options = new JsonWriterOptions
         {
             Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
@@ -212,13 +200,9 @@ public sealed class ExportJson : BaseDBCommand
         using var writer = new Utf8JsonWriter(Stream, options);
 
         writer.WriteStartObject();
-        foreach (RedisKey key in keys)
-        {
-            if (Exclude is { } && Exclude(key!))
-                continue;
 
+        foreach (RedisKey key in Keys)
             WriteKey(writer, key);
-        }
 
         writer.WriteEndObject();
     }

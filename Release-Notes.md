@@ -1,5 +1,11 @@
 # FarNet.Redis Release Notes
 
+## v0.15.5
+
+Tweak help.
+
+Garnet 1.0.56
+
 ## v0.15.4
 
 Order `HashToText`, fix `ValuesToText`.

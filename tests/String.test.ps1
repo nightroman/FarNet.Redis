@@ -105,6 +105,8 @@ task set_when_one {
 	Remove-RedisKey $key
 }
 
+# https://redis.io/commands/mset
+# https://redis.io/commands/msetnx
 task set_when_many {
 	Remove-RedisKey ($key1, $key2 = 'test:1', 'test:2')
 
@@ -127,18 +129,18 @@ task set_when_many {
 	try { throw Set-RedisString -Many @{$key1 = 5; $key2 = 6} -When Exists }
 	catch { equals "$_" 'Exists is not valid in this context; the permitted values are: Always, NotExists' }
 
-	# both exist -> false, nothing is set
+	# all exist -> false, nothing is set
 	$r = Set-RedisString -Many @{$key1 = 1; $key2 = 2} -When NotExists
 	equals $r $false
 	equals (Get-RedisString $key1) '5'
 	equals (Get-RedisString $key2) '4'
 
-	# some missing -> true, something is set
+	# some exists -> false, nothing is set // Garnet 1.0.55
 	Remove-RedisKey $key1
 	$r = Set-RedisString -Many @{$key1 = 1; $key2 = 2} -When NotExists
-	equals $r $true
-	equals (Get-RedisString $key1) '1'
-	equals (Get-RedisString $key2) '4' #! note the old value
+	equals $r $false
+	equals (Get-RedisString $key1) $null
+	equals (Get-RedisString $key2) '4'
 
 	Remove-RedisKey $key1, $key2
 }

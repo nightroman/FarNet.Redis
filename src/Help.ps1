@@ -407,6 +407,8 @@ Merge-Helps $BaseDB @{
 '@
 		Many = @'
 		Sets several strings specified as hashtable or dictionary.
+
+		All given keys are set at once or none.
 '@
 		Append = @'
 		Appends the string and returns result length if Result is set.

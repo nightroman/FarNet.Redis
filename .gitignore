@@ -1,11 +1,9 @@
-.vs
-bin
-obj
-Properties
-TestResults
-z
-z.*
-
+.vs/
+bin/
+obj/
+Properties/
+TestResults/
+z*
 *.htm
 *.nupkg
 *.user

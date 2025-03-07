@@ -1,5 +1,11 @@
 # FarNet.Redis Release Notes
 
+## v0.15.6
+
+StackExchange.Redis 2.8.31
+
+Garnet 1.0.59
+
 ## v0.15.5
 
 Tweak help.

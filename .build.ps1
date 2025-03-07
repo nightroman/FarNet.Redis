@@ -44,7 +44,7 @@ task content -After publish {
 
 task help {
 	. Helps.ps1
-	Convert-Helps src\Help.ps1 $ModuleRoot\PS.FarNet.Redis.dll-Help.xml
+	Convert-Helps Help.ps1 $ModuleRoot\PS.FarNet.Redis.dll-Help.xml
 }
 
 task version {

@@ -3,17 +3,17 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PS.FarNet.Redis", "PS.FarNet.Redis\PS.FarNet.Redis.csproj", "{5AE1336B-D283-445B-A3BF-D98DCCD1323E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PS.FarNet.Redis", "src\PS.FarNet.Redis\PS.FarNet.Redis.csproj", "{5AE1336B-D283-445B-A3BF-D98DCCD1323E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FarNet.Redis", "FarNet.Redis\FarNet.Redis.csproj", "{07DB1E3D-08CA-46F3-9AC0-563965F57F06}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FarNet.Redis", "src\FarNet.Redis\FarNet.Redis.csproj", "{07DB1E3D-08CA-46F3-9AC0-563965F57F06}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{7123E4AF-C6DE-4725-9E97-91C5442D2D1D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FarNet.Redis.Tests", "src\FarNet.Redis.Tests\FarNet.Redis.Tests.csproj", "{18955F60-D0D4-45AD-A126-81BDF875A3F6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8EC462FD-D22E-90A8-E5CE-7E832BA40C5D}"
 	ProjectSection(SolutionItems) = preProject
-		Content\about_FarNet.Redis.help.txt = Content\about_FarNet.Redis.help.txt
-		Content\FarNet.Redis.psd1 = Content\FarNet.Redis.psd1
+		src\Content\about_FarNet.Redis.help.txt = src\Content\about_FarNet.Redis.help.txt
+		src\Content\FarNet.Redis.psd1 = src\Content\FarNet.Redis.psd1
 	EndProjectSection
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FarNet.Redis.Tests", "FarNet.Redis.Tests\FarNet.Redis.Tests.csproj", "{18955F60-D0D4-45AD-A126-81BDF875A3F6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

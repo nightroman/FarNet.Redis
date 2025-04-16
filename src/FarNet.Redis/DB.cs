@@ -1,13 +1,14 @@
-﻿using System;
+﻿using FarNet.Redis;
 using System.Collections.Concurrent;
-using System.Linq;
 
 #pragma warning disable IDE0130
 namespace StackExchange.Redis;
 
 public static class DB
 {
-    private static readonly ConcurrentDictionary<string, IDatabase> s_databases = [];
+    const int DefaultIndex = -1;
+
+    private static readonly ConcurrentDictionary<(string, int), IDatabase> s_databases = [];
     private static IDatabase? s_database;
 
     public static IDatabase? DefaultDatabase => s_database;
@@ -26,30 +27,30 @@ public static class DB
         return s_database = Open(options);
     }
 
-    public static IDatabase Open(string configuration)
+    public static IDatabase Open(string configuration, int index = DefaultIndex)
     {
         var options = ConfigurationOptions.Parse(configuration);
-        return Open(options);
+        return Open(options, index);
     }
 
-    public static IDatabase Open(ConfigurationOptions options)
+    public static IDatabase Open(ConfigurationOptions options, int index = DefaultIndex)
     {
         var key = options.ToString();
-        var db = s_databases.GetOrAdd(key, key =>
+        var db = s_databases.GetOrAdd((key, index), key =>
         {
             var redis = ConnectionMultiplexer.Connect(options);
-            return redis.GetDatabase();
+            return redis.GetDatabase(key.Item2);
         });
 
         return db;
     }
 
-    public static void Close(string configuration)
+    public static void Close(string configuration, int index = DefaultIndex)
     {
         var options = ConfigurationOptions.Parse(configuration);
 
         var key = options.ToString();
-        if (s_databases.TryRemove(key, out IDatabase? db))
+        if (s_databases.TryRemove((key, index), out IDatabase? db))
             db.Multiplexer.Close();
     }
 
@@ -68,7 +69,7 @@ public static class DB
 
     public static IEnumerable<RedisKey> Keys(IDatabase db, RedisValue pattern)
     {
-        var server = db.Multiplexer.GetServers()[0];
+        var server = AboutRedis.GetServer(db.Multiplexer);
         return server.Keys(db.Database, pattern);
     }
 }

@@ -1,4 +1,5 @@
-﻿using StackExchange.Redis;
+﻿using FarNet.Redis;
+using StackExchange.Redis;
 using System.Management.Automation;
 
 namespace PS.FarNet.Redis;
@@ -11,7 +12,8 @@ public sealed class GetServerCommand : BaseDBCmdlet
     {
         base.BeginProcessing();
 
-        var res = Database.Multiplexer.GetServers()[Database.Database];
-        WriteObject(res);
+        var server = AboutRedis.GetServer(Database.Multiplexer);
+
+        WriteObject(server);
     }
 }

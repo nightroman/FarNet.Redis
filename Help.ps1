@@ -6,15 +6,6 @@ $ParamKey = 'Specifies the Redis key.'
 
 $ParamCount = 'Gets the number of items.'
 
-$ParamConfiguration = @'
-		Specifies the Redis configuration string.
-		Examples:
-			"127.0.0.1:3278"
-			"127.0.0.1:3278,AllowAdmin=true"
-
-		Note that 127.0.0.1 seems to work faster than localhost.
-'@
-
 $ParamPattern = @'
 		Specifies the search pattern in one of two forms.
 
@@ -93,19 +84,49 @@ $BaseSub = Merge-Helps $BaseDB @{
 	command = 'Open-Redis'
 	synopsis = 'Opens and returns the specified Redis database.'
 	description = @'
-	This command connects to Redis and returns the database instance. Keep it
-	as the variable $db. Other commands use the variable $db as the default
-	value of the parameter Database.
+	This command connects to Redis and returns the specified database.
 
-	You may close the database by Close-Redis. Or keep it for using later. If
-	you use the same configuration string then the same database instance is
-	returned.
+	Keep the result database as the variable $db. In this case Redis cmdlets
+	automatically use it the default value of omitted parameters Database.
 
-	If Configuration is omitted or empty then $env:FARNET_REDIS_CONFIGURATION
-	is used and should be defined as the default configuration.
+	Use different variables on opening more databases in the same scope and use
+	them explicitly as Redis cmdlet parameters Database.
+
+	The database may be closed by Close-Redis but in many cases this is not
+	needed. It is cached internally and automatically reused on Open-Redis
+	subsequent calls with the same Configuration.
 '@
 	parameters = @{
-		Configuration = $ParamConfiguration
+		Configuration = @'
+		Specifies the configuration, see https://stackexchange.github.io/StackExchange.Redis/Configuration
+
+		If Configuration is omitted then $env:FARNET_REDIS_CONFIGURATION is
+		used as the default configuration. This variable should be defined
+		or else the call fails.
+
+		EXAMPLES
+
+		127.0.0.1:3278
+		"127.0.0.1:3278,allowAdmin=true"
+		"127.0.0.1:3278,defaultDatabase=1"
+
+		NOTES
+
+		In local endpoints 127.0.0.1 seems to work faster than localhost.
+
+		`defaultDatabase=N` maybe used instead of specifying -Index N.
+
+		With multiple endpoints ("server1:6379,server2:6379") the first
+		endpoint defines the server which is used by these cmdlets:
+
+			- Search-RedisKey
+			- Get-RedisServer
+			- Save-Redis
+'@
+		Index = @'
+		Specifies the database index. The default -1 implies the default
+		database if it is specified by Configuration, otherwise it is 0.
+'@
 		Prefix = @'
 		Specifies the key prefix and tells to return the prefixed database.
 		See Use-RedisPrefix for the details.
@@ -130,9 +151,6 @@ Merge-Helps $BaseDB @{
 	description = @'
 	This command calls Save(BackgroundSave) and waits for LastSave() changed.
 '@
-	parameters = @{
-		Configuration = $ParamConfiguration
-	}
 }
 
 ### Close-Redis

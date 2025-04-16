@@ -82,13 +82,10 @@ db.StringGet("test:key1")
 
 ## Known issues
 
-[#61]: https://github.com/microsoft/garnet/issues/61
 [#358]: https://github.com/microsoft/garnet/issues/358
 [FAQ]: https://microsoft.github.io/garnet/docs/welcome/faq
 
 For faster local connections, consider `127.0.0.1` instead of `localhost` in configuration strings.
-
-Garnet: The only database is 0, see [#61]. Other database indexes formally work but 0 is used.
 
 Garnet: The same key may simultaneously exist as string and object, see [#358].
 Mind expected inconsistencies and not unique `Search-RedisKey` results.

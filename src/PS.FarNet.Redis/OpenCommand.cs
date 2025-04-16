@@ -11,6 +11,10 @@ public sealed class OpenCommand : PSCmdlet
     [Parameter(Position = 0)]
     public string Configuration { get; set; }
 
+    //! `DB` cannot be used due to alias `db` for `Debug`.
+    [Parameter]
+    public int Index { get; set; } = -1;
+
     [Parameter]
     public string Prefix { get; set; }
 
@@ -43,7 +47,7 @@ public sealed class OpenCommand : PSCmdlet
             var options = ConfigurationOptions.Parse(Configuration);
             Configure(options);
 
-            var db = DB.Open(options);
+            var db = DB.Open(options, Index);
             WriteDatabase(db);
         }
     }

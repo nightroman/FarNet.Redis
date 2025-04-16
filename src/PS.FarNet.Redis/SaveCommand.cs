@@ -1,4 +1,5 @@
-﻿using StackExchange.Redis;
+﻿using FarNet.Redis;
+using StackExchange.Redis;
 using System.Management.Automation;
 
 namespace PS.FarNet.Redis;
@@ -6,34 +7,42 @@ namespace PS.FarNet.Redis;
 [Cmdlet("Save", "Redis")]
 public sealed class SaveCommand : BaseDBCmdlet
 {
-    [Parameter(Position = 0)]
-    public string Configuration { get; set; }
-
     protected override void BeginProcessing()
     {
-        IConnectionMultiplexer redis;
-        if (Configuration == null)
-        {
-            base.BeginProcessing();
-            redis = Database.Multiplexer;
-        }
-        else
-        {
-            var options = ConfigurationOptions.Parse(Configuration);
-            options.AllowAdmin = true;
-            redis = ConnectionMultiplexer.Connect(options);
-        }
+        base.BeginProcessing();
 
-        var server = redis.GetServers()[0];
-        var lastSave = server.LastSave();
+        var options = ConfigurationOptions.Parse(Database.Multiplexer.Configuration);
+        var allowAdmin = options.AllowAdmin;
 
-        server.Save(SaveType.BackgroundSave);
-        while(true)
+        IConnectionMultiplexer redis = null;
+        try
         {
-            Thread.Sleep(200);
-            var nextSave = server.LastSave();
-            if (nextSave != lastSave)
-                break;
+            if (allowAdmin)
+            {
+                redis = Database.Multiplexer;
+            }
+            else
+            {
+                options.AllowAdmin = true;
+                redis = ConnectionMultiplexer.Connect(options);
+            }
+
+            var server = AboutRedis.GetServer(redis, options);
+            var lastSave = server.LastSave();
+
+            server.Save(SaveType.BackgroundSave);
+            while (true)
+            {
+                Thread.Sleep(200);
+                var nextSave = server.LastSave();
+                if (nextSave != lastSave)
+                    break;
+            }
+        }
+        finally
+        {
+            if (!allowAdmin)
+                redis.Close();
         }
     }
 }

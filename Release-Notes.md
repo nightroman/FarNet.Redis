@@ -1,5 +1,13 @@
 # FarNet.Redis Release Notes
 
+## v0.16.0
+
+`Open-Redis` supports multiple databases, use new parameter `Index`.
+
+`Save-Redis` removed redundant parameter `Configuration`.
+
+Garnet 1.0.63
+
 ## v0.15.6
 
 StackExchange.Redis 2.8.31

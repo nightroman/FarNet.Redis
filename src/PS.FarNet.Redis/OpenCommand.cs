@@ -18,9 +18,6 @@ public sealed class OpenCommand : PSCmdlet
     [Parameter]
     public string Prefix { get; set; }
 
-    [Parameter]
-    public SwitchParameter AllowAdmin { get; set; }
-
     void WriteDatabase(IDatabase db)
     {
         if (!string.IsNullOrEmpty(Prefix))
@@ -29,26 +26,12 @@ public sealed class OpenCommand : PSCmdlet
         WriteObject(db);
     }
 
-    void Configure(ConfigurationOptions options)
-    {
-        if (AllowAdmin)
-            options.AllowAdmin = true;
-    }
-
     protected override void BeginProcessing()
     {
         if (string.IsNullOrEmpty(Configuration))
-        {
-            var db = DB.OpenDefaultDatabase(Configure);
-            WriteDatabase(db);
-        }
-        else
-        {
-            var options = ConfigurationOptions.Parse(Configuration);
-            Configure(options);
+            Configuration = DB.DefaultConfiguration;
 
-            var db = DB.Open(options, Index);
-            WriteDatabase(db);
-        }
+        var db = DB.Open(Configuration, Index);
+        WriteDatabase(db);
     }
 }

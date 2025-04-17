@@ -1,5 +1,13 @@
 # FarNet.Redis Release Notes
 
+## v0.17.0
+
+New cmdlet `Clear-Redis`.
+
+Amend opening default configuration.
+
+`Open-Redis` removed `AllowAdmin`, use `Configuration` instead.
+
 ## v0.16.0
 
 `Open-Redis` supports multiple databases, use new parameter `Index`.

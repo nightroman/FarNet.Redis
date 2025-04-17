@@ -24,3 +24,19 @@ task db_and_db1 {
 
 	Remove-RedisKey $key -Database $db1
 }
+
+task clear_2 {
+	$db = Open-Redis -Index 2
+	Clear-Redis
+
+	Set-RedisString q1 q1
+	Set-RedisString q2 q2
+
+	$r = Search-RedisKey *
+	equals (($r | Sort-Object) -join '//') q1//q2
+
+	Clear-Redis
+
+	$r = Search-RedisKey *
+	equals $r
+}

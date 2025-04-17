@@ -15,6 +15,7 @@
 	CmdletsToExport = @(
 		'Open-Redis'
 		'Save-Redis'
+		'Clear-Redis'
 		'Close-Redis'
 		'Get-RedisServer'
 		'Use-RedisPrefix'

@@ -8,7 +8,7 @@ public class AbcTest
 
     public AbcTest()
     {
-        Database = DB.OpenDefaultDatabase();
+        Database = DB.Open(DB.DefaultConfiguration);
     }
 
     protected static string NewGuid()

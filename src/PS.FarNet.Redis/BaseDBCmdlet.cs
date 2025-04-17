@@ -16,22 +16,7 @@ public abstract class BaseDBCmdlet : AnyCmdlet
             return;
 
         // get $db or default
-        Database = GetVariableValue("db").ToBaseObject() as IDatabase ?? DB.DefaultDatabase;
-        if (Database is { })
-            return;
-
-        // can open default?
-        if (Environment.GetEnvironmentVariable("FARNET_REDIS_CONFIGURATION") == null)
-            throw new PSArgumentException("Requires parameter Database or variable $db or $env:FARNET_REDIS_CONFIGURATION.", nameof(Database));
-
-        try
-        {
-            Database = DB.OpenDefaultDatabase();
-        }
-        catch (Exception ex)
-        {
-            throw new PSArgumentException($"Cannot connect Redis specified by $env:FARNET_REDIS_CONFIGURATION: {ex.Message}", ex);
-        }
+        Database = GetVariableValue("db").ToBaseObject() as IDatabase ?? DB.Open(DB.DefaultConfiguration);
     }
 
     protected static string ConvertPatternToRedis(string pattern)

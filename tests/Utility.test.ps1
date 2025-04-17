@@ -7,7 +7,7 @@ task open_redis {
 	equals ([object]::ReferenceEquals($db2, $db)) $true
 
 	# should be a different instance, close it
-	$db2 = Open-Redis 127.0.0.1:3278 -AllowAdmin
+	$db2 = Open-Redis '127.0.0.1:3278,allowAdmin=true'
 	equals ([object]::ReferenceEquals($db2, $db)) $false
 	Close-Redis -Database $db2
 }

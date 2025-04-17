@@ -131,9 +131,6 @@ $BaseSub = Merge-Helps $BaseDB @{
 		Specifies the key prefix and tells to return the prefixed database.
 		See Use-RedisPrefix for the details.
 '@
-		AllowAdmin = @'
-		Tells to allow admin operations.
-'@
 	}
 	outputs = @{
 		type = 'StackExchange.Redis.IDatabase'
@@ -150,6 +147,15 @@ Merge-Helps $BaseDB @{
 	synopsis = 'Explicitly requests to persist the current state to disk.'
 	description = @'
 	This command calls Save(BackgroundSave) and waits for LastSave() changed.
+'@
+}
+
+### Clear-Redis
+Merge-Helps $BaseDB @{
+	command = 'Clear-Redis'
+	synopsis = 'Removes all database keys.'
+	description = @'
+	This command removes all database keys.
 '@
 }
 

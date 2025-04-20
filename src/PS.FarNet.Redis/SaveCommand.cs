@@ -1,5 +1,4 @@
-﻿using FarNet.Redis;
-using StackExchange.Redis;
+﻿using StackExchange.Redis;
 using System.Management.Automation;
 
 namespace PS.FarNet.Redis;
@@ -27,7 +26,7 @@ public sealed class SaveCommand : BaseDBCmdlet
                 redis = ConnectionMultiplexer.Connect(options);
             }
 
-            var server = AboutRedis.GetServer(redis, options);
+            var server = DB.GetServer(redis, options);
             var lastSave = server.LastSave();
 
             server.Save(SaveType.BackgroundSave);

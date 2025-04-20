@@ -24,15 +24,6 @@ public static class DB
         return db;
     }
 
-    public static void Close(string configuration, int index = DefaultIndex)
-    {
-        var options = ConfigurationOptions.Parse(configuration);
-
-        var key = options.ToString();
-        if (s_databases.TryRemove((key, index), out IDatabase? db))
-            db.Multiplexer.Close();
-    }
-
     public static void Close(IDatabase db)
     {
         db.Multiplexer.Close();
@@ -45,7 +36,17 @@ public static class DB
 
     public static IEnumerable<RedisKey> Keys(IDatabase db, RedisValue pattern)
     {
-        var server = AboutRedis.GetServer(db.Multiplexer);
-        return server.Keys(db.Database, pattern);
+        return GetServer(db).Keys(db.Database, pattern);
+    }
+
+    public static IServer GetServer(IDatabase db, ConfigurationOptions? options = null)
+    {
+        return GetServer(db.Multiplexer, options);
+    }
+
+    public static IServer GetServer(IConnectionMultiplexer redis, ConfigurationOptions? options = null)
+    {
+        options ??= ConfigurationOptions.Parse(redis.Configuration);
+        return redis.GetServer(options.EndPoints[0]);
     }
 }

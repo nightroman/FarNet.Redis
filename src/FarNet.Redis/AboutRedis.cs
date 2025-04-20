@@ -7,12 +7,6 @@ public static class AboutRedis
 {
     public class Exception(string message) : System.Exception(message) { }
 
-    public static IServer GetServer(IConnectionMultiplexer redis, ConfigurationOptions? options = null)
-    {
-        options ??= ConfigurationOptions.Parse(redis.Configuration);
-        return redis.GetServer(options.EndPoints[0]);
-    }
-
     public static bool IsTextAscii(string value)
     {
         return value.All(x => x < 128);

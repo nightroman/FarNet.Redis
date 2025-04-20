@@ -18,6 +18,7 @@ $Arg = @(
 	"--checkpointdir=$DataRoot\checkpointdir"
 	'--index=128m'
 	'--obj-index=16m'
+	'--max-databases=2'
 	'--lua'
 	'--lua-transaction-mode'
 	'-q'

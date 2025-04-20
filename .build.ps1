@@ -99,8 +99,7 @@ task package help, markdown, version, {
 	Set-Psd $xml $Version 'Data/Table/Item[@Key="ModuleVersion"]'
 	Export-PsdXml $PSPackageRoot\$ModuleName.psd1 $xml
 
-	$result = Get-ChildItem $PSPackageRoot -Recurse -File -Name | Out-String
-	$sample = @'
+	Assert-SameFile.ps1 -Result (Get-ChildItem $PSPackageRoot -Recurse -File -Name) -Text -View $env:MERGE @'
 about_FarNet.Redis.help.txt
 FarNet.Redis.dll
 FarNet.Redis.ini
@@ -115,7 +114,6 @@ StackExchange.Redis.dll
 StackExchange.Redis.xml
 System.IO.Pipelines.dll
 '@
-	Assert-SameFile.ps1 -Text $sample $result $env:MERGE
 }
 
 task nuget package, version, {

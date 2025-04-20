@@ -25,8 +25,8 @@ task db_and_db1 {
 	Remove-RedisKey $key -Database $db1
 }
 
-task clear_2 {
-	$db = Open-Redis -Index 2
+task clear_1 {
+	$db = Open-Redis -Index 1
 	Clear-Redis
 
 	Set-RedisString q1 q1

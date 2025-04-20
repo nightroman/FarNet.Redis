@@ -1,5 +1,9 @@
 # FarNet.Redis Release Notes
 
+## v0.17.1
+
+Refactoring.
+
 ## v0.17.0
 
 New cmdlet `Clear-Redis`.

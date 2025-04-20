@@ -85,7 +85,7 @@ db.StringGet("test:key1")
 [#358]: https://github.com/microsoft/garnet/issues/358
 [FAQ]: https://microsoft.github.io/garnet/docs/welcome/faq
 
-For faster local connections, consider `127.0.0.1` instead of `localhost` in configuration strings.
+Configuration: Using `127.0.0.1` instead of `localhost` may work faster.
 
 Garnet: The same key may simultaneously exist as string and object, see [#358].
 Mind expected inconsistencies and not unique `Search-RedisKey` results.

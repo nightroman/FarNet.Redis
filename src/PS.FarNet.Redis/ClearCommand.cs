@@ -1,4 +1,4 @@
-﻿using FarNet.Redis;
+﻿using StackExchange.Redis;
 using System.Management.Automation;
 
 namespace PS.FarNet.Redis;
@@ -10,7 +10,7 @@ public sealed class ClearCommand : BaseDBCmdlet
     {
         base.BeginProcessing();
 
-        var server = AboutRedis.GetServer(Database.Multiplexer);
+        var server = DB.GetServer(Database);
         server.FlushDatabase(Database.Database);
     }
 }

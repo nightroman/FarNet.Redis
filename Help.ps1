@@ -112,9 +112,9 @@ $BaseSub = Merge-Helps $BaseDB @{
 
 		NOTES
 
-		In local endpoints 127.0.0.1 seems to work faster than localhost.
+		Using `127.0.0.1` instead of `localhost` may work faster.
 
-		`defaultDatabase=N` maybe used instead of specifying -Index N.
+		`defaultDatabase=N` may be used instead of specifying -Index N.
 
 		With multiple endpoints ("server1:6379,server2:6379") the first
 		endpoint defines the server which is used by these cmdlets:

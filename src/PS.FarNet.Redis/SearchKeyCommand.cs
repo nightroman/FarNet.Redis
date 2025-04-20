@@ -1,4 +1,4 @@
-﻿using FarNet.Redis;
+﻿using StackExchange.Redis;
 using System.Management.Automation;
 
 namespace PS.FarNet.Redis;
@@ -17,8 +17,7 @@ public sealed class SearchKeyCommand : BaseDBCmdlet
         if (Pattern is { })
             Pattern = ConvertPatternToRedis(Pattern);
 
-        var server = AboutRedis.GetServer(Database.Multiplexer);
-        var keys = server.Keys(Database.Database, Pattern);
+        var keys = DB.Keys(Database, Pattern);
         foreach (var key in keys)
             WriteObject((string)key);
     }

@@ -147,6 +147,10 @@ Merge-Helps $BaseDB @{
 	synopsis = 'Explicitly requests to persist the current state to disk.'
 	description = @'
 	This command calls Save(BackgroundSave) and waits for LastSave() changed.
+
+	Use Open-Redis with `allowAdmin=true` if Save-Redis is planned. If this is
+	unknown, you may open without admin and Save-Redis will use a temp session
+	with `allowAdmin=true`. In any case admin is required.
 '@
 }
 

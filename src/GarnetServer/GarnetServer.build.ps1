@@ -52,7 +52,7 @@ task install {
 
 	# save before stopping, using FarNet.Redis all users module
 	$pwsh = (Get-Command pwsh.exe).Definition
-	exec { nssm set $Service AppEvents Stop/Pre "$pwsh -c Import-Module FarNet.Redis; Save-Redis 127.0.0.1:$Port" }
+	exec { nssm set $Service AppEvents Stop/Pre "$pwsh -c Import-Module FarNet.Redis; Save-Redis -Database (Open-Redis '127.0.0.1:$Port,allowAdmin=true')" }
 }
 
 task start {

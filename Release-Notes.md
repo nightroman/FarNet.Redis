@@ -1,5 +1,9 @@
 # FarNet.Redis Release Notes
 
+## v0.17.2
+
+StackExchange.Redis 2.8.37, Garnet 1.0.64
+
 ## v0.17.1
 
 Refactoring.
@@ -22,9 +26,7 @@ Garnet 1.0.63
 
 ## v0.15.6
 
-StackExchange.Redis 2.8.31
-
-Garnet 1.0.59
+StackExchange.Redis 2.8.31, Garnet 1.0.59
 
 ## v0.15.5
 
@@ -65,9 +67,7 @@ StackExchange.Redis 2.8.24
 
 ## v0.14.1
 
-StackExchange.Redis 2.8.22
-
-Garnet 1.0.44
+StackExchange.Redis 2.8.22, Garnet 1.0.44
 
 ## v0.14.0
 
@@ -139,9 +139,7 @@ Garnet 1.0.32
 
 ## v0.7.11
 
-StackExchange.Redis 2.8.16
-
-Garnet 1.0.30
+StackExchange.Redis 2.8.16, Garnet 1.0.30
 
 ## v0.7.10
 
@@ -153,9 +151,7 @@ Garnet 1.0.19
 
 ## v0.7.8
 
-StackExchange.Redis 2.8.0
-
-Garnet 1.0.14
+StackExchange.Redis 2.8.0, Garnet 1.0.14
 
 ## v0.7.7
 

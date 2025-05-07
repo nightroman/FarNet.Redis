@@ -6,6 +6,6 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.Garnet" Version="1.0.63" />
+    <PackageReference Include="Microsoft.Garnet" Version="1.0.64" />
   </ItemGroup>
 </Project>

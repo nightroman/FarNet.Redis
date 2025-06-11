@@ -55,6 +55,10 @@ task install {
 	exec { nssm set $Service AppEvents Stop/Pre "$pwsh -c Import-Module FarNet.Redis; Save-Redis -Database (Open-Redis '127.0.0.1:$Port,allowAdmin=true')" }
 }
 
+task uninstall stop, {
+	nssm remove $Service confirm
+}
+
 task start {
 	nssm start $Service
 }
@@ -63,9 +67,7 @@ task stop {
 	nssm stop $Service
 }
 
-task uninstall stop, {
-	nssm remove $Service confirm
-}
+task restart stop, start
 
 # Synopsis: Use on changing code or packages.
 task rebuild stop, publish, start

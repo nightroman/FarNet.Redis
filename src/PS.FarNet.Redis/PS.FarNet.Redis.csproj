@@ -8,7 +8,7 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\FarNet.Redis\FarNet.Redis.csproj" />
-    <PackageReference Include="StackExchange.Redis" Version="2.8.37" />
+    <PackageReference Include="StackExchange.Redis" Version="2.8.41" />
     <PackageReference Include="PowerShellStandard.Library" Version="5.1.1" />
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">

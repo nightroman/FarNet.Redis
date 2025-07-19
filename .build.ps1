@@ -52,7 +52,7 @@ task version {
 }
 
 task markdown version, {
-	assert (Test-Path $env:MarkdownCss)
+	requires -Path $env:MarkdownCss
 	exec { pandoc.exe @(
 		'README.md'
 		'--output=README.htm'
@@ -105,6 +105,7 @@ FarNet.Redis.dll
 FarNet.Redis.ini
 FarNet.Redis.psd1
 LICENSE
+Microsoft.Extensions.DependencyInjection.Abstractions.dll
 Microsoft.Extensions.Logging.Abstractions.dll
 Pipelines.Sockets.Unofficial.dll
 PS.FarNet.Redis.dll

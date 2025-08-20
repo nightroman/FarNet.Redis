@@ -8,6 +8,7 @@ param(
 	$FarHome = (property FarHome C:\Bin\Far\x64)
 )
 
+$ProgressPreference = 0
 Set-StrictMode -Version 3
 $ModuleName = 'FarNet.Redis'
 $ModuleRoot = "$FarHome\FarNet\Lib\$ModuleName"

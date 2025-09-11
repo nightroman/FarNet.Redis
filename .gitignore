@@ -4,7 +4,7 @@ obj/
 Properties/
 TestResults/
 z*
-*.htm
+*.html
 *.nupkg
 *.user
 Directory.Build.props

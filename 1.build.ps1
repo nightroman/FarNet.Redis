@@ -14,18 +14,20 @@ $ModuleName = 'FarNet.Redis'
 $ModuleRoot = "$FarHome\FarNet\Lib\$ModuleName"
 $Description = 'StackExchange.Redis PowerShell module and FarNet library'
 
+function __clean {
+	Push-Location $PSScriptRoot
+	remove README.html, *.nupkg, z, src\*\bin, src\*\obj, src\TestResults
+	Pop-Location
+}
+
+task clean {
+	__clean
+}
+
 task build meta, {
 	Set-Location src\PS.FarNet.Redis
 	exec { dotnet build -c $Configuration }
 }
-
-function do_clean {
-	Push-Location $PSScriptRoot
-	remove README.htm, *.nupkg, z, src\*\bin, src\*\obj, src\TestResults
-	Pop-Location
-}
-
-task clean {do_clean}
 
 task publish {
 	Set-Location src
@@ -43,20 +45,20 @@ task content -After publish {
 	exec { robocopy src\Content $ModuleRoot } (0..3)
 }
 
+task version {
+	($Script:Version = Get-BuildVersion Release-Notes.md '##\s+v(\d+\.\d+\.\d+)')
+}
+
 task help {
 	. Helps.ps1
 	Convert-Helps Help.ps1 $ModuleRoot\PS.FarNet.Redis.dll-Help.xml
-}
-
-task version {
-	($Script:Version = Get-BuildVersion Release-Notes.md '##\s+v(\d+\.\d+\.\d+)')
 }
 
 task markdown version, {
 	requires -Path $env:MarkdownCss
 	exec { pandoc.exe @(
 		'README.md'
-		'--output=README.htm'
+		'--output=README.html'
 		'--from=gfm'
 		'--embed-resources'
 		'--standalone'
@@ -65,7 +67,7 @@ task markdown version, {
 	)}
 }
 
-task meta -Inputs .build.ps1, Release-Notes.md -Outputs src\Directory.Build.props -Jobs version, {
+task meta -Inputs 1.build.ps1, Release-Notes.md -Outputs src\Directory.Build.props -Jobs version, {
 	Set-Content src\Directory.Build.props @"
 <Project>
 	<PropertyGroup>
@@ -91,7 +93,7 @@ task package help, markdown, version, {
 	)
 
 	Copy-Item -Destination $PSPackageRoot @(
-		"README.htm"
+		"README.html"
 		"LICENSE"
 	)
 
@@ -111,7 +113,7 @@ Microsoft.Extensions.Logging.Abstractions.dll
 Pipelines.Sockets.Unofficial.dll
 PS.FarNet.Redis.dll
 PS.FarNet.Redis.dll-Help.xml
-README.htm
+README.html
 StackExchange.Redis.dll
 StackExchange.Redis.xml
 System.IO.Pipelines.dll
@@ -152,12 +154,10 @@ task pushPSGallery package, {
 	Publish-Module -Path $PSPackageRoot -NuGetApiKey $NuGetApiKey
 }
 
-task push pushNuGet, pushPSGallery, clean
-
 task testUnit {
 	Set-Location src\FarNet.Redis.Tests
 	exec { dotnet run -c Release }
-	do_clean
+	__clean
 }
 
 task testStar {
@@ -165,5 +165,7 @@ task testStar {
 }
 
 task test testUnit, testStar
+
+task release pushNuGet, pushPSGallery, clean
 
 task . build, clean

@@ -1,6 +1,9 @@
 <#
 .Synopsis
 	Build script, https://github.com/nightroman/Invoke-Build
+
+.Description
+	. -> test -> release
 #>
 
 param(
@@ -26,7 +29,7 @@ task clean {
 
 task build meta, {
 	Set-Location src\PS.FarNet.Redis
-	exec { dotnet build -c $Configuration }
+	exec { dotnet build -c $Configuration --tl:off }
 }
 
 task publish {
@@ -166,6 +169,9 @@ task testStar {
 
 task test testUnit, testStar
 
-task release pushNuGet, pushPSGallery, clean
+task release pushNuGet, pushPSGallery, clean -If {
+	Assert-GitBranchClean.ps1
+	$true
+}
 
 task . build, clean

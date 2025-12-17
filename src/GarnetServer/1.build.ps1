@@ -4,16 +4,16 @@
 
 .Description
 	Tasks to build and maintain the service "garnet".
-	Requires: https://github.com/kirillkovalenko/nssm
+	Requires: https://github.com/aelassas/servy
 #>
 
 $Port = 3278
-$Service = 'garnet'
+$ServiceName = 'garnet'
 $AppRoot = 'C:\Bin\Garnet'
 $DataRoot = 'C:\Data\Garnet'
 $Log = "$DataRoot\service.log"
 $App = "$AppRoot\GarnetServer.exe"
-$Arg = @(
+$Params = @(
 	"--port=$Port"
 	"--checkpointdir=$DataRoot\checkpointdir"
 	'--index=128m'
@@ -27,7 +27,7 @@ $Arg = @(
 ) -join ' '
 
 task run {
-	Start-Process $App $Arg
+	Start-Process $App $Params
 }
 
 task publish {
@@ -36,35 +36,32 @@ task publish {
 	remove bin, obj
 }
 
+# - AutomaticDelayedStart // let required network services start first
+# - DOTNET_LegacyExceptionHandling // https://github.com/microsoft/garnet/issues/902
 task install {
-	# install the service
-	exec { nssm install $Service $App $Arg }
-
-	# send standard and error output to file
-	exec { nssm set $Service AppStdout $Log }
-	exec { nssm set $Service AppStderr $Log }
-
-	# let required network services start first
-	exec { nssm set $Service Start SERVICE_DELAYED_AUTO_START }
-
-	# https://github.com/microsoft/garnet/issues/902
-	exec { nssm set $Service AppEnvironmentExtra "DOTNET_LegacyExceptionHandling=1" }
-
-	# save before stopping, using FarNet.Redis all users module
-	$pwsh = (Get-Command pwsh.exe).Definition
-	exec { nssm set $Service AppEvents Stop/Pre "$pwsh -c Import-Module FarNet.Redis; Save-Redis -Database (Open-Redis '127.0.0.1:$Port,allowAdmin=true')" }
+	exec -echo {
+		servy-cli install `
+		--name=$ServiceName `
+		--path=$App `
+		--params=$Params `
+		--startupDir=$AppRoot `
+		--startupType=AutomaticDelayedStart `
+		--env="DOTNET_LegacyExceptionHandling=1" `
+		--stdout=$Log `
+		--stderr=$Log `
+	}
 }
 
 task uninstall stop, {
-	nssm remove $Service confirm
+	servy-cli uninstall -n $ServiceName
 }
 
 task start {
-	nssm start $Service
+	servy-cli start -n $ServiceName
 }
 
 task stop {
-	nssm stop $Service
+	servy-cli stop -n $ServiceName
 }
 
 task restart stop, start

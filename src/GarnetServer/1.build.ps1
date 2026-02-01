@@ -39,6 +39,7 @@ task publish {
 # - AutomaticDelayedStart // let required network services start first
 # - DOTNET_LegacyExceptionHandling // https://github.com/microsoft/garnet/issues/902
 task install {
+	$pwsh = (Get-Command pwsh.exe).Definition
 	exec -echo {
 		servy-cli install `
 		--name=$ServiceName `
@@ -49,6 +50,8 @@ task install {
 		--env="DOTNET_LegacyExceptionHandling=1" `
 		--stdout=$Log `
 		--stderr=$Log `
+		--preStopPath=$pwsh `
+		--preStopParams="-nop -c Import-Module FarNet.Redis; Save-Redis -Database (Open-Redis '127.0.0.1:$Port,allowAdmin=true')" `
 	}
 }
 

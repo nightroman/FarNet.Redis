@@ -13,9 +13,9 @@ param(
 
 $ProgressPreference = 0
 Set-StrictMode -Version 3
-$ModuleName = 'FarNet.Redis'
-$ModuleRoot = "$FarHome\FarNet\Lib\$ModuleName"
-$Description = 'StackExchange.Redis PowerShell module and FarNet library'
+$_name = 'FarNet.Redis'
+$_root = "$FarHome\FarNet\Lib\$_name"
+$_description = 'StackExchange.Redis PowerShell module and FarNet library'
 
 function __clean {
 	Push-Location $PSScriptRoot
@@ -35,26 +35,26 @@ task build meta, {
 task publish {
 	Set-Location src
 
-	exec { dotnet publish PS.FarNet.Redis/PS.FarNet.Redis.csproj -c $Configuration -o $ModuleRoot --no-build }
-	remove $ModuleRoot\PS.FarNet.Redis.deps.json, $ModuleRoot\System.Management.Automation.dll
+	exec { dotnet publish PS.FarNet.Redis/PS.FarNet.Redis.csproj -c $Configuration -o $_root --no-build }
+	remove $_root\PS.FarNet.Redis.deps.json, $_root\System.Management.Automation.dll
 
 	$v1 = (Select-Xml '//PackageReference[@Include="StackExchange.Redis"]' FarNet.Redis\FarNet.Redis.csproj).Node.Version
-	Copy-Item -Destination $ModuleRoot @(
+	Copy-Item -Destination $_root @(
 		"$HOME\.nuget\packages\StackExchange.Redis\$v1\lib\net6.0\StackExchange.Redis.xml"
 	)
 }
 
 task content -After publish {
-	exec { robocopy src\Content $ModuleRoot } (0..3)
+	exec { robocopy src\Content $_root } (0..3)
 }
 
 task version {
-	($Script:Version = Get-BuildVersion Release-Notes.md '##\s+v(\d+\.\d+\.\d+)')
+	($Script:_version = Get-BuildVersion Release-Notes.md '##\s+v(\d+\.\d+\.\d+)')
 }
 
 task help {
 	. Helps.ps1
-	Convert-Helps Help.ps1 $ModuleRoot\PS.FarNet.Redis.dll-Help.xml
+	Convert-Helps Help.ps1 $_root\PS.FarNet.Redis.dll-Help.xml
 }
 
 task markdown version, {
@@ -66,7 +66,7 @@ task markdown version, {
 		'--embed-resources'
 		'--standalone'
 		"--css=$env:MarkdownCss"
-		"--metadata=pagetitle=$ModuleName $Version"
+		"--metadata=pagetitle=$_name $_version"
 	)}
 }
 
@@ -74,11 +74,11 @@ task meta -Inputs 1.build.ps1, Release-Notes.md -Outputs src\Directory.Build.pro
 	Set-Content src\Directory.Build.props @"
 <Project>
 	<PropertyGroup>
-		<Company>https://github.com/nightroman/$ModuleName</Company>
+		<Company>https://github.com/nightroman/$_name</Company>
 		<Copyright>Copyright (c) Roman Kuzmin</Copyright>
-		<Description>$Description</Description>
-		<Product>$ModuleName</Product>
-		<Version>$Version</Version>
+		<Description>$_description</Description>
+		<Product>$_name</Product>
+		<Version>$_version</Version>
 		<IncludeSourceRevisionInInformationalVersion>False</IncludeSourceRevisionInInformationalVersion>
 	</PropertyGroup>
 </Project>
@@ -87,9 +87,9 @@ task meta -Inputs 1.build.ps1, Release-Notes.md -Outputs src\Directory.Build.pro
 
 task package help, markdown, version, {
 	remove z
-	$Script:PSPackageRoot = mkdir "z\tools\FarHome\FarNet\Lib\$ModuleName"
+	$Script:PSPackageRoot = mkdir "z\tools\FarHome\FarNet\Lib\$_name"
 
-	exec { robocopy $ModuleRoot $PSPackageRoot /s /xf *.pdb } 1
+	exec { robocopy $_root $PSPackageRoot /s /xf *.pdb } 1
 
 	Copy-Item -Destination z @(
 		'README.md'
@@ -101,11 +101,11 @@ task package help, markdown, version, {
 	)
 
 	Import-Module PsdKit
-	$xml = Import-PsdXml $PSPackageRoot\$ModuleName.psd1
-	Set-Psd $xml $Version 'Data/Table/Item[@Key="ModuleVersion"]'
-	Export-PsdXml $PSPackageRoot\$ModuleName.psd1 $xml
+	$xml = Import-PsdXml $PSPackageRoot\$_name.psd1
+	Set-Psd $xml $_version 'Data/Table/Item[@Key="ModuleVersion"]'
+	Export-PsdXml $PSPackageRoot\$_name.psd1 $xml
 
-	Assert-SameFile.ps1 -Result (Get-ChildItem $PSPackageRoot -Recurse -File -Name) -Text -View $env:MERGE @'
+	Assert-SameFile.ps1 -Fail -Result (Get-ChildItem $PSPackageRoot -Recurse -File -Name) -Text -View $env:MERGE @'
 about_FarNet.Redis.help.txt
 FarNet.Redis.dll
 FarNet.Redis.ini
@@ -119,26 +119,26 @@ PS.FarNet.Redis.dll-Help.xml
 README.html
 StackExchange.Redis.dll
 StackExchange.Redis.xml
-System.IO.Pipelines.dll
+System.IO.Hashing.dll
 '@
 }
 
 task nuget package, version, {
-	equals $Version (Get-Item "$ModuleRoot\$ModuleName.dll").VersionInfo.ProductVersion
+	equals $_version (Get-Item "$_root\$_name.dll").VersionInfo.ProductVersion
 
 	Set-Content z\Package.nuspec @"
 <?xml version="1.0"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
 	<metadata>
-		<id>$ModuleName</id>
-		<version>$Version</version>
+		<id>$_name</id>
+		<version>$_version</version>
 		<authors>Roman Kuzmin</authors>
 		<owners>Roman Kuzmin</owners>
 		<license type="expression">MIT</license>
 		<readme>README.md</readme>
-		<projectUrl>https://github.com/nightroman/$ModuleName</projectUrl>
-		<description>$Description</description>
-		<releaseNotes>https://github.com/nightroman/$ModuleName/blob/main/Release-Notes.md</releaseNotes>
+		<projectUrl>https://github.com/nightroman/$_name</projectUrl>
+		<description>$_description</description>
+		<releaseNotes>https://github.com/nightroman/$_name/blob/main/Release-Notes.md</releaseNotes>
 		<tags>FarManager FarNet Redis Client Database</tags>
 	</metadata>
 </package>
@@ -148,13 +148,11 @@ task nuget package, version, {
 }
 
 task pushNuGet nuget, version, {
-	$NuGetApiKey = Read-Host NuGetApiKey
-	exec { nuget push "$ModuleName.$Version.nupkg" -Source nuget.org -ApiKey $NuGetApiKey }
+	exec { nuget push "$_name.$_version.nupkg" -Source nuget.org -ApiKey (property NuGetApiKey) }
 }
 
 task pushPSGallery package, {
-	$NuGetApiKey = Read-Host NuGetApiKey
-	Publish-Module -Path $PSPackageRoot -NuGetApiKey $NuGetApiKey
+	Publish-Module -Path $PSPackageRoot -NuGetApiKey (property NuGetApiKeyPS)
 }
 
 task testUnit {

@@ -32,12 +32,13 @@ task run {
 
 task publish {
 	remove $AppRoot
-	exec { dotnet publish --use-current-runtime -c Release -o $AppRoot }
+	exec { dotnet publish --use-current-runtime -c Release -o $AppRoot --tl:off }
 	remove bin, obj
 }
 
 # - AutomaticDelayedStart // let required network services start first
 # - DOTNET_LegacyExceptionHandling // https://github.com/microsoft/garnet/issues/902
+# - preStopTimeout=20 < OS default 30 // https://github.com/aelassas/servy/wiki/Shutdown-&-Teardown
 task install {
 	$pwsh = (Get-Command pwsh.exe).Definition
 	exec -echo {
@@ -51,7 +52,9 @@ task install {
 		--stdout=$Log `
 		--stderr=$Log `
 		--preStopPath=$pwsh `
-		--preStopParams="-nop -c Import-Module FarNet.Redis; Save-Redis -Database (Open-Redis '127.0.0.1:$Port,allowAdmin=true')" `
+		--preStopParams="-nop -f $AppRoot\PreStopGarnet.ps1 $Port $DataRoot\PreStopGarnet.log" `
+		--preStopTimeout=20 `
+		--preStopLogAsError `
 	}
 }
 

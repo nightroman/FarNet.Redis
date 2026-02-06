@@ -126,8 +126,9 @@ task set_when_many {
 	equals (Get-RedisString $key1) '5'
 
 	# but fails with two
+	# 2026-02-06 err used to be: Exists is not valid in this context; the permitted values are: Always, NotExists
 	try { throw Set-RedisString -Many @{$key1 = 5; $key2 = 6} -When Exists }
-	catch { equals "$_" 'Exists is not valid in this context; the permitted values are: Always, NotExists' }
+	catch { equals "$_" 'ERR unknown command' }
 
 	# all exist -> false, nothing is set
 	$r = Set-RedisString -Many @{$key1 = 1; $key2 = 2} -When NotExists

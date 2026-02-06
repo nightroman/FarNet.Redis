@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="xunit.v3" Version="3.2.1" />
+    <PackageReference Include="xunit.v3" Version="3.2.2" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\FarNet.Redis\FarNet.Redis.csproj" />

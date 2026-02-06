@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="src/Content/about_FarNet.Redis.help.txt" />
+    <File Path="src/Content/FarNet.Redis.psd1" />
+  </Folder>
+  <Project Path="src/FarNet.Redis.Tests/FarNet.Redis.Tests.csproj" />
+  <Project Path="src/FarNet.Redis/FarNet.Redis.csproj" />
+  <Project Path="src/PS.FarNet.Redis/PS.FarNet.Redis.csproj" />
+</Solution>

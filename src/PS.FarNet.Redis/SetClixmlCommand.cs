@@ -1,4 +1,5 @@
-﻿using System.Management.Automation;
+﻿using StackExchange.Redis;
+using System.Management.Automation;
 
 namespace PS.FarNet.Redis;
 
@@ -19,6 +20,6 @@ public sealed class SetClixmlCommand : BaseKeyCmdlet
         base.BeginProcessing();
 
         var str = PSSerializer.Serialize(Value, Depth);
-        Database.StringSet(RKey, str, TimeToLive);
+        Database.StringSet(RKey, str, TimeToLive, When.Always);
     }
 }

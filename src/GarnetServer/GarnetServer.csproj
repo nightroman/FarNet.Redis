@@ -6,6 +6,12 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.Garnet" Version="1.0.94" />
+    <PackageReference Include="Microsoft.Garnet" Version="1.0.97" />
   </ItemGroup>
+  <ItemGroup>
+    <MyFile Include="PreStopGarnet.ps1" />
+  </ItemGroup>
+  <Target Name="CopyPublish" AfterTargets="Publish">
+    <Copy SourceFiles="@(MyFile)" DestinationFiles="@(MyFile->'$(PublishDir)%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
+  </Target>
 </Project>

@@ -48,7 +48,7 @@ task install {
 		--params=$Params `
 		--startupDir=$AppRoot `
 		--startupType=AutomaticDelayedStart `
-		--env="DOTNET_LegacyExceptionHandling=1" `
+		--envVars="DOTNET_LegacyExceptionHandling=1" `
 		--stdout=$Log `
 		--stderr=$Log `
 		--preStopPath=$pwsh `
